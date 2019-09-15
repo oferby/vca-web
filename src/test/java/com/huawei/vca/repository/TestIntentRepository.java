@@ -30,12 +30,16 @@ public class TestIntentRepository {
         assert all.size() == 1;
         assert all.contains(intentEntity);
 
-        String intent = intentEntity.getIntent();
-        intentRepository.deleteById(intent);
+//        String intent = intentEntity.getIntent();
+//        intentRepository.deleteById(intent);
+//
+//        Optional<IntentEntity> byId = intentRepository.findById(intent);
+//
+//        assert !byId.isPresent();
 
-        Optional<IntentEntity> byId = intentRepository.findById(intent);
+        intentEntity = this.getRejectIntentEntity();
 
-        assert !byId.isPresent();
+        intentRepository.save(intentEntity);
 
     }
 
@@ -54,5 +58,44 @@ public class TestIntentRepository {
         return intentEntity;
 
     }
+
+    private IntentEntity getRejectIntentEntity() {
+
+        IntentEntity intentEntity = new IntentEntity();
+        intentEntity.setIntent("reject");
+
+        Set<String> textSet = new HashSet<>();
+        textSet.add("no");
+        textSet.add("no way");
+        textSet.add("not for me");
+        intentEntity.setTextSet(textSet);
+
+        return intentEntity;
+
+    }
+
+    @Test
+    public void addTestIntents() {
+
+        intentRepository.deleteAll();
+
+        IntentEntity intentEntity = this.getIntentEntity();
+        intentRepository.save(intentEntity);
+
+        intentEntity = this.getRejectIntentEntity();
+        intentRepository.save(intentEntity);
+
+    }
+
+    @Test
+    public void testFind(){
+
+        List<IntentEntity> all = intentRepository.findAll();
+
+        assert all.size() == 2;
+
+    }
+
+
 
 }

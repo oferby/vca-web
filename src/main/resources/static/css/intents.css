@@ -1,0 +1,43 @@
+#search_text {
+    width: 400px;
+    margin-bottom: 5px;
+}
+
+.left_window {
+    width: 50%;
+}
+
+
+.split {
+  height: 100%;
+  width: 50%;
+  position: fixed;
+  z-index: 1;
+  top: 60px;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+/* Control the left side */
+.left {
+  left: 0;
+  background-color: #EEECEC;
+}
+
+.left input[type="text"] {
+    margin-left: 9px;
+    width: 68%;
+    margin-bottom: 5px;
+}
+
+/* Control the right side */
+.right {
+  right: 0;
+  background-color: #DDDADA;
+}
+
+.right input[type="text"] {
+    margin-left: 9px;
+    width: 68%;
+    margin-bottom: 5px;
+}

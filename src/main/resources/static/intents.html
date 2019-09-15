@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Intents Management</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <link rel="stylesheet" href="/css/intents.css">
+</head>
+<body>
+<div id="app">
+    <input id="search_text" type="text">
+    <div>
+        <input type="button" value="Add" onclick="addIntent()">
+    </div>
+
+
+    <div class="split left">
+
+        <intent-item
+                v-for="(intents, indx) in intent_list"
+                v-bind:intents="intents"
+                v-on:remove="remove(intents.intent, indx)"
+        ></intent-item>
+    </div>
+    <div class="split right">
+        <div class="example paragraph" v-for="example in intents_data[index].textSet">
+            <input type="text" v-model="example">
+            <input type="button" value="Delete">
+            <input type="button" value="Save">
+        </div>
+    </div>
+
+
+</div>
+<script src="js/intents.js"></script>
+</body>
+</html>
