@@ -24,10 +24,12 @@
         ></intent-item>
     </div>
     <div class="split right">
+        <label id="intent_label">Intent: {{intent_label}}</label>
+        <input id="input_example" type="text"><input type="button" value="Add" onclick="addExample()">
         <example-item
                 v-for="(example, indx) in example_list"
                 v-bind:example="example"
-                v-on:remove="remove(intents.intent, indx)"
+                v-on:remove="removeExample(indx)"
         ></example-item>
     </div>
 </div>

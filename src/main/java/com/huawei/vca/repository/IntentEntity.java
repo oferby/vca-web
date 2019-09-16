@@ -24,6 +24,8 @@ public class IntentEntity implements Comparable{
     }
 
     public Set<String> getTextSet() {
+        if (textSet == null)
+            return new HashSet<>();
         return textSet;
     }
 
