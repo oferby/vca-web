@@ -41,19 +41,52 @@ public class TestBotUtterRepository {
 
     }
 
+    @Test
+    public void addActions(){
+
+        this.botUtterRepository.deleteAll();
+
+        BotUtterEntity botUtterEntity = this.getBotUtterEntity();
+
+        botUtterRepository.save(botUtterEntity);
+
+        botUtterEntity = this.getAnotherBotUtterEntity();
+
+        botUtterRepository.save(botUtterEntity);
+
+        List<BotUtterEntity> all = botUtterRepository.findAll();
+
+        assert all.size() == 2;
+
+    }
+
     private BotUtterEntity getBotUtterEntity(){
 
         BotUtterEntity entity = new BotUtterEntity();
-        entity.setActionId(1);
-        Set<String>textSet = new HashSet<>();
-        textSet.add("How can I help you?");
-        textSet.add("Good morning.");
-        textSet.add("Hello to you too :-)");
+        entity.setId("greet");
+        entity.addToTextList("How can I help you?");
+        entity.addToTextList("Good morning.");
+        entity.addToTextList("Hello to you too :-)");
 
         return entity;
 
     }
 
+    private BotUtterEntity getAnotherBotUtterEntity(){
 
+        BotUtterEntity entity = new BotUtterEntity();
+        entity.setId("goodbye");
+        entity.addToTextList("bye bye");
+        entity.addToTextList("Goodbye.");
+        entity.addToTextList("see you next time.");
+
+        return entity;
+
+    }
+
+    @Test
+    public void deleteAll() {
+        this.botUtterRepository.deleteAll();
+    }
 
 }

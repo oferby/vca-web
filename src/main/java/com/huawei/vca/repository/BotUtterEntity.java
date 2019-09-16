@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Document(collection = "bot_utters")
-public class BotUtterEntity extends BotEvent {
+public class BotUtterEntity extends BotEvent implements Comparable<BotUtterEntity>{
 
     @Id
     private String id;
@@ -25,6 +25,11 @@ public class BotUtterEntity extends BotEvent {
     }
 
     public Set<String> getTextSet() {
+
+        if (textSet == null) {
+            return new HashSet<>();
+        }
+
         return textSet;
     }
 
@@ -54,5 +59,10 @@ public class BotUtterEntity extends BotEvent {
     @Override
     public int hashCode() {
         return Objects.hash(getId(), getTextSet());
+    }
+
+    @Override
+    public int compareTo(BotUtterEntity entity) {
+        return this.id.compareTo(entity.id);
     }
 }

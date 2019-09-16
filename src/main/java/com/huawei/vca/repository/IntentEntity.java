@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Document(collection = "intents")
-public class IntentEntity implements Comparable{
+public class IntentEntity implements Comparable<IntentEntity>{
 
     @Id
     private String intent;
@@ -57,11 +57,10 @@ public class IntentEntity implements Comparable{
         return Objects.hash(getIntent(), getTextSet());
     }
 
+
     @Override
-    public int compareTo( Object o) {
-
-        String o_id = ((IntentEntity)o).getIntent();
-        return this.intent.compareTo(o_id);
-
+    public int compareTo(IntentEntity entity) {
+        String intent = entity.getIntent();
+        return this.intent.compareTo(intent);
     }
 }

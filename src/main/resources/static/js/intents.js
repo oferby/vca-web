@@ -1,5 +1,4 @@
 var intents_dict = {};
-var example_dict = {}
 var index = 0;
 var app;
 var dataUrl = '/data/intents/';
@@ -66,6 +65,7 @@ function successAfterAddNew(intent) {
 function addIntent() {
     var text = $("#search_text").val()
     if (text == '') return
+    $("#search_text").val("")
     data = { "intent": text, textSet: []}
     this.addNew(dataUrl, data, successAfterAddNew)
 }
@@ -81,7 +81,6 @@ function addNew(url, data, callback) {
         method: "POST",
         success: callback
     });
-
 
 }
 

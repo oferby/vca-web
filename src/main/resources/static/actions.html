@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Actions Management</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <link rel="stylesheet" href="/css/actions.css">
+</head>
+<body>
+<div id="app">
+    <input id="search_text" type="text">
+    <div>
+        <input type="button" value="Add" onclick="addAction()">
+    </div>
+
+
+    <div class="split left">
+
+        <action-item
+                v-for="(action, indx) in action_list"
+                v-bind:action="action"
+                v-on:remove="remove(action.id, indx)"
+        ></action-item>
+    </div>
+    <div class="split right">
+        <label id="action_label">Action: {{action_label}}</label>
+        <input id="input_example" type="text"><input type="button" value="Add" onclick="addExample()">
+        <example-item
+                v-for="(example, indx) in example_list"
+                v-bind:example="example"
+                v-on:remove="removeExample(indx)"
+        ></example-item>
+    </div>
+</div>
+
+
+</div>
+<script src="js/actions.js"></script>
+</body>
+</html>
