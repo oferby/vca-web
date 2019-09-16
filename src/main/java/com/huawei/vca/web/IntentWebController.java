@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +23,11 @@ public class IntentWebController {
     @GetMapping(produces = "application/json")
     public List<IntentEntity> getIntentEntitylist() {
         logger.debug("got get all intents request.");
-        return intentRepository.findAll();
+        List<IntentEntity> all = intentRepository.findAll();
+
+        Collections.sort(all);
+
+        return all;
     }
 
     @GetMapping("{id}")

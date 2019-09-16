@@ -24,12 +24,13 @@
         ></intent-item>
     </div>
     <div class="split right">
-        <div class="example paragraph" v-for="example in intents_data[index].textSet">
-            <input type="text" v-model="example">
-            <input type="button" value="Delete">
-            <input type="button" value="Save">
-        </div>
+        <example-item
+                v-for="(example, indx) in example_list"
+                v-bind:example="example"
+                v-on:remove="remove(intents.intent, indx)"
+        ></example-item>
     </div>
+</div>
 
 
 </div>

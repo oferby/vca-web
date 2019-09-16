@@ -3,12 +3,13 @@ package com.huawei.vca.repository;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
 @Document(collection = "intents")
-public class IntentEntity {
+public class IntentEntity implements Comparable{
 
     @Id
     private String intent;
@@ -52,5 +53,13 @@ public class IntentEntity {
     @Override
     public int hashCode() {
         return Objects.hash(getIntent(), getTextSet());
+    }
+
+    @Override
+    public int compareTo( Object o) {
+
+        String o_id = ((IntentEntity)o).getIntent();
+        return this.intent.compareTo(o_id);
+
     }
 }
