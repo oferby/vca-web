@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.huawei.vca.intent";
+option java_outer_classname = "IntentProto";
+
+package intent;
+
+service NluService {
+    rpc getNluResponse(NluRequest) returns (NluResponse) {
+
+    }
+}
+
+message NluRequest {
+    string text = 1;
+    string sessionId = 2;
+}
+message Intent {
+    string name = 1;
+    float confidence = 2;
+}
+
+message Entity {
+    int32 start = 1;
+    int32 end = 2;
+    string value = 3;
+    string entity = 4;
+    float confidence = 5;
+}
+
+message Rank {
+    string name = 1;
+    float confidence = 2;
+}
+
+message NluResponse {
+    string sessionId = 1;
+    Intent intent = 2;
+    repeated Entity entities = 3;
+    repeated Rank ranking = 4;
+}
+

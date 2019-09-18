@@ -1,4 +1,4 @@
-package com.huawei.vca.repository;
+package com.huawei.vca.conversation;
 
 import com.huawei.vca.message.Dialogue;
 import org.springframework.stereotype.Controller;

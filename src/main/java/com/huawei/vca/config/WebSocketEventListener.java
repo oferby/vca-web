@@ -1,7 +1,7 @@
 package com.huawei.vca.config;
 
 import com.huawei.vca.message.Dialogue;
-import com.huawei.vca.repository.SessionController;
+import com.huawei.vca.conversation.SessionController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

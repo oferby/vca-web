@@ -1,4 +1,4 @@
-package com.huawei.vca.repository;
+package com.huawei.vca.message;
 
 import com.huawei.vca.message.Event;
 

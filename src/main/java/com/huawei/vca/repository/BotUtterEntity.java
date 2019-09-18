@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Document(collection = "bot_utters")
-public class BotUtterEntity extends BotEvent implements Comparable<BotUtterEntity>{
+public class BotUtterEntity implements Comparable<BotUtterEntity>{
 
     @Id
     private String id;
