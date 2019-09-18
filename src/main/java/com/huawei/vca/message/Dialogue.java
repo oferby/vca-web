@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Dialogue {
 
-    private UUID sessionId;
+    private String sessionId;
     private Set<String> dialogueState;
     private String text;
     private List<String> history;
@@ -14,12 +14,19 @@ public class Dialogue {
     private Set<String> observables;
     private String feedbackUrl;
 
-    public UUID getSessionId() {
+    public Dialogue() {
+    }
+
+    public Dialogue(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public String getSessionId() {
         return sessionId;
     }
 
     public void setSessionId() {
-        sessionId = UUID.randomUUID();
+        sessionId = UUID.randomUUID().toString();
     }
 
     public Set<String> getDialogueState() {

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @RestController
@@ -19,7 +20,7 @@ public class ActionWebController {
     private BotUtterRepository botUtterRepository;
 
     @GetMapping(produces = "application/json")
-    public List<BotUtterEntity> getAll() {
+    public List<BotUtterEntity> getAll(HttpSession httpSession) {
         return botUtterRepository.findAll();
     }
 

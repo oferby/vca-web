@@ -38,21 +38,21 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         return executor;
     }
 
-    @Bean
-    public RestTemplate restTemplate(){
-        return new RestTemplate();
-    }
-
-
-    @Bean
-    public WebMvcConfigurerAdapter forwardToIndex() {
-        return new WebMvcConfigurerAdapter() {
-            @Override
-            public void addViewControllers(ViewControllerRegistry registry) {
-                registry.addViewController("/demo").setViewName(
-                        "forward:/demo/index.html");
-            }
-        };
-    }
+//    @Bean
+//    public RestTemplate restTemplate(){
+//        return new RestTemplate();
+//    }
+//
+//
+//    @Bean
+//    public WebMvcConfigurerAdapter forwardToIndex() {
+//        return new WebMvcConfigurerAdapter() {
+//            @Override
+//            public void addViewControllers(ViewControllerRegistry registry) {
+//                registry.addViewController("/demo").setViewName(
+//                        "forward:/demo/index.html");
+//            }
+//        };
+//    }
 
 }

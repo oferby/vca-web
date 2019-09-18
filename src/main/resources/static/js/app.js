@@ -2,7 +2,7 @@ var visible = false
 var greetingSent = false;
 
 var intent = {};
-var dialogue = {};
+var dialogue;
 
 function getTime() {
     var today = new Date();
@@ -21,9 +21,14 @@ function connect() {
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
 
-        console.log('Connected: ' + frame);
+        var sessionId = /\/([^\/]+)\/websocket/.exec(socket._transport.url)[1];
+        console.log("connected, session id: " + sessionId);
 
-        stompClient.subscribe('/topic/dialogue', function (hint) {
+        dialogue = {
+            'sessionId': sessionId
+        }
+
+        stompClient.subscribe('/topic/dialogue/'+sessionId, function (hint) {
             dialogue  = JSON.parse(hint.body);
 //            if (res.status == 'DONE') {
 //            }
@@ -76,24 +81,18 @@ function addBotText(text) {
 
 }
 
-
-
 function addBotResponse(dialogue){
 
     async function displayWait() {
 
         $('#smartbotBody').append('<div id="waiting-div" class="messageBox incoming"><div class="messageText"><div class="waiting"><img src="/images/waiting.gif" alt="Enter"></div></div></div>');
         scroll_window();
-        await sleep(1500);
+        await sleep(1000);
         $('#waiting-div').remove();
 
          var text = dialogue.text
          addBotText(text);
 
-//         var urlUp = dialogue.feedbackUrl+'/up';
-//         var urlDown = dialogue.feedbackUrl+'/down';
-//
-//        $('#history').append('<div class="bot-text-line"><span class="bot-text">Was this helpful?</span><img class="feedback-btn" src="/images/up.png" onclick="javascript:sendFeedback('+urlUp+')"><img src="/images/down.png" class="feedback-btn" onclick="javascript:sendFeedback('+urlDown+')"></div>');
         scroll_window();
 
     }
@@ -101,6 +100,18 @@ function addBotResponse(dialogue){
     displayWait()
 
 }
+
+
+function getData(dataUrl, callback) {
+
+    $.ajax({
+      dataType: "json",
+      url: dataUrl,
+      processData: false,
+      success: callback
+    });
+
+};
 
 $(document).ready( function(){
 

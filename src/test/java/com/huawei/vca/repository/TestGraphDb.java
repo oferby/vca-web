@@ -23,6 +23,7 @@ public class TestGraphDb {
         conversationRepository.deleteAll();
 
         RootNode rootNode = new RootNode();
+        rootNode.setName("root");
 
         RootNode save = conversationRepository.save(rootNode);
 
