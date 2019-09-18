@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
 
 @RestController
 @RequestMapping("data/intents")
@@ -19,6 +20,9 @@ public class IntentWebController {
 
     @Autowired
     private IntentRepository intentRepository;
+
+    @Autowired
+    private ExecutorService executorService;
 
     @GetMapping(produces = "application/json")
     public List<IntentEntity> getIntentEntitylist() {
@@ -43,6 +47,7 @@ public class IntentWebController {
 
     @PutMapping("{id}")
     public IntentEntity update(@RequestBody IntentEntity intentEntity, @PathVariable String id) {
+
         return intentRepository.save(intentEntity);
     }
 
