@@ -8,6 +8,7 @@ public class Dialogue {
     private String text;
     private List<Event> history;
     private Map<String, String> slots;
+    private NluEvent lastNluEvent;
 
     public Dialogue() {
     }
@@ -60,5 +61,13 @@ public class Dialogue {
 
     public void setSlots(Map<String, String> slots) {
         this.slots = slots;
+    }
+
+    public NluEvent getLastNluEvent() {
+        return lastNluEvent;
+    }
+
+    public void setLastNluEvent(NluEvent lastNluEvent) {
+        this.lastNluEvent = lastNluEvent;
     }
 }

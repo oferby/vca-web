@@ -6,7 +6,7 @@ import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
-@EnableNeo4jRepositories
+@EnableNeo4jRepositories("com.huawei.vca.repository")
 @EnableTransactionManagement
 public class Application {
 

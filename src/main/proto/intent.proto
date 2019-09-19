@@ -12,6 +12,11 @@ service NluService {
     }
 }
 
+message NluRequest {
+    string text = 1;
+    string sessionId = 2;
+}
+
 message Intent {
     string name = 1;
     float confidence = 2;
@@ -29,11 +34,6 @@ message Entity {
 message Rank {
     string name = 1;
     float confidence = 2;
-}
-
-message NluRequest {
-    string text = 1;
-    string sessionId = 2;
 }
 
 message NluResponse {

@@ -65,6 +65,12 @@ function addUserInput(text) {
 
 }
 
+function addUserInput(text) {
+
+    $('#smartbotBody').append('<div class="messageBox outgoing"><div class="messageText">'+text+'</div></div>');
+
+}
+
 function scroll_window(){
     var element = document.getElementById("smartbotBody");
     element.scrollTop = element.scrollHeight - element.clientHeight;
@@ -90,8 +96,14 @@ function addBotResponse(dialogue){
         await sleep(1000);
         $('#waiting-div').remove();
 
-         var text = dialogue.text
-         addBotText(text);
+        var nluInfo = dialogue.lastNluEvent;
+        if (nluInfo != null) {
+            intent = nluInfo.bestIntent.intent + " " + nluInfo.bestIntent.confidence;
+            addUserInput(intent);
+        }
+        var text = dialogue.text;
+
+        addBotText(text);
 
         scroll_window();
 

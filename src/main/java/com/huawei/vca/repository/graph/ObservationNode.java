@@ -1,27 +1,26 @@
 package com.huawei.vca.repository.graph;
 
-import org.neo4j.ogm.annotation.GeneratedValue;
-import org.neo4j.ogm.annotation.Id;
-import org.neo4j.ogm.annotation.NodeEntity;
-import org.neo4j.ogm.annotation.Relationship;
+import org.neo4j.ogm.annotation.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @NodeEntity
-public class ObservationNode extends ConversationNode{
-
-    @Id
-    @GeneratedValue
-    private
-    Long id;
+public class ObservationNode extends StateNode {
 
     @Relationship(type = "LEADS")
     private ActionNode actionNode;
 
-    public Long getId() {
-        return id;
+    @Properties
+    private Map<String,String>properties;
+
+    public ObservationNode() {
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public ObservationNode(String name) {
+        super(name);
     }
 
     public ActionNode getActionNode() {
@@ -30,5 +29,23 @@ public class ObservationNode extends ConversationNode{
 
     public void setActionNode(ActionNode actionNode) {
         this.actionNode = actionNode;
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
+
+    public void addProperty(String key, String value) {
+        if (properties == null) {
+            properties = new HashMap<>();
+
+        }
+
+        properties.put(key, value);
+
     }
 }

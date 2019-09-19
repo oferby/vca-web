@@ -5,8 +5,6 @@ import com.huawei.vca.intent.NluResponse;
 public class UserUtter extends Event{
 
     private String text;
-    private NluResponse nluResponse;
-
 
     public UserUtter() {
         super();
@@ -25,11 +23,4 @@ public class UserUtter extends Event{
         this.text = text;
     }
 
-    public NluResponse getNluResponse() {
-        return nluResponse;
-    }
-
-    public void setNluResponse(NluResponse nluResponse) {
-        this.nluResponse = nluResponse;
-    }
 }
