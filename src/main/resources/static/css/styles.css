@@ -159,3 +159,7 @@ box-shadow: 0 -2px 10px 2px #ccc inset;
   padding-left: 3px;
   padding-top: 5px;
 }
+
+.intent {
+    background-color: #DDDBC9
+}

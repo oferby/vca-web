@@ -3,6 +3,7 @@ var greetingSent = false;
 
 var intent = {};
 var dialogue;
+var showIntent = false;
 
 function getTime() {
     var today = new Date();
@@ -46,7 +47,7 @@ function showChatbot() {
         $('#smartbot').show();
 
         async function displayGreeting() {
-            await sleep(1000);
+            await sleep(500);
             addBotText('Hello, how may I help you?')
             greetingSent = true;
         }
@@ -65,9 +66,9 @@ function addUserInput(text) {
 
 }
 
-function addUserInput(text) {
+function addIntentInput(text) {
 
-    $('#smartbotBody').append('<div class="messageBox outgoing"><div class="messageText">'+text+'</div></div>');
+    $('#smartbotBody').append('<div class="messageBox outgoing intent"><div class="messageText">'+text+'</div></div>');
 
 }
 
@@ -99,7 +100,17 @@ function addBotResponse(dialogue){
         var nluInfo = dialogue.lastNluEvent;
         if (nluInfo != null) {
             intent = nluInfo.bestIntent.intent + " " + nluInfo.bestIntent.confidence;
-            addUserInput(intent);
+            addIntentInput(intent);
+
+            slots = nluInfo.slots
+            if (slots != null) {
+                slots.forEach(function(slot){
+                                text = slot.key + ":" + slot.value + "(" + slot.confidence + ")"
+                                addIntentInput(text)
+                            })
+            }
+
+
         }
         var text = dialogue.text;
 

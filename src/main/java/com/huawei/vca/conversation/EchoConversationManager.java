@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class EchoConversationManager implements ConversationManager{
+public class EchoConversationManager implements ConversationManager {
 
     @Autowired
     private NluService nluService;
@@ -21,10 +21,7 @@ public class EchoConversationManager implements ConversationManager{
         UserUtter userUtter = new UserUtter(text);
         dialogue.addToHistory(userUtter);
 
-        NluResponse nluResponse = nluService.getNluResponse(text);
-        NluEvent nluEvent = new NluEvent();
-        nluEvent.setBestIntent(new Intent(nluResponse.getIntent().getName(), nluResponse.getIntent().getConfidence()));
-        dialogue.setLastNluEvent(nluEvent);
+        dialogue.setLastNluEvent(handleNlu(text));
 
         BotUtterEvent botUtterEvent = new BotUtterEvent();
         String response = "echo: " + text;
@@ -34,5 +31,17 @@ public class EchoConversationManager implements ConversationManager{
         dialogue.setText(response);
 
         return dialogue;
+    }
+
+    private NluEvent handleNlu(String text) {
+        NluResponse nluResponse = nluService.getNluResponse(text);
+        NluEvent nluEvent = new NluEvent();
+        nluEvent.setBestIntent(new Intent(nluResponse.getIntent().getName(), nluResponse.getIntent().getConfidence()));
+
+        for (Entity entity : nluResponse.getEntitiesList()) {
+            nluEvent.addSlot(new Slot(entity.getEntity(), entity.getValue(),entity.getConfidence()));
+        }
+
+        return nluEvent;
     }
 }
