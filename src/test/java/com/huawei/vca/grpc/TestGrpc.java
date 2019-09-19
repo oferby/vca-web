@@ -17,11 +17,13 @@ public class TestGrpc {
     @Test
     public void testNluService() {
 
-        String text = "this is a test!";
+        String text = "I would like to have lunch";
 
         NluResponse nluResponse = nluService.getNluResponse(text);
 
-        assert nluResponse.getIntent().getName().contains(text);
+        System.out.println(nluResponse);
+
+
 
     }
 
