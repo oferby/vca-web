@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Set;
 
 @RestController
-@RequestMapping("data/dialogue")
+@RequestMapping("data/dialogues")
 public class ActiveDialogueWebController {
 
     @Autowired
     private SessionController sessionController;
 
-    @GetMapping("sessions")
+    @GetMapping
     public Set<String> getSessionList(){
         return sessionController.getAllSessions();
     }
