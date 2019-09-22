@@ -2,6 +2,7 @@ var app;
 var dialogue_list;
 var dialogue_lines;
 var dialogue_dict = {};
+var subscription = {}
 
 var dataUrl = '/data/dialogues/';
 
@@ -20,6 +21,7 @@ function connect() {
             dialogue_dict[sessionId] =  dialogue
             dialogue_list.unshift(dialogue);
 
+
         });
         stompClient.subscribe('/topic/dialogue/monitor/disconnect', function (msg) {
             sessionId  = msg.body;
@@ -29,8 +31,28 @@ function connect() {
             dialogue_list.splice(indx, 1);
 
         });
+
+        stompClient.subscribe('/topic/dialogue/monitor/summary', function (msg) {
+            dialogueSummary = JSON.parse(msg.body);
+            dialogue_dict[dialogueSummary.id] = dialogueSummary;
+
+            indx = dialogue_list.findIndex(dialogue => dialogue.id == dialogueSummary.id);
+            dialogue_list.splice(indx, 1, dialogueSummary);
+
+        });
+
     });
 }
+
+function subscribe_to_dialogue(sessionId) {
+    this.stompClient.subscribe('/topic/dialogue/monitor/data/' + sessionId, function(msg) {
+
+    })
+}
+
+
+
+
 
 Vue.component('dialogue-item', {
     props: ['dialogue'],
@@ -115,8 +137,6 @@ function addBotText(text, time) {
     $('#smartbotBody').append('<div class="messageBox incoming"><div class="messageText">'+text+'</div><div class="messageTime">'+time+'</div></div>');
 
 }
-
-
 
 $( document ).ready(function() {
     console.log( "ready!" );
