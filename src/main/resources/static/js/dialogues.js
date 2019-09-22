@@ -1,8 +1,36 @@
 var app;
 var dialogue_list;
 var dialogue_lines;
+var dialogue_dict = {};
 
 var dataUrl = '/data/dialogues/';
+
+var stompClient;
+
+
+function connect() {
+    var socket = new SockJS('/monitor-websocket');
+    stompClient = Stomp.over(socket);
+    stompClient.connect({}, function (frame) {
+
+        stompClient.subscribe('/topic/dialogue/monitor/connect', function (msg) {
+            sessionId  = msg.body;
+            console.log('got connect message for session: ' + sessionId);
+            dialogue = {'id': sessionId}
+            dialogue_dict[sessionId] =  dialogue
+            dialogue_list.unshift(dialogue);
+
+        });
+        stompClient.subscribe('/topic/dialogue/monitor/disconnect', function (msg) {
+            sessionId  = msg.body;
+            console.log('got disconnect message for session: ' + sessionId)
+            delete dialogue_dict[sessionId];
+            indx = dialogue_list.findIndex(dialogue => dialogue.id == sessionId);
+            dialogue_list.splice(indx, 1);
+
+        });
+    });
+}
 
 Vue.component('dialogue-item', {
     props: ['dialogue'],
@@ -27,9 +55,17 @@ function getData(url, callback) {
 
 };
 
+function add_dialogue_to_map(value) {
+    dialogue_dict[value.id] = value;
+}
+
+
 function success(data){
-    console.log('got data')
-    dialogue_list = data
+    console.log('got data');
+
+    data.forEach(add_dialogue_to_map);
+    dialogue_list = Object.values(dialogue_dict).sort()
+
     app = new Vue({
       el: '#app',
       data: {
@@ -41,7 +77,9 @@ function success(data){
 function after_get_lines(data) {
     console.log('got lines data');
 
-    data.history.forEach(handleEvent);
+    if (data.history != null) {
+        data.history.forEach(handleEvent);
+    }
 
 }
 
@@ -80,8 +118,8 @@ function addBotText(text, time) {
 
 
 
-
 $( document ).ready(function() {
     console.log( "ready!" );
     getData(dataUrl, success);
+    connect();
 });

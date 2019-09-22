@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
@@ -27,6 +28,9 @@ public class WebSocketEventListener {
     @Autowired
     private SessionController sessionController;
 
+    @Autowired
+    private SimpMessagingTemplate template;
+
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
 
@@ -40,6 +44,7 @@ public class WebSocketEventListener {
         accessor.setSessionAttributes(attr);
 
         sessionController.addOrUpdateDialogue(sessionId, new Dialogue(sessionId));
+        informConnection(sessionId);
     }
 
     @EventListener
@@ -54,8 +59,19 @@ public class WebSocketEventListener {
         if (sessionId != null) {
             logger.info("User Disconnected : " + sessionId);
             sessionController.removeDialogue(sessionId);
+            informDisconnection(sessionId);
         }
 
     }
+
+    private void informConnection(String sessionId) {
+        template.convertAndSend("/topic/dialogue/monitor/connect", sessionId);
+    }
+
+    private void informDisconnection(String sessionId) {
+        template.convertAndSend("/topic/dialogue/monitor/disconnect", sessionId);
+    }
+
+
 
 }

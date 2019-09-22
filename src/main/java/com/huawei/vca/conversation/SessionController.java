@@ -27,8 +27,14 @@ public class SessionController {
         Set<DialogueSummary> dialogueSummaries = new HashSet<>();
         for (Dialogue dialogue : dialogueMap.values()) {
 
-            dialogueSummaries.add(new DialogueSummary(dialogue.getSessionId(), dialogue.getLastNluEvent().getBestIntent().getConfidence()));
+            DialogueSummary dialogueSummary = new DialogueSummary();
+            dialogueSummary.setId(dialogue.getSessionId());
+            dialogueSummaries.add(dialogueSummary);
 
+            if (dialogue.getLastNluEvent() == null) {
+                continue;
+            }
+            dialogueSummary.setConfidence(dialogue.getLastNluEvent().getBestIntent().getConfidence());
         }
 
         return dialogueSummaries;

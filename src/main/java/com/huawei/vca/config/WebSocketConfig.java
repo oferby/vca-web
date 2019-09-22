@@ -25,6 +25,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/intent-websocket").withSockJS();
+        registry.addEndpoint("/monitor-websocket").withSockJS();
     }
 
 
@@ -37,22 +38,5 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         executor.initialize();
         return executor;
     }
-
-//    @Bean
-//    public RestTemplate restTemplate(){
-//        return new RestTemplate();
-//    }
-//
-//
-//    @Bean
-//    public WebMvcConfigurerAdapter forwardToIndex() {
-//        return new WebMvcConfigurerAdapter() {
-//            @Override
-//            public void addViewControllers(ViewControllerRegistry registry) {
-//                registry.addViewController("/demo").setViewName(
-//                        "forward:/demo/index.html");
-//            }
-//        };
-//    }
 
 }
