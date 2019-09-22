@@ -46,6 +46,7 @@ public class WebSocketController {
 
     private void sendResponse(Dialogue dialogueResponse) {
         template.convertAndSend("/topic/dialogue/"+dialogueResponse.getSessionId(), dialogueResponse);
+        template.convertAndSend("/topic/dialogue/monitor/"+dialogueResponse.getSessionId(), dialogueResponse);
     }
 
 }

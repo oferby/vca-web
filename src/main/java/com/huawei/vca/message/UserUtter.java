@@ -1,10 +1,9 @@
 package com.huawei.vca.message;
 
-import com.huawei.vca.intent.NluResponse;
-
 public class UserUtter extends Event{
 
     private String text;
+    private NluEvent nluEvent;
 
     public UserUtter() {
         super();
@@ -23,4 +22,11 @@ public class UserUtter extends Event{
         this.text = text;
     }
 
+    public NluEvent getNluEvent() {
+        return nluEvent;
+    }
+
+    public void setNluEvent(NluEvent nluEvent) {
+        this.nluEvent = nluEvent;
+    }
 }

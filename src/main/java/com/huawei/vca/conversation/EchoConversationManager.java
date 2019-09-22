@@ -20,8 +20,9 @@ public class EchoConversationManager implements ConversationManager {
         String text = dialogue.getText();
         UserUtter userUtter = new UserUtter(text);
         dialogue.addToHistory(userUtter);
-
-        dialogue.setLastNluEvent(handleNlu(text));
+        NluEvent nluEvent = handleNlu(text);
+        userUtter.setNluEvent(nluEvent);
+        dialogue.setLastNluEvent(nluEvent);
 
         BotUtterEvent botUtterEvent = new BotUtterEvent();
         String response = "echo: " + text;

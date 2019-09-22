@@ -134,13 +134,13 @@ function success(data){
     data.forEach(add_intent_to_map);
     sorted_intent_list = Object.values(intents_dict).sort()
     app = new Vue({
-      el: '#app',
-      data: {
-        intent_list: sorted_intent_list,
-        example_list: sorted_intent_list[0].textSet,
-        intent_label: sorted_intent_list[0].intent
-      }
-    })
+            el: '#app',
+            data: {
+              intent_list: sorted_intent_list,
+              example_list: sorted_intent_list[0].textSet,
+              intent_label: sorted_intent_list[0].intent
+            }
+          })
 
 }
 
