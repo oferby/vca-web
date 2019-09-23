@@ -2,12 +2,12 @@ var app;
 var dialogue_list;
 var dialogue_lines;
 var dialogue_dict = {};
-var subscription = {}
 
 var dataUrl = '/data/dialogues/';
 
 var stompClient;
-
+var activeDialogue;
+var subscription;
 
 function connect() {
     var socket = new SockJS('/monitor-websocket');
@@ -45,14 +45,10 @@ function connect() {
 }
 
 function subscribe_to_dialogue(sessionId) {
-    this.stompClient.subscribe('/topic/dialogue/monitor/data/' + sessionId, function(msg) {
+    this.subscription = this.stompClient.subscribe('/topic/dialogue/monitor/data/' + sessionId, function(msg) {
 
-    })
+    });
 }
-
-
-
-
 
 Vue.component('dialogue-item', {
     props: ['dialogue'],
@@ -64,6 +60,12 @@ function show_dialogue(caller) {
     $('#smartbotBody').empty();
     session = caller.textContent;
     getData(dataUrl + session, after_get_lines);
+
+    if (this.subscription != null) {
+        this.subscription.unsubscribe();
+    }
+
+    this.subscribe_to_dialogue(session);
 
 }
 
@@ -94,7 +96,7 @@ function success(data){
         dialogue_list: dialogue_list
       }
     })
-}
+};
 
 function after_get_lines(data) {
     console.log('got lines data');
