@@ -1,5 +1,5 @@
 package com.huawei.vca.message;
 
 public enum Confidence {
-    LOW, MEDIUM, HIGH;
+    LOW, MEDIUM, HIGH, TRAIN;
 }

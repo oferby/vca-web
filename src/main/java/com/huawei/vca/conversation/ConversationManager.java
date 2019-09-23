@@ -7,5 +7,6 @@ public interface ConversationManager {
 
     Dialogue handleDialogue(Dialogue dialogue);
 
+    Dialogue handleNluOnly(Dialogue dialogue);
 
 }

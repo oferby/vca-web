@@ -7,8 +7,8 @@ public class Dialogue {
     private String sessionId;
     private String text;
     private List<Event> history;
-
     private NluEvent lastNluEvent;
+    private boolean isTraining;
 
     public Dialogue() {
     }
@@ -55,13 +55,19 @@ public class Dialogue {
 
     }
 
-
-
     public NluEvent getLastNluEvent() {
         return lastNluEvent;
     }
 
     public void setLastNluEvent(NluEvent lastNluEvent) {
         this.lastNluEvent = lastNluEvent;
+    }
+
+    public boolean isTraining() {
+        return isTraining;
+    }
+
+    public void setTraining(boolean training) {
+        isTraining = training;
     }
 }

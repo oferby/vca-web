@@ -84,7 +84,7 @@ box-shadow: 0 -2px 10px 2px #ccc inset;
 }
 
 #smartbotBody {
-  height: 540px;
+  height: 60%;
   overflow-y: auto;
   background-color: white;
   padding-left: 8px;
@@ -92,6 +92,7 @@ box-shadow: 0 -2px 10px 2px #ccc inset;
   margin-top: 3px;
   margin-bottom: 3px;
 }
+
 
 .messageBox {
   max-width: 75%;

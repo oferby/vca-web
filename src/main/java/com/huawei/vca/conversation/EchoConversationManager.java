@@ -17,15 +17,10 @@ public class EchoConversationManager implements ConversationManager {
     @Override
     public Dialogue handleDialogue(Dialogue dialogue) {
 
-        String text = dialogue.getText();
-        UserUtter userUtter = new UserUtter(text);
-        dialogue.addToHistory(userUtter);
-        NluEvent nluEvent = handleNlu(text);
-        userUtter.setNluEvent(nluEvent);
-        dialogue.setLastNluEvent(nluEvent);
+        this.handleUserUtter(dialogue);
 
         BotUtterEvent botUtterEvent = new BotUtterEvent();
-        String response = "echo: " + text;
+        String response = "echo: " + dialogue.getText();
         botUtterEvent.setText(response);
         dialogue.addToHistory(botUtterEvent);
 
@@ -33,6 +28,26 @@ public class EchoConversationManager implements ConversationManager {
 
         return dialogue;
     }
+
+    @Override
+    public Dialogue handleNluOnly(Dialogue dialogue) {
+
+        this.handleUserUtter(dialogue);
+        return dialogue;
+
+    }
+
+    private void handleUserUtter(Dialogue dialogue) {
+
+        String text = dialogue.getText();
+        UserUtter userUtter = new UserUtter(text);
+        dialogue.addToHistory(userUtter);
+        NluEvent nluEvent = handleNlu(text);
+        userUtter.setNluEvent(nluEvent);
+        dialogue.setLastNluEvent(nluEvent);
+
+    }
+
 
     private NluEvent handleNlu(String text) {
         NluResponse nluResponse = nluService.getNluResponse(text);

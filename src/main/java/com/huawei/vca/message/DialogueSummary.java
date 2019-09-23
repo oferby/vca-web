@@ -15,6 +15,18 @@ public class DialogueSummary {
         this.setConfidenceString();
     }
 
+    public DialogueSummary(String id, float confidence, boolean isTraining) {
+        this.id = id;
+        this.confidence = confidence;
+        if (isTraining) {
+            this.confidenceString = Confidence.TRAIN;
+        } else {
+            this.setConfidenceString();
+        }
+
+    }
+
+
     public String getId() {
         return id;
     }
@@ -45,5 +57,9 @@ public class DialogueSummary {
 
     public Confidence getConfidenceString() {
         return confidenceString;
+    }
+
+    public void setConfidenceString(Confidence confidenceString) {
+        this.confidenceString = confidenceString;
     }
 }

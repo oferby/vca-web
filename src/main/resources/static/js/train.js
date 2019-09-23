@@ -14,7 +14,7 @@ function sendIntent(userInput){
     intent.text = userInput;
     console.log('Sending user input to server');
     dialogue.text = userInput
-    stompClient.send("/app/parseDialogue", {}, JSON.stringify(dialogue));
+    stompClient.send("/app/train/parseDialogue", {}, JSON.stringify(dialogue));
 }
 
 function connect() {

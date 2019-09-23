@@ -1,5 +1,6 @@
 package com.huawei.vca.conversation;
 
+import com.huawei.vca.message.Confidence;
 import com.huawei.vca.message.Dialogue;
 import com.huawei.vca.message.DialogueSummary;
 import org.springframework.stereotype.Controller;
@@ -29,12 +30,18 @@ public class SessionController {
 
             DialogueSummary dialogueSummary = new DialogueSummary();
             dialogueSummary.setId(dialogue.getSessionId());
+
+
             dialogueSummaries.add(dialogueSummary);
 
             if (dialogue.getLastNluEvent() == null) {
                 continue;
             }
             dialogueSummary.setConfidence(dialogue.getLastNluEvent().getBestIntent().getConfidence());
+
+            if (dialogue.isTraining()){
+                dialogueSummary.setConfidenceString(Confidence.TRAIN);
+            }
         }
 
         return dialogueSummaries;
