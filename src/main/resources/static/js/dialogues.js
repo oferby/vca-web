@@ -119,6 +119,15 @@ function handleEvent(event) {
 
         if (event.nluEvent != null) {
             addIntentInput(event.nluEvent.bestIntent.intent + ": " + event.nluEvent.bestIntent.confidence)
+
+            slots = event.nluEvent.slots
+            if (slots != null) {
+                slots.forEach(function(slot){
+                                text = slot.key + ":" + slot.value + "(" + slot.confidence + ")"
+                                addIntentInput(text)
+                            })
+            }
+
         }
 
     } else if (event.type == "BotUtterEvent") {

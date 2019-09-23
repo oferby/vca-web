@@ -95,25 +95,23 @@ function addBotResponse(dialogue){
         await sleep(1000);
         $('#waiting-div').remove();
 
-        var nluInfo = dialogue.lastNluEvent;
-        if (nluInfo != null) {
-            intent = nluInfo.bestIntent.intent + " " + nluInfo.bestIntent.confidence;
-            addIntentInput(intent);
+//        var nluInfo = dialogue.lastNluEvent;
+//        if (nluInfo != null) {
+//            intent = nluInfo.bestIntent.intent + " " + nluInfo.bestIntent.confidence;
+//            addIntentInput(intent);
+//
+//            slots = nluInfo.slots
+//            if (slots != null) {
+//                slots.forEach(function(slot){
+//                                text = slot.key + ":" + slot.value + "(" + slot.confidence + ")"
+//                                addIntentInput(text)
+//                            })
+//            }
+//
+//
+//        }
 
-            slots = nluInfo.slots
-            if (slots != null) {
-                slots.forEach(function(slot){
-                                text = slot.key + ":" + slot.value + "(" + slot.confidence + ")"
-                                addIntentInput(text)
-                            })
-            }
-
-
-        }
-        var text = dialogue.text;
-
-        addBotText(text);
-
+        addBotText(dialogue.text);
         scroll_window();
 
     }

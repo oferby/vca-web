@@ -88,37 +88,27 @@ function addBotText(text) {
 
 function addBotResponse(dialogue){
 
-    async function displayWait() {
+    var nluInfo = dialogue.lastNluEvent;
+    if (nluInfo != null) {
+        intent = nluInfo.bestIntent.intent + " " + nluInfo.bestIntent.confidence;
+        addIntentInput(intent);
 
-        $('#smartbotBody').append('<div id="waiting-div" class="messageBox incoming"><div class="messageText"><div class="waiting"><img src="/images/waiting.gif" alt="Enter"></div></div></div>');
-        scroll_window();
-        await sleep(1000);
-        $('#waiting-div').remove();
-
-        var nluInfo = dialogue.lastNluEvent;
-        if (nluInfo != null) {
-            intent = nluInfo.bestIntent.intent + " " + nluInfo.bestIntent.confidence;
-            addIntentInput(intent);
-
-            slots = nluInfo.slots
-            if (slots != null) {
-                slots.forEach(function(slot){
-                                text = slot.key + ":" + slot.value + "(" + slot.confidence + ")"
-                                addIntentInput(text)
-                            })
-            }
-
-
+        slots = nluInfo.slots
+        if (slots != null) {
+            slots.forEach(function(slot){
+                            text = slot.key + ":" + slot.value + "(" + slot.confidence + ")"
+                            addIntentInput(text)
+                        })
         }
-        var text = dialogue.text;
 
-        addBotText(text);
-
-        scroll_window();
 
     }
 
-    displayWait()
+    if (dialogue.text != null) {
+        addBotText(dialogue.text);
+    };
+
+    scroll_window();
 
 }
 

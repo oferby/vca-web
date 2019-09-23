@@ -46,6 +46,9 @@ public class TrainWebSocketController {
         this.sendUserUtterToMonitor(dialogue);
         this.sendSummaryResponse(dialogue);
 
+        dialogue.setText(null);
+        this.sendDialogueResponse(dialogue);
+
     }
 
 
