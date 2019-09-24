@@ -40,10 +40,10 @@ public class EchoConversationManager implements ConversationManager {
     private void handleUserUtter(Dialogue dialogue) {
 
         String text = dialogue.getText();
-        UserUtter userUtter = new UserUtter(text);
-        dialogue.addToHistory(userUtter);
+        UserUtterEvent userUtterEvent = new UserUtterEvent(text);
+        dialogue.addToHistory(userUtterEvent);
         NluEvent nluEvent = handleNlu(text);
-        userUtter.setNluEvent(nluEvent);
+        userUtterEvent.setNluEvent(nluEvent);
         dialogue.setLastNluEvent(nluEvent);
 
     }

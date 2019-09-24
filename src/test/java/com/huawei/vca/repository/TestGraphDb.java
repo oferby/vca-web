@@ -1,17 +1,14 @@
 package com.huawei.vca.repository;
 
-import com.huawei.vca.repository.graph.ConversationRepository;
-import com.huawei.vca.repository.graph.ObservationNode;
-import com.huawei.vca.repository.graph.RootNode;
-import com.huawei.vca.repository.graph.StateNode;
+import com.huawei.vca.message.*;
+import com.huawei.vca.repository.controller.IntentRepository;
+import com.huawei.vca.repository.graph.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.awt.datatransfer.Transferable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,50 +19,114 @@ public class TestGraphDb {
     @Autowired
     private ConversationRepository conversationRepository;
 
+    @Autowired
+    private ConversationRepositoryController conversationRepositoryController;
+
+    @Autowired
+    private IntentRepository intentRepository;
+
     @Test
     public void testReset(){
 
         reset();
-        addObservations();
+        RootNode rootNode = conversationRepository.getRootNode();
 
-        StateNode root = conversationRepository.getRootNode();
-
-        assert root !=null;
-
-        StateNode obs1 = conversationRepository.findObservationNodeByName("obs1");
-
-        assert obs1 != null;
-
-        obs1 = conversationRepository.findObservationNodeById(obs1.getId());
-
-        assert obs1 != null;
+        assert rootNode !=null;
 
     }
 
 
     @Test
-    public void testFindByName() {
+    public void testFindConnected() {
 
-        String name = "obs1";
+        reset();
 
-        ObservationNode observationNode = new ObservationNode();
-        observationNode.setName(name);
+        List<IntentEntity> intentEntityList = intentRepository.findAll();
 
-        ObservationNode save = conversationRepository.save(observationNode);
+        Dialogue dialogue = new Dialogue();
 
-        ObservationNode observationByName = conversationRepository.findObservationNodeByName(name);
+        for (int i = 0; i < 10; i++) {
 
-        assert observationByName != null;
+            UserUtterEvent userUtterEvent = new UserUtterEvent("obs" + i);
+            dialogue.addToHistory(userUtterEvent);
 
-        conversationRepository.delete(save);
+            NluEvent nluEvent = new NluEvent();
+            IntentEntity intentEntity = intentEntityList.get(i);
+            Intent intent = new Intent(intentEntity.getIntent(), (float) 0.9);
+            nluEvent.setBestIntent(intent);
+            userUtterEvent.setNluEvent(nluEvent);
 
-        observationByName = conversationRepository.findObservationNodeByName(name);
+            BotUtterEvent botUtterEvent = new BotUtterEvent("action" + i);
+            dialogue.addToHistory(botUtterEvent);
 
-        assert observationByName == null;
+        }
 
-//        reset();
+        conversationRepositoryController.saveDialogueToGraph(dialogue);
+
+        dialogue = new Dialogue();
+        for (int i = 0; i < 5; i++) {
+
+            UserUtterEvent userUtterEvent = new UserUtterEvent("obs" + i);
+            dialogue.addToHistory(userUtterEvent);
+
+            NluEvent nluEvent = new NluEvent();
+            IntentEntity intentEntity = intentEntityList.get(i);
+            Intent intent = new Intent(intentEntity.getIntent(), (float) 0.9);
+            nluEvent.setBestIntent(intent);
+            userUtterEvent.setNluEvent(nluEvent);
+
+            BotUtterEvent botUtterEvent = new BotUtterEvent("action" + i);
+            dialogue.addToHistory(botUtterEvent);
+
+        }
+
+        for (int i = 10; i < 15; i++) {
+
+            UserUtterEvent userUtterEvent = new UserUtterEvent("obs" + i);
+            dialogue.addToHistory(userUtterEvent);
+
+            NluEvent nluEvent = new NluEvent();
+            IntentEntity intentEntity = intentEntityList.get(i);
+            Intent intent = new Intent(intentEntity.getIntent(), (float) 0.9);
+            nluEvent.setBestIntent(intent);
+            userUtterEvent.setNluEvent(nluEvent);
+
+            BotUtterEvent botUtterEvent = new BotUtterEvent("action" + i);
+            dialogue.addToHistory(botUtterEvent);
+
+        }
+
+        conversationRepositoryController.saveDialogueToGraph(dialogue);
+
+        RootNode rootNode = conversationRepository.getRootNode();
+
+        assert rootNode != null;
 
     }
+
+    @Test
+    public void getNodeById() {
+
+        Iterable<StateNode> nodes = conversationRepository.findAll();
+
+        StateNode node = nodes.iterator().next();
+
+        Optional<StateNode> byId = conversationRepository.findById(node.getId());
+
+        assert byId.isPresent();
+
+        List<ObservationNode> allObservationNodes = conversationRepository.findAllObservationNodes();
+
+        ObservationNode observationNode = allObservationNodes.get(0);
+
+        ObservationNode observationNodeById = conversationRepository.findObservationNodeById(observationNode.getId());
+
+        assert observationNodeById != null;
+
+    }
+
+
+
 
 
     @Test
@@ -78,17 +139,18 @@ public class TestGraphDb {
     public void testProperties() {
 
         reset();
-        addObservations();
+        RootNode rootNode = conversationRepository.getRootNode();
+        addObservations(rootNode);
 
-        ObservationNode obs1 = conversationRepository.findObservationNodeByName("obs1");
-
-        obs1.addProperty("k1", "v1");
-
-        conversationRepository.save(obs1);
-
-        obs1 = conversationRepository.findObservationNodeByName("obs1");
-
-        assert obs1.getProperties() !=null && !obs1.getProperties().keySet().isEmpty();
+//        ObservationNode obs1 = conversationRepository.findObservationNodeByName("obs1");
+//
+//        obs1.addProperty("k1", "v1");
+//
+//        conversationRepository.save(obs1);
+//
+//        obs1 = conversationRepository.findObservationNodeByName("obs1");
+//
+//        assert obs1.getProperties() !=null && !obs1.getProperties().keySet().isEmpty();
 
 
     }
@@ -109,7 +171,7 @@ public class TestGraphDb {
     }
 
 
-    public void addObservations() {
+    public void addObservations(StateNode from) {
 
         RootNode rootNode = conversationRepository.getRootNode();
 

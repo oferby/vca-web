@@ -1,15 +1,15 @@
 package com.huawei.vca.message;
 
-public class UserUtter extends Event{
+public class UserUtterEvent extends Event{
 
     private String text;
     private NluEvent nluEvent;
 
-    public UserUtter() {
+    public UserUtterEvent() {
         super();
     }
 
-    public UserUtter(String text) {
+    public UserUtterEvent(String text) {
 
         this.text = text;
     }

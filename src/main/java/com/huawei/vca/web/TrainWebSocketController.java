@@ -7,6 +7,7 @@ import com.huawei.vca.message.Dialogue;
 import com.huawei.vca.message.DialogueSummary;
 import com.huawei.vca.repository.BotUtterEntity;
 import com.huawei.vca.repository.controller.BotUtterRepository;
+import com.huawei.vca.repository.graph.ConversationRepositoryController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,9 @@ public class TrainWebSocketController {
     @Autowired
     private BotUtterRepository botUtterRepository;
 
+    @Autowired
+    private ConversationRepositoryController conversationRepositoryController;
+
     @MessageMapping("/train/parseDialogue")
     public void getIntentRequest(Dialogue dialogue, @Header("simpSessionId") String sessionId) {
 
@@ -52,6 +56,15 @@ public class TrainWebSocketController {
     }
 
 
+    @MessageMapping("/train/saveDialogue")
+    public void saveDialogue(Dialogue dialogue) {
+
+        logger.debug("saving dialogue to graph");
+
+        conversationRepositoryController.saveDialogueToGraph(dialogue);
+
+    }
+
     @MessageMapping("/train/addAction")
     public void addAction(Dialogue dialogue) {
         logger.debug("got new training action: " + dialogue.getText() + " on session id: " + dialogue.getSessionId());
@@ -66,6 +79,7 @@ public class TrainWebSocketController {
         BotUtterEvent botUtterEvent = new BotUtterEvent();
         String text = botUtterEntity.getTextSet().iterator().next();
         botUtterEvent.setText(text);
+        botUtterEvent.setId(botUtterEntity.getId());
 
         dialogue.addToHistory(botUtterEvent);
         dialogue.setText(text);

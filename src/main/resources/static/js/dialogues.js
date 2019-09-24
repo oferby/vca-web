@@ -82,6 +82,7 @@ function after_get_lines(data) {
     }
 
     if (activeDialogue.training) {
+        $('#actionWindow').empty();
         show_actions();
     } else {
         $('#actionWindow').empty();
@@ -97,11 +98,17 @@ function show_actions() {
 
 function afterGetActions(data) {
     console.log('got action list');
-
+    $('#actionWindow').append("<div id='save-button-div'><input type='button' value='Save' onclick='saveDialogueToGraph()'></div>");
+    data.sort();
     data.forEach(function (value) {
         $('#actionWindow').append("<span class='action-item' onclick='addAction(this)'>" + value.id + "</span>");
-    })
+    });
 
+}
+
+function saveDialogueToGraph() {
+    console.log('saving dialogue to graph');
+    stompClient.send("/app/train/saveDialogue", {}, JSON.stringify(activeDialogue));
 }
 
 function addAction(value) {

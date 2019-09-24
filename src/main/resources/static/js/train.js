@@ -45,7 +45,6 @@ function showChatbot() {
         $('#smartbot').show();
 
         async function displayGreeting() {
-            await sleep(500);
             addBotText('Hello, how may I help you?')
             greetingSent = true;
         }
@@ -70,43 +69,39 @@ function addIntentInput(text) {
 
 }
 
-function scroll_window(){
-    var element = document.getElementById("smartbotBody");
-    element.scrollTop = element.scrollHeight - element.clientHeight;
-
-}
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 function addBotText(text) {
 
     $('#smartbotBody').append('<div class="messageBox incoming"><div class="messageText">'+text+'</div><div class="messageTime">'+getTime()+'</div></div>');
 
 }
 
+function scroll_window(){
+    var element = document.getElementById("smartbotBody");
+    element.scrollTop = element.scrollHeight - element.clientHeight;
+
+}
+
 function addBotResponse(dialogue){
-
-    var nluInfo = dialogue.lastNluEvent;
-    if (nluInfo != null) {
-        intent = nluInfo.bestIntent.intent + " " + nluInfo.bestIntent.confidence;
-        addIntentInput(intent);
-
-        slots = nluInfo.slots
-        if (slots != null) {
-            slots.forEach(function(slot){
-                            text = slot.key + ":" + slot.value + "(" + slot.confidence + ")"
-                            addIntentInput(text)
-                        })
-        }
-
-
-    }
 
     if (dialogue.text != null) {
         addBotText(dialogue.text);
-    };
+    } else {
+
+        var nluInfo = dialogue.lastNluEvent;
+        if (nluInfo != null) {
+            intent = nluInfo.bestIntent.intent + " " + nluInfo.bestIntent.confidence;
+            addIntentInput(intent);
+
+            slots = nluInfo.slots
+            if (slots != null) {
+                slots.forEach(function(slot){
+                                text = slot.key + ":" + slot.value + "(" + slot.confidence + ")"
+                                addIntentInput(text)
+                            })
+            }
+
+        }
+    }
 
     scroll_window();
 

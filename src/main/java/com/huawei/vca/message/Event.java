@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
         property = "type")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = BotUtterEvent.class, name = "BotUtterEvent"),
-        @JsonSubTypes.Type(value = UserUtter.class, name = "UserUtter")
+        @JsonSubTypes.Type(value = UserUtterEvent.class, name = "UserUtter")
 })
 public class Event {
 
