@@ -14,6 +14,8 @@ public class StateNode {
     private
     Long id;
 
+    private String stringId;
+
     private String name;
 
     private Integer stateId;
@@ -31,6 +33,14 @@ public class StateNode {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getStringId() {
+        return stringId;
+    }
+
+    public void setStringId(String stringId) {
+        this.stringId = stringId;
     }
 
     public String getName() {
@@ -55,13 +65,13 @@ public class StateNode {
         if (!(o instanceof StateNode)) return false;
         StateNode stateNode = (StateNode) o;
         return Objects.equals(getId(), stateNode.getId()) &&
+                Objects.equals(getStringId(), stateNode.getStringId()) &&
                 Objects.equals(getName(), stateNode.getName()) &&
                 Objects.equals(getStateId(), stateNode.getStateId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getStateId());
+        return Objects.hash(getId(), getStringId(), getName(), getStateId());
     }
-
 }

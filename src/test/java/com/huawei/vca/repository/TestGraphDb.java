@@ -59,6 +59,7 @@ public class TestGraphDb {
             userUtterEvent.setNluEvent(nluEvent);
 
             BotUtterEvent botUtterEvent = new BotUtterEvent("action" + i);
+            botUtterEvent.setId("action_id" + i);
             dialogue.addToHistory(botUtterEvent);
 
         }
@@ -78,6 +79,7 @@ public class TestGraphDb {
             userUtterEvent.setNluEvent(nluEvent);
 
             BotUtterEvent botUtterEvent = new BotUtterEvent("action" + i);
+            botUtterEvent.setId("action_id" + i);
             dialogue.addToHistory(botUtterEvent);
 
         }
@@ -94,6 +96,7 @@ public class TestGraphDb {
             userUtterEvent.setNluEvent(nluEvent);
 
             BotUtterEvent botUtterEvent = new BotUtterEvent("action" + i);
+            botUtterEvent.setId("action_id" + i);
             dialogue.addToHistory(botUtterEvent);
 
         }
@@ -184,6 +187,7 @@ public class TestGraphDb {
 
         RootNode rootNode = new RootNode();
         rootNode.setName("root");
+        rootNode.setStringId("root");
 
         RootNode save = conversationRepository.save(rootNode);
 

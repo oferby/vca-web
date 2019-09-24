@@ -46,7 +46,8 @@ public class ConversationRepositoryController {
 
                 if (nextObservationNode.getActionNode() == null) {
                     nextActionNode = new ActionNode();
-                    nextActionNode.setName(botUtterEvent.getText());
+//                    nextActionNode.setName(botUtterEvent.getText());
+                    nextActionNode.setStringId(botUtterEvent.getId());
                     nextObservationNode.setActionNode(nextActionNode);
                     nodes = new ArrayList<>();
                     nextActionNode.setObservationNodes(nodes);
@@ -58,7 +59,7 @@ public class ConversationRepositoryController {
 
                 }
 
-                if (!nextActionNode.getName().equals(botUtterEvent.getText())) {
+                if (!nextActionNode.getStringId().equals(botUtterEvent.getId())) {
                     throw new RuntimeException("multiple actions to single observation");
                 }
 
@@ -71,7 +72,7 @@ public class ConversationRepositoryController {
                 boolean found = false;
 
                 for (ObservationNode node : nodes) {
-                    if (node.getName().equals(userUtterEvent.getNluEvent().getBestIntent().getIntent())) {
+                    if (node.getStringId().equals(userUtterEvent.getNluEvent().getBestIntent().getIntent())) {
                         found = true;
                         nextObservationNode = conversationRepository.findObservationNodeById(node.getId());
                         nextActionNode = nextObservationNode.getActionNode();
@@ -86,7 +87,8 @@ public class ConversationRepositoryController {
                 }
 
                 if (!found) {
-                    ObservationNode observationNode = new ObservationNode(userUtterEvent.getNluEvent().getBestIntent().getIntent());
+                    ObservationNode observationNode = new ObservationNode();
+                    observationNode.setStringId(userUtterEvent.getNluEvent().getBestIntent().getIntent());
                     nodes.add(observationNode);
                     nextObservationNode = observationNode;
                     toSave.add(observationNode);
