@@ -4,6 +4,8 @@ import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 
+import java.util.Objects;
+
 @NodeEntity
 public class StateNode {
 
@@ -46,4 +48,20 @@ public class StateNode {
     public void setStateId(Integer stateId) {
         this.stateId = stateId;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof StateNode)) return false;
+        StateNode stateNode = (StateNode) o;
+        return Objects.equals(getId(), stateNode.getId()) &&
+                Objects.equals(getName(), stateNode.getName()) &&
+                Objects.equals(getStateId(), stateNode.getStateId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName(), getStateId());
+    }
+
 }

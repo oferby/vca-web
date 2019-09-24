@@ -4,6 +4,7 @@ import org.neo4j.ogm.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @NodeEntity
 public class RootNode extends StateNode {
@@ -27,5 +28,17 @@ public class RootNode extends StateNode {
         observationNodes.add(observationNode);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof RootNode)) return false;
+        if (!super.equals(o)) return false;
+        RootNode rootNode = (RootNode) o;
+        return Objects.equals(getObservationNodes(), rootNode.getObservationNodes());
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getObservationNodes());
+    }
 }

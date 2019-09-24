@@ -1,11 +1,9 @@
 package com.huawei.vca.repository.graph;
 
 import org.neo4j.ogm.annotation.*;
+import org.neo4j.ogm.annotation.Properties;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @NodeEntity
 public class ObservationNode extends StateNode {
@@ -47,5 +45,20 @@ public class ObservationNode extends StateNode {
 
         properties.put(key, value);
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ObservationNode)) return false;
+        if (!super.equals(o)) return false;
+        ObservationNode that = (ObservationNode) o;
+        return Objects.equals(getActionNode(), that.getActionNode()) &&
+                Objects.equals(getProperties(), that.getProperties());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getActionNode(), getProperties());
     }
 }

@@ -10,6 +10,12 @@ var stompClient;
 var activeDialogue;
 var subscription;
 
+function scroll_window(){
+    var element = document.getElementById("smartbotBody");
+    element.scrollTop = element.scrollHeight - element.clientHeight;
+
+}
+
 function connect() {
     var socket = new SockJS('/monitor-websocket');
     stompClient = Stomp.over(socket);
@@ -88,6 +94,7 @@ function after_get_lines(data) {
         $('#actionWindow').empty();
     }
 
+    scroll_window();
 }
 
 

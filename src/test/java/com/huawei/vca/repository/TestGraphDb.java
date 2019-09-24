@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -103,6 +105,27 @@ public class TestGraphDb {
         assert rootNode != null;
 
     }
+
+
+    @Test
+    public void testSet() {
+
+        Set<ObservationNode>nodes = new HashSet<>();
+
+        ObservationNode node = new ObservationNode("text");
+
+        nodes.add(node);
+
+        node.setActionNode(new ActionNode());
+
+        nodes.add(node);
+
+        assert nodes.size() == 1;
+
+
+
+    }
+
 
     @Test
     public void getNodeById() {

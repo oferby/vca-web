@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 public class ConversationRepositoryController {
@@ -99,7 +101,9 @@ public class ConversationRepositoryController {
 
         }
 
-        conversationRepository.saveAll(toSave);
+
+        Set<StateNode>nodeSet=new HashSet<>(toSave);
+        conversationRepository.saveAll(nodeSet);
 
     }
 
