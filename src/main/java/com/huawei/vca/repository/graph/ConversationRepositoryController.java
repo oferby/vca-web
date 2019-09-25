@@ -1,16 +1,10 @@
 package com.huawei.vca.repository.graph;
 
-import com.huawei.vca.message.BotUtterEvent;
-import com.huawei.vca.message.Dialogue;
-import com.huawei.vca.message.Event;
-import com.huawei.vca.message.UserUtterEvent;
+import com.huawei.vca.message.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Controller
 public class ConversationRepositoryController {
@@ -73,15 +67,40 @@ public class ConversationRepositoryController {
 
                 for (ObservationNode node : nodes) {
                     if (node.getStringId().equals(userUtterEvent.getNluEvent().getBestIntent().getIntent())) {
+
                         found = true;
-                        nextObservationNode = conversationRepository.findObservationNodeById(node.getId());
-                        nextActionNode = nextObservationNode.getActionNode();
-                        if (nextActionNode != null) {
-                            nextActionNode = conversationRepository.findActionById(nextActionNode.getId());
+
+                        Map<String, String> properties = node.getProperties();
+                        Set<Slot> slots = userUtterEvent.getNluEvent().getSlots();
+
+                        if (slots != null || properties.size() != 0) {
+
+                            if (slots != null && properties.keySet().size() == slots.size()) {
+                                //                            same number of slots
+
+                                for (Slot slot : slots) {
+                                    if (!properties.containsKey(slot.getKey()) || !properties.get(slot.getKey()).equals(slot.getValue())) {
+                                        found = false;
+                                        break;
+                                    }
+                                }
+
+                            } else {
+                                found = false;
+                            }
                         }
 
-                        break;
+                        if (found) {
 
+                            nextObservationNode = conversationRepository.findObservationNodeById(node.getId());
+                            nextActionNode = nextObservationNode.getActionNode();
+                            if (nextActionNode != null) {
+                                nextActionNode = conversationRepository.findActionById(nextActionNode.getId());
+                            }
+
+                            break;
+
+                        }
                     }
 
                 }
@@ -89,6 +108,14 @@ public class ConversationRepositoryController {
                 if (!found) {
                     ObservationNode observationNode = new ObservationNode();
                     observationNode.setStringId(userUtterEvent.getNluEvent().getBestIntent().getIntent());
+
+                    if (userUtterEvent.getNluEvent().getSlots() != null) {
+                        for (Slot slot : userUtterEvent.getNluEvent().getSlots()) {
+                            observationNode.addProperty(slot.getKey(), slot.getValue());
+                        }
+
+                    }
+
                     nodes.add(observationNode);
                     nextObservationNode = observationNode;
                     toSave.add(observationNode);
@@ -104,7 +131,7 @@ public class ConversationRepositoryController {
         }
 
 
-        Set<StateNode>nodeSet=new HashSet<>(toSave);
+        Set<StateNode> nodeSet = new HashSet<>(toSave);
         conversationRepository.saveAll(nodeSet);
 
     }

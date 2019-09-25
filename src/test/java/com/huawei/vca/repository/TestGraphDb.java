@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -45,6 +42,18 @@ public class TestGraphDb {
 
         List<IntentEntity> intentEntityList = intentRepository.findAll();
 
+        Set<Slot>slots = new HashSet<>();
+        Slot slot;
+        for (int i = 0; i < 30; i++) {
+            slot = new Slot();
+            slot.setKey("key" + i);
+            slot.setValue("value" + i);
+            slot.setConfidence((float) 0.8);
+
+            slots.add(slot);
+        }
+        Iterator<Slot> slotIterator = slots.iterator();
+
         Dialogue dialogue = new Dialogue();
 
         for (int i = 0; i < 10; i++) {
@@ -53,6 +62,12 @@ public class TestGraphDb {
             dialogue.addToHistory(userUtterEvent);
 
             NluEvent nluEvent = new NluEvent();
+
+            if (i % 2 == 0) {
+                nluEvent.addSlot(slotIterator.next());
+                nluEvent.addSlot(slotIterator.next());
+            }
+
             IntentEntity intentEntity = intentEntityList.get(i);
             Intent intent = new Intent(intentEntity.getIntent(), (float) 0.9);
             nluEvent.setBestIntent(intent);
@@ -67,12 +82,19 @@ public class TestGraphDb {
         conversationRepositoryController.saveDialogueToGraph(dialogue);
 
         dialogue = new Dialogue();
+        slotIterator = slots.iterator();
+
         for (int i = 0; i < 5; i++) {
 
             UserUtterEvent userUtterEvent = new UserUtterEvent("obs" + i);
             dialogue.addToHistory(userUtterEvent);
 
             NluEvent nluEvent = new NluEvent();
+            if (i % 3 == 0) {
+                nluEvent.addSlot(slotIterator.next());
+                nluEvent.addSlot(slotIterator.next());
+            }
+
             IntentEntity intentEntity = intentEntityList.get(i);
             Intent intent = new Intent(intentEntity.getIntent(), (float) 0.9);
             nluEvent.setBestIntent(intent);
@@ -90,6 +112,12 @@ public class TestGraphDb {
             dialogue.addToHistory(userUtterEvent);
 
             NluEvent nluEvent = new NluEvent();
+
+            if (i % 3 == 0) {
+                nluEvent.addSlot(slotIterator.next());
+                nluEvent.addSlot(slotIterator.next());
+            }
+
             IntentEntity intentEntity = intentEntityList.get(i);
             Intent intent = new Intent(intentEntity.getIntent(), (float) 0.9);
             nluEvent.setBestIntent(intent);
