@@ -5,27 +5,28 @@
     <title>Actions Management</title>
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script src="/webjars/jquery/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/actions.css">
 </head>
 <body>
 <div id="app">
-    <input id="search_text" type="text">
-    <div>
-        <input type="button" value="Add" onclick="addAction()">
-    </div>
-
-
     <div class="split left">
-
+        <h4>Actions</h4>
+        <div>
+            Filter <input id="search_text" type="text"><input type="button" value="Add" onclick="addAction()">
+        </div>
         <action-item
                 v-for="(action, indx) in action_list"
                 v-bind:action="action"
                 v-on:remove="remove(action.id, indx)"
         ></action-item>
     </div>
-    <div class="split right">
-        <label id="action_label">Action: {{action_label}}</label>
+    <div class="split right" style="padding-left: 10px;">
+        <h4>Sentences for:</h4>
+        <h2>{{action_label}}</h2>
+        <h5>New Sentence:</h5>
         <input id="input_example" type="text"><input type="button" value="Add" onclick="addExample()">
+        <hr/>
         <example-item
                 v-for="(example, indx) in example_list"
                 v-bind:example="example"

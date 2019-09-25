@@ -9,13 +9,17 @@
 
 
 .split {
-  height: 100%;
+  height: 90%;
   width: 50%;
   position: fixed;
   z-index: 1;
   top: 60px;
   overflow-x: hidden;
   padding-top: 20px;
+}
+
+input {
+    padding: 4px 2px 4px 6px;
 }
 
 /* Control the left side */

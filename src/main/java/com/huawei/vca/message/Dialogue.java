@@ -9,6 +9,8 @@ public class Dialogue {
     private List<Event> history;
     private NluEvent lastNluEvent;
     private boolean isTraining;
+    private Map<String,Object> properties;
+
 
     public Dialogue() {
     }
@@ -69,5 +71,30 @@ public class Dialogue {
 
     public void setTraining(boolean training) {
         isTraining = training;
+    }
+
+    public void addProperty(String key, Object value){
+
+        if (this.properties == null) {
+            this.properties = new HashMap<>();
+        }
+
+        this.properties.put(key,value);
+    }
+
+    public Object getProperty(String key){
+
+        if (this.properties == null)
+            return null;
+
+        return this.properties.get(key);
+    }
+
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
     }
 }

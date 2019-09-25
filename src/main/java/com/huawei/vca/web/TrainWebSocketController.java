@@ -7,7 +7,7 @@ import com.huawei.vca.message.Dialogue;
 import com.huawei.vca.message.DialogueSummary;
 import com.huawei.vca.repository.BotUtterEntity;
 import com.huawei.vca.repository.controller.BotUtterRepository;
-import com.huawei.vca.repository.graph.ConversationRepositoryController;
+import com.huawei.vca.repository.graph.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +16,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -38,6 +39,9 @@ public class TrainWebSocketController {
     @Autowired
     private ConversationRepositoryController conversationRepositoryController;
 
+    @Autowired
+    private ConversationRepository conversationRepository;
+
     @MessageMapping("/train/parseDialogue")
     public void getIntentRequest(Dialogue dialogue, @Header("simpSessionId") String sessionId) {
 
@@ -46,12 +50,45 @@ public class TrainWebSocketController {
         sessionController.addOrUpdateDialogue(sessionId, dialogue);
 
         dialogue = conversationManager.handleNluOnly(dialogue);
+        this.addGraphLocation(dialogue);
 
         this.sendUserUtterToMonitor(dialogue);
         this.sendSummaryResponse(dialogue);
 
         dialogue.setText(null);
         this.sendDialogueResponse(dialogue);
+
+    }
+
+    private void addGraphLocation(Dialogue dialogue) {
+
+        String graphLocation = "graph_location";
+        Long graphId = (Long) dialogue.getProperty(graphLocation);
+
+        if ( graphId == null) {
+
+            RootNode rootNode = conversationRepository.getRootNode();
+            dialogue.addProperty(graphLocation, rootNode.getId());
+            List<ObservationNode> observationNodes = rootNode.getObservationNodes();
+            this.addActionToDialogue(dialogue, observationNodes);
+
+        } else {
+
+
+
+            ActionNode actionNode = conversationRepository.findActionById(graphId);
+            this.addActionToDialogue(dialogue, actionNode.getObservationNodes());
+        }
+
+    }
+
+    private void addActionToDialogue(Dialogue dialogue, List<ObservationNode> observationNodes) {
+
+        for (ObservationNode observationNode : observationNodes) {
+            if (observationNode.getStringId().equals(dialogue.getLastNluEvent().getBestIntent().getIntent())){
+                dialogue.addProperty("best_action", observationNode.getActionNode());
+            }
+        }
 
     }
 
@@ -93,7 +130,6 @@ public class TrainWebSocketController {
     public void sendDialogueResponse(Dialogue dialogueResponse) {
         template.convertAndSend("/topic/dialogue/" + dialogueResponse.getSessionId(), dialogueResponse);
     }
-
 
     private void sendSummaryResponse(Dialogue dialogueResponse) {
 
