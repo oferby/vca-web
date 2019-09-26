@@ -51,7 +51,6 @@ Vue.component('dialogue-item', {
     template: '<div class="dialogue-item"><span class="status" v-bind:class="dialogue.confidenceString"></span><span onclick="show_dialogue(this)">{{dialogue.id}}</span></div>'
 });
 
-// TODO
 function subscribe_to_dialogue(sessionId) {
     subscription = this.stompClient.subscribe('/topic/dialogue/monitor/data/' + sessionId, function (msg) {
         dialogue = JSON.parse(msg.body);
@@ -111,7 +110,7 @@ function show_actions() {
 function afterGetActions(data) {
     console.log('got action list');
     $('#actionWindow').append("<div id='save-button-div'><input type='button' value='Save' onclick='saveDialogueToGraph()'></div>");
-
+    // $('#actionWindow').append("<div id='actionWindow-left class='split left'></div><div id='actionWindow-left class='split left'></div>
     data.sort();
     data.forEach(function (value) {
         $('#actionWindow').append("<span class='action-item' onclick='addAction(this)'>" + value.id + "</span>");

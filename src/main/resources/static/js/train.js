@@ -1,4 +1,4 @@
-var visible = false
+var visible = false;
 var greetingSent = false;
 
 var intent = {};
@@ -13,7 +13,7 @@ function getTime() {
 function sendIntent(userInput){
     intent.text = userInput;
     console.log('Sending user input to server');
-    dialogue.text = userInput
+    dialogue.text = userInput;
     stompClient.send("/app/train/parseDialogue", {}, JSON.stringify(dialogue));
 }
 
@@ -27,7 +27,7 @@ function connect() {
 
         dialogue = {
             'sessionId': sessionId
-        }
+        };
 
         stompClient.subscribe('/topic/dialogue/'+sessionId, function (hint) {
             dialogue  = JSON.parse(hint.body);
@@ -45,7 +45,7 @@ function showChatbot() {
         $('#smartbot').show();
 
         async function displayGreeting() {
-            addBotText('Hello, how may I help you?')
+            addBotText('Hello, how may I help you?');
             greetingSent = true;
         }
 
@@ -83,24 +83,26 @@ function scroll_window(){
 
 function addBotResponse(dialogue){
 
-    if (dialogue.text != null) {
-        addBotText(dialogue.text);
-    } else {
+    if (dialogue.lastNluEvent != null) {
 
         var nluInfo = dialogue.lastNluEvent;
         if (nluInfo != null) {
             intent = nluInfo.bestIntent.intent + " " + nluInfo.bestIntent.confidence;
             addIntentInput(intent);
 
-            slots = nluInfo.slots
+            slots = nluInfo.slots;
             if (slots != null) {
                 slots.forEach(function(slot){
-                                text = slot.key + ":" + slot.value + "(" + slot.confidence + ")"
-                                addIntentInput(text)
-                            })
+                    text = slot.key + ":" + slot.value + "(" + slot.confidence + ")";
+                    addIntentInput(text)
+                })
             }
 
         }
+    }
+
+    if (dialogue.text != null) {
+        addBotText(dialogue.text);
     }
 
     scroll_window();
@@ -117,22 +119,22 @@ function getData(dataUrl, callback) {
       success: callback
     });
 
-};
+}
 
 $(document).ready( function(){
 
-    connect()
+    connect();
 
     $('#user-input').keyup(function(e){
-        if(e.keyCode == 13)
+        if(e.keyCode === 13)
         {
             var userInput = $('#user-input').val();
             $('#user-input').val('');
             addUserInput(userInput);
             scroll_window();
-            sendIntent(userInput)
+            sendIntent(userInput);
             console.log('user entered: ' + userInput);
         }
     });
 
-})
+});

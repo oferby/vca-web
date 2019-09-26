@@ -61,6 +61,7 @@ public class TrainWebSocketController {
 
             this.sendUserUtterToMonitor(dialogue);
             this.sendSummaryResponse(dialogue);
+
             dialogue.setText(null);
             this.sendDialogueResponse(dialogue);
 
@@ -126,11 +127,17 @@ public class TrainWebSocketController {
 
         conversationRepositoryController.saveDialogueToGraph(dialogue);
 
+        logger.debug("dialogue saved to graph");
+
     }
 
     @MessageMapping("/train/addAction")
     public void addAction(Dialogue dialogue) {
         logger.debug("got new training action: " + dialogue.getText() + " on session id: " + dialogue.getSessionId());
+
+        if (dialogue.getProperties()!=null){
+            dialogue.getProperties().remove("best_action");
+        }
 
         Optional<BotUtterEntity> actionById = botUtterRepository.findById(dialogue.getText());
 
@@ -150,6 +157,7 @@ public class TrainWebSocketController {
         sessionController.addOrUpdateDialogue(dialogue.getSessionId(), dialogue);
         this.sendDialogueResponse(dialogue);
         this.sendUserUtterToMonitor(dialogue);
+        this.sendSummaryResponse(dialogue);
 
     }
 
