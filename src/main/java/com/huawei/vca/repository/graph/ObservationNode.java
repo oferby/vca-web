@@ -6,13 +6,15 @@ import org.neo4j.ogm.annotation.Properties;
 import java.util.*;
 
 @NodeEntity
-public class ObservationNode extends StateNode {
+public class ObservationNode extends StateNode implements Comparable<StateNode>{
 
     @Relationship(type = "LEADS")
     private ActionNode actionNode;
 
     @Properties
     private Map<String,String>properties;
+
+    private Integer visited;
 
     public ObservationNode() {
     }
@@ -47,18 +49,40 @@ public class ObservationNode extends StateNode {
 
     }
 
+    public int getVisited() {
+        return visited;
+    }
+
+    public void setVisited(int visited) {
+        this.visited = visited;
+    }
+
+    public void increaseVisited() {
+
+        if (this.visited == null)
+            visited = 0;
+
+        this.visited++;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ObservationNode)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         ObservationNode that = (ObservationNode) o;
-        return Objects.equals(getActionNode(), that.getActionNode()) &&
-                Objects.equals(getProperties(), that.getProperties());
+        return Objects.equals(actionNode, that.actionNode) &&
+                Objects.equals(properties, that.properties) &&
+                Objects.equals(visited, that.visited);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getActionNode(), getProperties());
+        return Objects.hash(super.hashCode(), actionNode, properties, visited);
+    }
+
+    @Override
+    public int compareTo(StateNode stateNode) {
+        return this.getStringId().compareTo(stateNode.getStringId());
     }
 }

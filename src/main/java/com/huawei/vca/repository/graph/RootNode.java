@@ -7,38 +7,44 @@ import java.util.List;
 import java.util.Objects;
 
 @NodeEntity
-public class RootNode extends StateNode {
+public class RootNode extends HasObservationsNode implements Comparable<StateNode>{
 
-    @Relationship(type = "LEADS")
-    private List<ObservationNode> observationNodes;
+    private Integer visited;
 
-    public List<ObservationNode> getObservationNodes() {
-        return observationNodes;
+    public int getVisited() {
+        return visited;
     }
 
-    public void setObservationNodes(List<ObservationNode> observationNodes) {
-        this.observationNodes = observationNodes;
+    public void setVisited(int visited) {
+        this.visited = visited;
     }
 
-    public void addObservation(ObservationNode observationNode) {
-        if (observationNodes == null) {
-            observationNodes = new ArrayList<>();
-        }
+    public void increaseVisited() {
 
-        observationNodes.add(observationNode);
+        if (this.visited == null)
+            visited = 0;
+
+        this.visited++;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof RootNode)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         RootNode rootNode = (RootNode) o;
-        return Objects.equals(getObservationNodes(), rootNode.getObservationNodes());
+        return Objects.equals(visited, rootNode.visited);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getObservationNodes());
+        return Objects.hash(super.hashCode(), visited);
+    }
+
+    @Override
+    public int compareTo(StateNode stateNode) {
+
+        return this.getStringId().compareTo(stateNode.getStringId());
+
     }
 }

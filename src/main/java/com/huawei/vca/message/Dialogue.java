@@ -9,7 +9,7 @@ public class Dialogue {
     private List<Event> history;
     private NluEvent lastNluEvent;
     private boolean isTraining;
-    private Map<String,Object> properties;
+    private Map<String,String> properties;
 
 
     public Dialogue() {
@@ -73,7 +73,7 @@ public class Dialogue {
         isTraining = training;
     }
 
-    public void addProperty(String key, Object value){
+    public void addProperty(String key, String value){
 
         if (this.properties == null) {
             this.properties = new HashMap<>();
@@ -82,7 +82,7 @@ public class Dialogue {
         this.properties.put(key,value);
     }
 
-    public Object getProperty(String key){
+    public String getProperty(String key){
 
         if (this.properties == null)
             return null;
@@ -90,11 +90,11 @@ public class Dialogue {
         return this.properties.get(key);
     }
 
-    public Map<String, Object> getProperties() {
+    public Map<String, String> getProperties() {
         return properties;
     }
 
-    public void setProperties(Map<String, Object> properties) {
+    public void setProperties(Map<String, String> properties) {
         this.properties = properties;
     }
 }

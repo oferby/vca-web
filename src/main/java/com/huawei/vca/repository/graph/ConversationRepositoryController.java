@@ -25,6 +25,7 @@ public class ConversationRepositoryController {
 
         }
 
+        rootNode.increaseVisited();
         toSave.add(rootNode);
 
         ActionNode nextActionNode = null;
@@ -40,7 +41,6 @@ public class ConversationRepositoryController {
 
                 if (nextObservationNode.getActionNode() == null) {
                     nextActionNode = new ActionNode();
-//                    nextActionNode.setName(botUtterEvent.getText());
                     nextActionNode.setStringId(botUtterEvent.getId());
                     nextObservationNode.setActionNode(nextActionNode);
                     nodes = new ArrayList<>();
@@ -93,6 +93,8 @@ public class ConversationRepositoryController {
                         if (found) {
 
                             nextObservationNode = conversationRepository.findObservationNodeById(node.getId());
+                            nextObservationNode.increaseVisited();
+                            toSave.add(nextObservationNode);
                             nextActionNode = nextObservationNode.getActionNode();
                             if (nextActionNode != null) {
                                 nextActionNode = conversationRepository.findActionById(nextActionNode.getId());
@@ -107,6 +109,7 @@ public class ConversationRepositoryController {
 
                 if (!found) {
                     ObservationNode observationNode = new ObservationNode();
+
                     observationNode.setStringId(userUtterEvent.getNluEvent().getBestIntent().getIntent());
 
                     if (userUtterEvent.getNluEvent().getSlots() != null) {
@@ -118,6 +121,7 @@ public class ConversationRepositoryController {
 
                     nodes.add(observationNode);
                     nextObservationNode = observationNode;
+                    nextObservationNode.increaseVisited();
                     toSave.add(observationNode);
                     if (nextActionNode != null) {
                         toSave.add(nextActionNode);
@@ -131,7 +135,7 @@ public class ConversationRepositoryController {
         }
 
 
-        Set<StateNode> nodeSet = new HashSet<>(toSave);
+        SortedSet<StateNode> nodeSet = new TreeSet<>(toSave);
         conversationRepository.saveAll(nodeSet);
 
     }

@@ -20,6 +20,8 @@ public class StateNode {
 
     private Integer stateId;
 
+
+
     public StateNode() {
     }
 
@@ -62,16 +64,16 @@ public class StateNode {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof StateNode)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         StateNode stateNode = (StateNode) o;
-        return Objects.equals(getId(), stateNode.getId()) &&
-                Objects.equals(getStringId(), stateNode.getStringId()) &&
-                Objects.equals(getName(), stateNode.getName()) &&
-                Objects.equals(getStateId(), stateNode.getStateId());
+        return Objects.equals(id, stateNode.id) &&
+                Objects.equals(stringId, stateNode.stringId) &&
+                Objects.equals(name, stateNode.name) &&
+                Objects.equals(stateId, stateNode.stateId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getStringId(), getName(), getStateId());
+        return Objects.hash(id, stringId, name, stateId);
     }
 }

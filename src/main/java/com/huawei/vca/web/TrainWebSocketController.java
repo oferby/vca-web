@@ -42,6 +42,8 @@ public class TrainWebSocketController {
     @Autowired
     private ConversationRepository conversationRepository;
 
+    private static String graphLocation = "graph_location";
+
     @MessageMapping("/train/parseDialogue")
     public void getIntentRequest(Dialogue dialogue, @Header("simpSessionId") String sessionId) {
 
@@ -62,34 +64,41 @@ public class TrainWebSocketController {
 
     private void addGraphLocation(Dialogue dialogue) {
 
-        String graphLocation = "graph_location";
-        Long graphId = (Long) dialogue.getProperty(graphLocation);
-
-        if ( graphId == null) {
+        if ( dialogue.getProperty(graphLocation) == null) {
 
             RootNode rootNode = conversationRepository.getRootNode();
-            dialogue.addProperty(graphLocation, rootNode.getId());
             List<ObservationNode> observationNodes = rootNode.getObservationNodes();
-            this.addActionToDialogue(dialogue, observationNodes);
+            if (this.addActionToDialogue(dialogue, observationNodes)) {
+                dialogue.addProperty(graphLocation, "-1");
+            }
 
         } else {
 
+            if (dialogue.getProperty(graphLocation).equals("-1")){
+                return;
+            }
 
-
+            Long graphId = Long.valueOf(dialogue.getProperty(graphLocation));
             ActionNode actionNode = conversationRepository.findActionById(graphId);
-            this.addActionToDialogue(dialogue, actionNode.getObservationNodes());
+            if (this.addActionToDialogue(dialogue, actionNode.getObservationNodes())){
+                dialogue.addProperty(graphLocation, "-1");
+            }
         }
 
     }
 
-    private void addActionToDialogue(Dialogue dialogue, List<ObservationNode> observationNodes) {
+    private boolean addActionToDialogue(Dialogue dialogue, List<ObservationNode> observationNodes) {
 
         for (ObservationNode observationNode : observationNodes) {
             if (observationNode.getStringId().equals(dialogue.getLastNluEvent().getBestIntent().getIntent())){
-                dialogue.addProperty("best_action", observationNode.getActionNode());
+                ObservationNode node = conversationRepository.findObservationNodeById(observationNode.getId());
+                dialogue.addProperty("best_action", node.getActionNode().getStringId());
+                dialogue.addProperty(graphLocation, node.getId().toString());
+                return false;
             }
         }
 
+        return true;
     }
 
 
