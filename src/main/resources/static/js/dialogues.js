@@ -53,7 +53,7 @@ Vue.component('dialogue-item', {
 
 // TODO
 function subscribe_to_dialogue(sessionId) {
-    this.subscription = this.stompClient.subscribe('/topic/dialogue/monitor/data/' + sessionId, function (msg) {
+    subscription = this.stompClient.subscribe('/topic/dialogue/monitor/data/' + sessionId, function (msg) {
         dialogue = JSON.parse(msg.body);
         console.log('got message for session: ' + dialogue.sessionId);
         $('#smartbotBody').empty();
@@ -68,8 +68,8 @@ function show_dialogue(caller) {
     sessionId = caller.textContent;
     getData(dataUrl + sessionId, after_get_lines);
 
-    if (this.subscription != null) {
-        this.subscription.unsubscribe();
+    if (subscription != null) {
+        subscription.unsubscribe();
     }
 
     this.subscribe_to_dialogue(sessionId);
@@ -111,6 +111,7 @@ function show_actions() {
 function afterGetActions(data) {
     console.log('got action list');
     $('#actionWindow').append("<div id='save-button-div'><input type='button' value='Save' onclick='saveDialogueToGraph()'></div>");
+
     data.sort();
     data.forEach(function (value) {
         $('#actionWindow').append("<span class='action-item' onclick='addAction(this)'>" + value.id + "</span>");

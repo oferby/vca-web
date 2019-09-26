@@ -86,7 +86,7 @@ public class TrainWebSocketController {
             ActionNode actionNode = conversationRepository.findActionById(graphId);
             if (actionNode == null || actionNode.getObservationNodes() == null) {
                 dialogue.addProperty(graphLocation, "-1");
-                dialogue.addProperty("best_action", "no action history");
+                dialogue.addProperty("best_action", "no action in graph");
                 return false;
 
             }
@@ -114,7 +114,7 @@ public class TrainWebSocketController {
         }
 
         dialogue.addProperty(graphLocation, "-1");
-        dialogue.addProperty("best_action", "no action history");
+        dialogue.addProperty("best_action", "no action in graph");
         return false;
     }
 
