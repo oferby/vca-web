@@ -175,7 +175,7 @@ function addBotText(text, time) {
 
 function addBestActionText(text) {
 
-    $('#smartbotBody').append('<div class="messageBox incoming best-action"><div class="messageText"><span onclick="addAction(this)">'+text+'</span></div></div>');
+    $('#smartbotBody').append('<div class="messageBox incoming best-action"><div class="messageText"><span>'+text+'</span></div></div>');
 
 }
 
