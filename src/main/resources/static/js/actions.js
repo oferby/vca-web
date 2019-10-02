@@ -61,7 +61,6 @@ function successAfterAddNew(action) {
     actions_dict[action.id] = action
     app.action_list.unshift(action)
     show_example_for_action(action)
-
 }
 
 function addAction() {
