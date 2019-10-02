@@ -1,5 +1,6 @@
 var app;
 var dialogue_list;
+var action_list;
 
 var dataUrl = '/data/dialogues/';
 var actionDataUrl = '/data/actions/';
@@ -51,6 +52,11 @@ Vue.component('dialogue-item', {
     template: '<div class="dialogue-item"><span class="status" v-bind:class="dialogue.confidenceString"></span><span onclick="show_dialogue(this)">{{dialogue.id}}</span></div>'
 });
 
+Vue.component('action-item', {
+    props: ['action'],
+    template: "<tr><td class='action-item' onclick='addAction(this)'>{{action.id}}</td><td class='action-item-text'>{{action.textSet[0]}}</td></tr>"
+});
+
 function subscribe_to_dialogue(sessionId) {
     subscription = this.stompClient.subscribe('/topic/dialogue/monitor/data/' + sessionId, function (msg) {
         dialogue = JSON.parse(msg.body);
@@ -88,14 +94,18 @@ function after_get_lines(data) {
             if (best_action != null) {
                 addBestActionText(best_action);
             }
+
+            if (data.properties['graph_location'] === '-1') {
+                $('#add-action-button').prop('disabled', false);
+                $('#graph-status').text("Detached from graph!");
+            }
         }
     }
 
     if (activeDialogue.training) {
-        $('#actionWindow').empty();
         show_actions();
     } else {
-        $('#actionWindow').empty();
+        app.action_list.splice(0, app.action_list.length)
     }
 
     scroll_window();
@@ -109,14 +119,7 @@ function show_actions() {
 
 function afterGetActions(data) {
     console.log('got action list');
-    $('#actionWindow').append("<div id='save-button-div'><input type='button' value='Save' onclick='saveDialogueToGraph()'></div>");
-    data.sort();
-    $('#actionWindow').append("<table id='actionTable'>");
-    data.forEach(function (value) {
-        $('#actionTable').append("<tr><td class='action-item' onclick='addAction(this)'>" + value.id + "</td><td class='action-item-text'>"+ value.textSet[0] + "</td></tr>");
-    });
-    $('#actionWindow').append("</table>");
-
+    app.action_list = [...data.sort()];
 }
 
 function saveDialogueToGraph() {
@@ -176,7 +179,7 @@ function addBotText(text, time) {
 
 function addBestActionText(text) {
 
-    $('#smartbotBody').append('<div class="messageBox incoming best-action"><div class="messageText"><span>'+text+'</span></div></div>');
+    $('#smartbotBody').append('<div class="messageBox incoming best-action"><div class="messageText"><span>' + text + '</span></div></div>');
 
 }
 
@@ -188,7 +191,8 @@ function success(data) {
     app = new Vue({
         el: '#app',
         data: {
-            dialogue_list: dialogue_list
+            dialogue_list: dialogue_list,
+            action_list: []
         }
     })
 }

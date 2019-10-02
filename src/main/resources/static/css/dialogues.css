@@ -107,8 +107,17 @@ tr:nth-child(even) {
 
 #save-button-div {
     display: block;
+    margin-bottom: 5px;
 }
 
+#add-action-button {
+    margin-right: 5px;
+}
+
+#graph-status {
+    background-color: #e31e26;
+    color: white;
+}
 .best-action {
     background-color: #2F0B0C;
 }

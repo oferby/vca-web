@@ -65,46 +65,52 @@ public class ConversationRepositoryController {
 
                 boolean found = false;
 
-                for (ObservationNode node : nodes) {
-                    if (node.getStringId().equals(userUtterEvent.getNluEvent().getBestIntent().getIntent())) {
+                if (nodes == null) {
+                    nodes = new ArrayList<>();
+                    nextActionNode.setObservationNodes(nodes);
+                } else {
 
-                        found = true;
+                    for (ObservationNode node : nodes) {
+                        if (node.getStringId().equals(userUtterEvent.getNluEvent().getBestIntent().getIntent())) {
 
-                        Map<String, String> properties = node.getProperties();
-                        Set<Slot> slots = userUtterEvent.getNluEvent().getSlots();
+                            found = true;
 
-                        if (slots != null || properties.size() != 0) {
+                            Map<String, String> properties = node.getProperties();
+                            Set<Slot> slots = userUtterEvent.getNluEvent().getSlots();
 
-                            if (slots != null && properties.keySet().size() == slots.size()) {
-                                //                            same number of slots
+                            if (slots != null || properties.size() != 0) {
 
-                                for (Slot slot : slots) {
-                                    if (!properties.containsKey(slot.getKey()) || !properties.get(slot.getKey()).equals(slot.getValue())) {
-                                        found = false;
-                                        break;
+                                if (slots != null && properties.keySet().size() == slots.size()) {
+                                    //                            same number of slots
+
+                                    for (Slot slot : slots) {
+                                        if (!properties.containsKey(slot.getKey()) || !properties.get(slot.getKey()).equals(slot.getValue())) {
+                                            found = false;
+                                            break;
+                                        }
                                     }
+
+                                } else {
+                                    found = false;
+                                }
+                            }
+
+                            if (found) {
+
+                                nextObservationNode = conversationRepository.findObservationNodeById(node.getId());
+                                nextObservationNode.increaseVisited();
+                                toSave.add(nextObservationNode);
+                                nextActionNode = nextObservationNode.getActionNode();
+                                if (nextActionNode != null) {
+                                    nextActionNode = conversationRepository.findActionById(nextActionNode.getId());
                                 }
 
-                            } else {
-                                found = false;
+                                break;
+
                             }
                         }
 
-                        if (found) {
-
-                            nextObservationNode = conversationRepository.findObservationNodeById(node.getId());
-                            nextObservationNode.increaseVisited();
-                            toSave.add(nextObservationNode);
-                            nextActionNode = nextObservationNode.getActionNode();
-                            if (nextActionNode != null) {
-                                nextActionNode = conversationRepository.findActionById(nextActionNode.getId());
-                            }
-
-                            break;
-
-                        }
                     }
-
                 }
 
                 if (!found) {

@@ -25,7 +25,18 @@
         <div id="smartbotBody"></div>
     </section>
     <footer>
-        <div id="actionWindow"></div>
+        <div id="actionWindow">
+            <div id='save-button-div'><input id='add-action-button' type='button' value='Save'
+                                             onclick='saveDialogueToGraph()' disabled><span id='graph-status'></span>
+            </div>
+            <table id='actionTable'>
+            <action-item
+                    v-for="action in action_list"
+                    v-bind:action="action"
+            >
+            </action-item>
+            </table>
+        </div>
     </footer>
 </div>
 <script src="js/dialogues.js"></script>
