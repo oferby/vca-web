@@ -11,7 +11,7 @@ Vue.component('action-item', {
 
 Vue.component('example-item', {
     props: ['example', 'action_label'],
-    template: '<div class="action-item"><input v-bind:id="example" type="text" v-model="example" ><input type="button" value="Save"><input type="button" value="X" v-on:click="$emit(\'remove\')"></div>'
+    template: '<div class="action-item"><input v-bind:id="example" type="text" v-model="example"><input type="button" value="Save"><input type="button" value="X" v-on:click="$emit(\'remove\')"></div>'
   });
 
 function remove(id, indx) {
@@ -58,7 +58,7 @@ function successAfterUpdate(data) {
 
 function successAfterAddNew(action) {
     console.log( "getting data from server after add new: " + action );
-    actions_dict[data.action] = action
+    actions_dict[action.id] = action
     app.action_list.unshift(action)
     show_example_for_action(action)
 }
