@@ -26,6 +26,10 @@ section:after {
     clear: both;
 }
 
+#actionTable {
+    width: 100%;
+}
+
 /* Style the footer */
 footer {
     background-color: #777;
@@ -85,6 +89,10 @@ footer {
 }
 .action-item-text {
 
+}
+
+table {
+    margin-top: 5px;
 }
 
 td, th {

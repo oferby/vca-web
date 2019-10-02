@@ -26,5 +26,7 @@ public interface ConversationRepository extends Neo4jRepository<StateNode, Long>
     @Query("MATCH (f:StateNode) WHERE id(f)={0} OPTIONAL MATCH (f)-[l:LEADS]->(to) RETURN f, collect(l), collect(to)")
     StateNode findStateNodeById(Long id);
 
+    @Query("MATCH (f:StateNode)-[l*]->(to) WHERE id(f)={0} detach delete f,to")
+    void deletePathStartingWithId(Long id);
 
 }

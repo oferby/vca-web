@@ -99,6 +99,9 @@ public class TrainWebSocketController {
 
     private boolean addActionToDialogue(Dialogue dialogue, List<ObservationNode> observationNodes) {
 
+        if (observationNodes == null)
+            return false;
+
         for (ObservationNode observationNode : observationNodes) {
             if (observationNode.getStringId().equals(dialogue.getLastNluEvent().getBestIntent().getIntent())) {
                 ObservationNode node = conversationRepository.findObservationNodeById(observationNode.getId());

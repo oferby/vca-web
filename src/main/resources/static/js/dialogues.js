@@ -110,11 +110,10 @@ function show_actions() {
 function afterGetActions(data) {
     console.log('got action list');
     $('#actionWindow').append("<div id='save-button-div'><input type='button' value='Save' onclick='saveDialogueToGraph()'></div>");
-    // $('#actionWindow').append("<div id='actionWindow-left class='split left'></div><div id='actionWindow-left class='split left'></div>
     data.sort();
-    $('#actionWindow').append("<table>");
+    $('#actionWindow').append("<table id='actionTable'>");
     data.forEach(function (value) {
-        $('#actionWindow').append("<tr><td class='action-item' onclick='addAction(this)'>" + value.id + "</td><td class='action-item-text'>"+ value.textSet[0] + "</td></tr>");
+        $('#actionTable').append("<tr><td class='action-item' onclick='addAction(this)'>" + value.id + "</td><td class='action-item-text'>"+ value.textSet[0] + "</td></tr>");
     });
     $('#actionWindow').append("</table>");
 
