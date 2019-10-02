@@ -52,37 +52,47 @@ public class TrainWebSocketController {
         sessionController.addOrUpdateDialogue(sessionId, dialogue);
 
         dialogue = conversationManager.handleNluOnly(dialogue);
-        this.addGraphLocation(dialogue);
 
-        this.sendUserUtterToMonitor(dialogue);
-        this.sendSummaryResponse(dialogue);
+        if (this.addGraphLocation(dialogue)) {
 
-        dialogue.setText(null);
-        this.sendDialogueResponse(dialogue);
-
-    }
-
-    private void addGraphLocation(Dialogue dialogue) {
-
-        if ( dialogue.getProperty(graphLocation) == null) {
-
-            RootNode rootNode = conversationRepository.getRootNode();
-            List<ObservationNode> observationNodes = rootNode.getObservationNodes();
-            if (this.addActionToDialogue(dialogue, observationNodes)) {
-                dialogue.addProperty(graphLocation, "-1");
-            }
+            this.addAction(dialogue);
 
         } else {
 
-            if (dialogue.getProperty(graphLocation).equals("-1")){
-                return;
+            this.sendUserUtterToMonitor(dialogue);
+            this.sendSummaryResponse(dialogue);
+
+            dialogue.setText(null);
+            this.sendDialogueResponse(dialogue);
+
+        }
+
+    }
+
+    private boolean addGraphLocation(Dialogue dialogue) {
+
+        if (dialogue.getProperty(graphLocation) == null) {
+
+            RootNode rootNode = conversationRepository.getRootNode();
+            List<ObservationNode> observationNodes = rootNode.getObservationNodes();
+            return this.addActionToDialogue(dialogue, observationNodes);
+
+        } else {
+
+            if (dialogue.getProperty(graphLocation).equals("-1")) {
+                return false;
             }
 
             Long graphId = Long.valueOf(dialogue.getProperty(graphLocation));
             ActionNode actionNode = conversationRepository.findActionById(graphId);
-            if (this.addActionToDialogue(dialogue, actionNode.getObservationNodes())){
+            if (actionNode == null || actionNode.getObservationNodes() == null) {
                 dialogue.addProperty(graphLocation, "-1");
+                dialogue.addProperty("best_action", "no action in graph");
+                return false;
+
             }
+
+            return this.addActionToDialogue(dialogue, actionNode.getObservationNodes());
         }
 
     }
@@ -90,15 +100,23 @@ public class TrainWebSocketController {
     private boolean addActionToDialogue(Dialogue dialogue, List<ObservationNode> observationNodes) {
 
         for (ObservationNode observationNode : observationNodes) {
-            if (observationNode.getStringId().equals(dialogue.getLastNluEvent().getBestIntent().getIntent())){
+            if (observationNode.getStringId().equals(dialogue.getLastNluEvent().getBestIntent().getIntent())) {
                 ObservationNode node = conversationRepository.findObservationNodeById(observationNode.getId());
-                dialogue.addProperty("best_action", node.getActionNode().getStringId());
-                dialogue.addProperty(graphLocation, node.getId().toString());
-                return false;
+                if (node.getActionNode() != null) {
+                    if (dialogue.getProperties() != null)
+                        dialogue.getProperties().remove("best_action");
+
+                    dialogue.setText(node.getActionNode().getStringId());
+                    dialogue.addProperty(graphLocation, node.getActionNode().getId().toString());
+                    return true;
+                }
+
             }
         }
 
-        return true;
+        dialogue.addProperty(graphLocation, "-1");
+        dialogue.addProperty("best_action", "no action in graph");
+        return false;
     }
 
 
@@ -109,11 +127,17 @@ public class TrainWebSocketController {
 
         conversationRepositoryController.saveDialogueToGraph(dialogue);
 
+        logger.debug("dialogue saved to graph");
+
     }
 
     @MessageMapping("/train/addAction")
     public void addAction(Dialogue dialogue) {
         logger.debug("got new training action: " + dialogue.getText() + " on session id: " + dialogue.getSessionId());
+
+        if (dialogue.getProperties()!=null){
+            dialogue.getProperties().remove("best_action");
+        }
 
         Optional<BotUtterEntity> actionById = botUtterRepository.findById(dialogue.getText());
 
@@ -133,6 +157,7 @@ public class TrainWebSocketController {
         sessionController.addOrUpdateDialogue(dialogue.getSessionId(), dialogue);
         this.sendDialogueResponse(dialogue);
         this.sendUserUtterToMonitor(dialogue);
+        this.sendSummaryResponse(dialogue);
 
     }
 
