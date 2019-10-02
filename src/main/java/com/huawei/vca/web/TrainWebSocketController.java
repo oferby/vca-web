@@ -18,6 +18,7 @@ import org.springframework.stereotype.Controller;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Controller
 public class TrainWebSocketController {
@@ -147,10 +148,16 @@ public class TrainWebSocketController {
 
         BotUtterEntity botUtterEntity = actionById.get();
         BotUtterEvent botUtterEvent = new BotUtterEvent();
-        String text = botUtterEntity.getTextSet().iterator().next();
-        botUtterEvent.setText(text);
-        botUtterEvent.setId(botUtterEntity.getId());
+        Set<String> textIterator = botUtterEntity.getTextSet();
+        String text;
+        if (textIterator.iterator().hasNext()) {
+            text = textIterator.iterator().next();
 
+        } else {
+            text = "** no messages found for action ** " + botUtterEntity.getId();
+        }
+        botUtterEvent.setId(botUtterEntity.getId());
+        botUtterEvent.setText(text);
         dialogue.addToHistory(botUtterEvent);
         dialogue.setText(text);
 
