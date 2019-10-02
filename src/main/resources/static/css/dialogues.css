@@ -1,32 +1,45 @@
-.split {
-  height: 100%;
-  width: 50%;
-  position: fixed;
-  z-index: 1;
-  top: 60px;
-  overflow-x: hidden;
-  padding-top: 20px;
-  padding-left: 5px;
+/* Style the header */
+header {
+    background-color: #666;
+    padding: 5px;
+    text-align: center;
+    font-size: 25px;
+    color: white;
 }
 
-/* Control the left side */
-.left {
-  left: 0;
-  background-color: #EEECEC;
+section {
+    background-color: #DDDADA;
+    height: 400px;
 }
 
-/* Control the right side */
-.right {
-  right: 0;
-  background-color: #DDDADA;
+article {
+    float: left;
+    padding: 3px;
+    width: 30%;
+    height: 300px; /* only for demonstration, should be removed */
 }
+
+/* Clear floats after the columns */
+section:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Style the footer */
+footer {
+    background-color: #777;
+    padding: 2px;
+    height: 250px;
+}
+
 
 .dialogue-item {
     left: 5px;
     margin-bottom: 5px;
 }
 
-.status  {
+.status {
     height: 15px;
     width: 15px;
     background-color: #bbb;
@@ -53,23 +66,35 @@
 }
 
 #actionWindow {
-  height: 46%;
-  overflow-y: auto;
-  background-color: white;
-  padding-left: 8px;
-  padding-right: 8px;
-  margin-top: 3px;
-  margin-bottom: 3px;
+    height: 97%;
+    overflow-y: auto;
+    background-color: white;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin-top: 3px;
+    margin-bottom: 3px;
 
 }
 
 #smartbotBody {
-  height: 37%;
+    height: 100%;
 }
 
 .action-item {
-    display: block;
-    padding-bottom: 3px;
+
+}
+.action-item-text {
+
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
 }
 
 #save-button-div {

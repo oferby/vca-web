@@ -112,9 +112,11 @@ function afterGetActions(data) {
     $('#actionWindow').append("<div id='save-button-div'><input type='button' value='Save' onclick='saveDialogueToGraph()'></div>");
     // $('#actionWindow').append("<div id='actionWindow-left class='split left'></div><div id='actionWindow-left class='split left'></div>
     data.sort();
+    $('#actionWindow').append("<table>");
     data.forEach(function (value) {
-        $('#actionWindow').append("<span class='action-item' onclick='addAction(this)'>" + value.id + "</span>");
+        $('#actionWindow').append("<tr><td class='action-item' onclick='addAction(this)'>" + value.id + "</td><td class='action-item-text'>"+ value.textSet[0] + "</td></tr>");
     });
+    $('#actionWindow').append("</table>");
 
 }
 

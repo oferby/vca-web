@@ -24,7 +24,7 @@ public class TestGraphDb {
     @Autowired
     private IntentRepository intentRepository;
 
-    @Test
+//    @Test
     public void testReset(){
 
         reset();
@@ -35,7 +35,7 @@ public class TestGraphDb {
     }
 
 
-    @Test
+//    @Test
     public void testFindConnected() {
 
         reset();
@@ -138,7 +138,7 @@ public class TestGraphDb {
     }
 
 
-    @Test
+//    @Test
     public void testSet() {
 
         Set<ObservationNode>nodes = new HashSet<>();
@@ -158,7 +158,7 @@ public class TestGraphDb {
     }
 
 
-    @Test
+//    @Test
     public void getNodeById() {
 
         Iterable<StateNode> nodes = conversationRepository.findAll();
@@ -183,13 +183,13 @@ public class TestGraphDb {
 
 
 
-    @Test
+//    @Test
     public void deleteAll(){
 
         reset();
     }
 
-    @Test
+//    @Test
     public void testProperties() {
 
         reset();
@@ -211,17 +211,17 @@ public class TestGraphDb {
 
     private void reset(){
 
-        conversationRepository.deleteAll();
-
-        RootNode rootNode = new RootNode();
-        rootNode.setName("root");
-        rootNode.setStringId("root");
-
-        RootNode save = conversationRepository.save(rootNode);
-
-        Optional<StateNode> byId = conversationRepository.findById(save.getId());
-
-        assert byId.isPresent();
+//        conversationRepository.deleteAll();
+//
+//        RootNode rootNode = new RootNode();
+//        rootNode.setName("root");
+//        rootNode.setStringId("root");
+//
+//        RootNode save = conversationRepository.save(rootNode);
+//
+//        Optional<StateNode> byId = conversationRepository.findById(save.getId());
+//
+//        assert byId.isPresent();
 
     }
 

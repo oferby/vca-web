@@ -12,22 +12,21 @@
 </head>
 <body>
 <div id="app">
-    <div class="split left">
-        <p>Active Dialogues</p>
-        <dialogue-item
-            v-for="dialogue in dialogue_list"
-            v-bind:dialogue="dialogue"
-        >
-        </dialogue-item>
-
-    </div>
-
-    <div class="split right">
-        <p>Monitored Dialogue</p>
+    <header>Monitored Dialogue</header>
+    <section>
+        <article>
+            <p>Active Dialogues</p>
+            <dialogue-item
+                    v-for="dialogue in dialogue_list"
+                    v-bind:dialogue="dialogue"
+            >
+            </dialogue-item>
+        </article>
         <div id="smartbotBody"></div>
+    </section>
+    <footer>
         <div id="actionWindow"></div>
-    </div>
-
+    </footer>
 </div>
 <script src="js/dialogues.js"></script>
 </body>
