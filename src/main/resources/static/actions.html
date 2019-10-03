@@ -19,6 +19,7 @@
                 v-for="(action, indx) in action_list"
                 v-bind:action="action"
                 v-on:remove="remove(action.id, indx)"
+
         ></action-item>
     </div>
     <div class="split right" style="padding-left: 10px;">
@@ -31,6 +32,7 @@
                 v-for="(example, indx) in example_list"
                 v-bind:example="example"
                 v-on:remove="removeExample(indx)"
+                v-on:save="saveExample(example, indx)"
         ></example-item>
     </div>
 </div>

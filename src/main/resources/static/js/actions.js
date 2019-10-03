@@ -11,7 +11,7 @@ Vue.component('action-item', {
 
 Vue.component('example-item', {
     props: ['example', 'action_label'],
-    template: '<div class="action-item"><input v-bind:id="example" type="text" v-model="example"><input type="button" value="Save"><input type="button" value="X" v-on:click="$emit(\'remove\')"></div>'
+    template: '<div class="action-item"><input v-bind:id="example" type="text" v-model="example"><input type="button" value="Save" v-on:click="$emit(\'save\')"><input type="button" value="X" v-on:click="$emit(\'remove\')"></div>'
   });
 
 function remove(id, indx) {
@@ -35,20 +35,25 @@ function show_example_for_action(action) {
     app.action_label = action.id;
 }
 
+function saveExample(example, indx) {
+    actionObject = actions_dict[app.action_label];
+    actionObject.textSet[indx] = example;
+    updateData(dataUrl+'/actions', actionObject)
+}
 
 function addExample() {
 
-    var example = $("#input_example").val()
+    var example = $("#input_example").val();
 
-    actionObject = actions_dict[app.action_label]
-    actionObject.textSet.unshift(example)
+    actionObject = actions_dict[app.action_label];
+    actionObject.textSet.unshift(example);
     updateData(dataUrl+'/actions', actionObject)
 
 }
 
 function removeExample(indx){
-    actionObject = actions_dict[app.action_label]
-    actionObject.textSet.splice(indx, 1)
+    actionObject = actions_dict[app.action_label];
+    actionObject.textSet.splice(indx, 1);
     updateData(dataUrl+'/actions', actionObject)
 }
 
@@ -58,16 +63,16 @@ function successAfterUpdate(data) {
 
 function successAfterAddNew(action) {
     console.log( "getting data from server after add new: " + action );
-    actions_dict[action.id] = action
-    app.action_list.unshift(action)
+    actions_dict[action.id] = action;
+    app.action_list.unshift(action);
     show_example_for_action(action)
 }
 
 function addAction() {
-    var text = $("#search_text").val()
-    if (text == '') return
-    $("#search_text").val("")
-    data = { "id": text, textSet: []}
+    var text = $("#search_text").val();
+    if (text == '') return;
+    $("#search_text").val("");
+    data = { "id": text, textSet: []};
     this.addNew(dataUrl, data, successAfterAddNew)
 }
 
