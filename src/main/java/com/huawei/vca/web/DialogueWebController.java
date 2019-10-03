@@ -80,4 +80,12 @@ public class DialogueWebController {
 
     }
 
+    @DeleteMapping("editor/{id}")
+    public void deleteDialogueFromDb(@PathVariable String id) {
+
+        executorService.execute(() -> {
+            dialogueRepository.deleteById(id);
+        });
+
+    }
 }
