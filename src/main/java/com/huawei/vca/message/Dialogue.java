@@ -10,7 +10,7 @@ public class Dialogue {
     private NluEvent lastNluEvent;
     private boolean isTraining;
     private Map<String,String> properties;
-
+    private boolean needOperator;
 
     public Dialogue() {
     }
@@ -96,5 +96,13 @@ public class Dialogue {
 
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
+    }
+
+    public boolean isNeedOperator() {
+        return needOperator;
+    }
+
+    public void setNeedOperator(boolean needOperator) {
+        this.needOperator = needOperator;
     }
 }

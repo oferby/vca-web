@@ -36,6 +36,8 @@ public class GraphConversationManager implements ConversationManager {
 
         if (this.conversationGraphController.addGraphLocation(dialogue))
             this.addActionToDialogue(dialogue);
+        else
+            this.addDefaultUtterEvent(dialogue);
 
         return dialogue;
     }
@@ -98,5 +100,12 @@ public class GraphConversationManager implements ConversationManager {
         dialogue.addToHistory(botUtterEvent);
         dialogue.setText(text);
 
+    }
+
+    private void addDefaultUtterEvent(Dialogue dialogue) {
+        BotUtterEvent botUtterEvent = new BotUtterEvent("I'm sorry but I did not understand what you've said. Let me route your call to human.");
+        dialogue.addToHistory(botUtterEvent);
+        dialogue.setText(botUtterEvent.getText());
+        dialogue.setNeedOperator(true);
     }
 }

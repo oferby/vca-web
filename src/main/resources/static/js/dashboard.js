@@ -98,6 +98,9 @@ function after_get_lines(data) {
             if (data.properties['graph_location'] === '-1') {
                 $('#add-action-button').prop('disabled', false);
                 $('#graph-status').text("Detached from graph!");
+            } else {
+                $('#add-action-button').prop('disabled', true);
+                $('#graph-status').text("");
             }
         }
     }

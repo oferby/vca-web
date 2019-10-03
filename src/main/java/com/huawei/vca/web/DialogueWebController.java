@@ -102,4 +102,11 @@ public class DialogueWebController {
         });
 
     }
+
+    @DeleteMapping("editor/all")
+    public void deleteAllDialoguesFromDb(){
+        executorService.execute(()-> {
+            dialogueRepository.deleteAll();
+        });
+    }
 }

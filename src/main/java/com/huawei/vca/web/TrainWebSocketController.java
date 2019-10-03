@@ -36,6 +36,9 @@ public class TrainWebSocketController {
     @Autowired
     private ConversationGraphController conversationGraphController;
 
+    @Autowired
+    private WebSocketController webSocketController;
+
     @MessageMapping("/train/parseDialogue")
     public void getIntentRequest(Dialogue dialogue, @Header("simpSessionId") String sessionId) {
 
@@ -48,15 +51,15 @@ public class TrainWebSocketController {
         List<Event> history = dialogue.getHistory();
         if (history.get(history.size() - 1) instanceof BotUtterEvent) {
 
-            this.sendResponseToAll(dialogue);
+            this.webSocketController.sendResponseToAll(dialogue);
 
         } else {
 
-            this.sendUserUtterToMonitor(dialogue);
-            this.sendSummaryResponse(dialogue);
+            this.webSocketController.sendUserUtterToMonitor(dialogue);
+            this.webSocketController.sendSummaryResponse(dialogue);
 
             dialogue.setText(null);
-            this.sendDialogueResponse(dialogue);
+            this.webSocketController.sendDialogueResponse(dialogue);
 
         }
 
@@ -78,29 +81,8 @@ public class TrainWebSocketController {
 
         logger.debug("got new action to add: " + dialogue.getText());
         conversationManager.addActionToDialogue(dialogue);
-        sendResponseToAll(dialogue);
+        this.webSocketController.sendResponseToAll(dialogue);
 
-    }
-
-    private void sendResponseToAll(Dialogue dialogue){
-        this.sendDialogueResponse(dialogue);
-        this.sendUserUtterToMonitor(dialogue);
-        this.sendSummaryResponse(dialogue);
-    }
-
-    public void sendDialogueResponse(Dialogue dialogueResponse) {
-        template.convertAndSend("/topic/dialogue/" + dialogueResponse.getSessionId(), dialogueResponse);
-    }
-
-    private void sendSummaryResponse(Dialogue dialogueResponse) {
-
-        DialogueSummary dialogueSummary = new DialogueSummary(dialogueResponse.getSessionId(),
-                dialogueResponse.getLastNluEvent().getBestIntent().getConfidence(), true);
-        template.convertAndSend("/topic/dialogue/monitor/summary", dialogueSummary);
-    }
-
-    private void sendUserUtterToMonitor(Dialogue dialogue) {
-        template.convertAndSend("/topic/dialogue/monitor/data/" + dialogue.getSessionId(), dialogue);
     }
 
 }

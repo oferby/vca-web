@@ -15,10 +15,13 @@ public class DialogueSummary {
         this.setConfidenceString();
     }
 
-    public DialogueSummary(String id, float confidence, boolean isTraining) {
+    public DialogueSummary(String id, float confidence, boolean isTraining, boolean needOperator) {
         this.id = id;
         this.confidence = confidence;
-        if (isTraining) {
+
+        if (needOperator) {
+            this.confidenceString = Confidence.NEED_OPERATOR;
+        } else if (isTraining) {
             this.confidenceString = Confidence.TRAIN;
         } else {
             this.setConfidenceString();
@@ -47,7 +50,7 @@ public class DialogueSummary {
     private void setConfidenceString() {
         if (confidence < 0.3) {
             this.confidenceString = Confidence.LOW;
-        } else if (confidence < 0.6 ) {
+        } else if (confidence < 0.6) {
             this.confidenceString = Confidence.MEDIUM;
         } else {
             this.confidenceString = Confidence.HIGH;

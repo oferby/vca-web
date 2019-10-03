@@ -69,6 +69,34 @@ footer {
     background-color: blue;
 }
 
+.NEED_OPERATOR {
+    -webkit-animation: argh-my-eyes 1s infinite;
+    -moz-animation:    argh-my-eyes 1s infinite;
+    animation:         argh-my-eyes 1s infinite;
+}
+
+@-webkit-keyframes argh-my-eyes {
+    0%   { background-color: #DDDADA; }
+    49% { background-color: #DDDADA; }
+    50% { background-color: #000; }
+    99% { background-color: #000; }
+    100% { background-color: #DDDADA; }
+}
+@-moz-keyframes argh-my-eyes {
+    0%   { background-color: #DDDADA; }
+    49% { background-color: #DDDADA; }
+    50% { background-color: #000; }
+    99% { background-color: #000; }
+    100% { background-color: #DDDADA; }
+}
+@keyframes argh-my-eyes {
+    0%   { background-color: #DDDADA; }
+    49% { background-color: #DDDADA; }
+    50% { background-color: #000; }
+    99% { background-color: #000; }
+    100% { background-color: #DDDADA; }
+}
+
 #actionWindow {
     height: 97%;
     overflow-y: auto;

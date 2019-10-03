@@ -50,7 +50,7 @@ public class SessionController {
             }
             dialogueSummary.setConfidence(dialogue.getLastNluEvent().getBestIntent().getConfidence());
 
-            if (dialogue.isTraining()){
+            if (dialogue.isTraining()) {
                 dialogueSummary.setConfidenceString(Confidence.TRAIN);
             }
         }
@@ -63,9 +63,7 @@ public class SessionController {
     }
 
     private void saveToDb(Dialogue dialogue) {
-
-        executorService.execute(() -> dialogueRepository.save(new DialogueEntity(dialogue)));
-
+        dialogueRepository.save(new DialogueEntity(dialogue));
     }
 
 }
