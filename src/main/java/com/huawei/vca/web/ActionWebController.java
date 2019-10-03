@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -21,7 +22,9 @@ public class ActionWebController {
 
     @GetMapping(produces = "application/json")
     public List<BotUtterEntity> getAll(HttpSession httpSession) {
-        return botUtterRepository.findAll();
+        List<BotUtterEntity> utterEntityList = botUtterRepository.findAll();
+        Collections.sort(utterEntityList);
+        return utterEntityList;
     }
 
     @PostMapping
