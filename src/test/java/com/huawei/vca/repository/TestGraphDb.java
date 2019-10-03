@@ -16,10 +16,10 @@ import java.util.*;
 public class TestGraphDb {
 
     @Autowired
-    private ConversationRepository conversationRepository;
+    private ConversationGraphRepository conversationGraphRepository;
 
     @Autowired
-    private ConversationRepositoryController conversationRepositoryController;
+    private ConversationGraphController conversationGraphController;
 
     @Autowired
     private IntentRepository intentRepository;
@@ -28,7 +28,7 @@ public class TestGraphDb {
     public void testReset(){
 
         reset();
-        RootNode rootNode = conversationRepository.getRootNode();
+        RootNode rootNode = conversationGraphRepository.getRootNode();
 
         assert rootNode !=null;
 
@@ -79,7 +79,7 @@ public class TestGraphDb {
 
         }
 
-        conversationRepositoryController.saveDialogueToGraph(dialogue);
+        conversationGraphController.saveDialogueToGraph(dialogue);
 
         dialogue = new Dialogue();
         slotIterator = slots.iterator();
@@ -129,9 +129,9 @@ public class TestGraphDb {
 
         }
 
-        conversationRepositoryController.saveDialogueToGraph(dialogue);
+        conversationGraphController.saveDialogueToGraph(dialogue);
 
-        RootNode rootNode = conversationRepository.getRootNode();
+        RootNode rootNode = conversationGraphRepository.getRootNode();
 
         assert rootNode != null;
 
@@ -161,19 +161,19 @@ public class TestGraphDb {
 //    @Test
     public void getNodeById() {
 
-        Iterable<StateNode> nodes = conversationRepository.findAll();
+        Iterable<StateNode> nodes = conversationGraphRepository.findAll();
 
         StateNode node = nodes.iterator().next();
 
-        Optional<StateNode> byId = conversationRepository.findById(node.getId());
+        Optional<StateNode> byId = conversationGraphRepository.findById(node.getId());
 
         assert byId.isPresent();
 
-        List<ObservationNode> allObservationNodes = conversationRepository.findAllObservationNodes();
+        List<ObservationNode> allObservationNodes = conversationGraphRepository.findAllObservationNodes();
 
         ObservationNode observationNode = allObservationNodes.get(0);
 
-        ObservationNode observationNodeById = conversationRepository.findObservationNodeById(observationNode.getId());
+        ObservationNode observationNodeById = conversationGraphRepository.findObservationNodeById(observationNode.getId());
 
         assert observationNodeById != null;
 
@@ -193,7 +193,7 @@ public class TestGraphDb {
     public void testProperties() {
 
         reset();
-        RootNode rootNode = conversationRepository.getRootNode();
+        RootNode rootNode = conversationGraphRepository.getRootNode();
         addObservations(rootNode);
 
 //        ObservationNode obs1 = conversationRepository.findObservationNodeByName("obs1");
@@ -211,30 +211,30 @@ public class TestGraphDb {
 
     private void reset(){
 
-//        conversationRepository.deleteAll();
-//
-//        RootNode rootNode = new RootNode();
-//        rootNode.setName("root");
-//        rootNode.setStringId("root");
-//
-//        RootNode save = conversationRepository.save(rootNode);
-//
-//        Optional<StateNode> byId = conversationRepository.findById(save.getId());
-//
-//        assert byId.isPresent();
+        conversationGraphRepository.deleteAll();
+
+        RootNode rootNode = new RootNode();
+        rootNode.setName("root");
+        rootNode.setStringId("root");
+
+        RootNode save = conversationGraphRepository.save(rootNode);
+
+        Optional<StateNode> byId = conversationGraphRepository.findById(save.getId());
+
+        assert byId.isPresent();
 
     }
 
 
     public void addObservations(StateNode from) {
 
-        RootNode rootNode = conversationRepository.getRootNode();
+        RootNode rootNode = conversationGraphRepository.getRootNode();
 
         for (int i = 0; i < 10; i++) {
             rootNode.addObservation(new ObservationNode("obs" + i));
         }
 
-        conversationRepository.save(rootNode);
+        conversationGraphRepository.save(rootNode);
     }
 
 }

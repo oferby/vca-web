@@ -7,16 +7,18 @@ import org.springframework.stereotype.Controller;
 import java.util.*;
 
 @Controller
-public class ConversationRepositoryController {
+public class ConversationGraphController {
 
     @Autowired
-    private ConversationRepository conversationRepository;
+    private ConversationGraphRepository conversationGraphRepository;
+
+    private static String graphLocation = "graph_location";
 
     public void saveDialogueToGraph(Dialogue dialogue) {
 
         List<StateNode> toSave = new ArrayList<>();
 
-        RootNode rootNode = conversationRepository.getRootNode();
+        RootNode rootNode = conversationGraphRepository.getRootNode();
 
         List<ObservationNode> nodes = rootNode.getObservationNodes();
         if (nodes == null) {
@@ -97,12 +99,12 @@ public class ConversationRepositoryController {
 
                             if (found) {
 
-                                nextObservationNode = conversationRepository.findObservationNodeById(node.getId());
+                                nextObservationNode = conversationGraphRepository.findObservationNodeById(node.getId());
                                 nextObservationNode.increaseVisited();
                                 toSave.add(nextObservationNode);
                                 nextActionNode = nextObservationNode.getActionNode();
                                 if (nextActionNode != null) {
-                                    nextActionNode = conversationRepository.findActionById(nextActionNode.getId());
+                                    nextActionNode = conversationGraphRepository.findActionById(nextActionNode.getId());
                                 }
 
                                 break;
@@ -142,8 +144,62 @@ public class ConversationRepositoryController {
 
 
         SortedSet<StateNode> nodeSet = new TreeSet<>(toSave);
-        conversationRepository.saveAll(nodeSet);
+        conversationGraphRepository.saveAll(nodeSet);
 
     }
+
+    public boolean addGraphLocation(Dialogue dialogue) {
+
+        if (dialogue.getProperty(graphLocation) == null) {
+
+            RootNode rootNode = conversationGraphRepository.getRootNode();
+            List<ObservationNode> observationNodes = rootNode.getObservationNodes();
+            return this.addActionToDialogue(dialogue, observationNodes);
+
+        } else {
+
+            if (dialogue.getProperty(graphLocation).equals("-1")) {
+                return false;
+            }
+
+            Long graphId = Long.valueOf(dialogue.getProperty(graphLocation));
+            ActionNode actionNode = conversationGraphRepository.findActionById(graphId);
+            if (actionNode == null || actionNode.getObservationNodes() == null) {
+                dialogue.addProperty(graphLocation, "-1");
+                dialogue.addProperty("best_action", "no action in graph");
+                return false;
+
+            }
+
+            return this.addActionToDialogue(dialogue, actionNode.getObservationNodes());
+        }
+
+    }
+
+    private boolean addActionToDialogue(Dialogue dialogue, List<ObservationNode> observationNodes) {
+
+        if (observationNodes == null)
+            return false;
+
+        for (ObservationNode observationNode : observationNodes) {
+            if (observationNode.getStringId().equals(dialogue.getLastNluEvent().getBestIntent().getIntent())) {
+                ObservationNode node = conversationGraphRepository.findObservationNodeById(observationNode.getId());
+                if (node.getActionNode() != null) {
+                    if (dialogue.getProperties() != null)
+                        dialogue.getProperties().remove("best_action");
+
+                    dialogue.setText(node.getActionNode().getStringId());
+                    dialogue.addProperty(graphLocation, node.getActionNode().getId().toString());
+                    return true;
+                }
+
+            }
+        }
+
+        dialogue.addProperty(graphLocation, "-1");
+        dialogue.addProperty("best_action", "no action in graph");
+        return false;
+    }
+
 
 }

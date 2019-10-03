@@ -8,7 +8,7 @@ import com.huawei.vca.message.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-@Controller
+//@Controller
 public class EchoConversationManager implements ConversationManager {
 
     @Autowired
@@ -34,6 +34,11 @@ public class EchoConversationManager implements ConversationManager {
 
         this.handleUserUtter(dialogue);
         return dialogue;
+
+    }
+
+    @Override
+    public void addActionToDialogue(Dialogue dialogue) {
 
     }
 

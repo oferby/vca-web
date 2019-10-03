@@ -47,7 +47,7 @@ public class DialogueWebController {
         return dialogueRepository.findById(id);
     }
 
-    @GetMapping("editor")
+    @GetMapping("editor/all")
     public List<Dialogue> getAllDialogues(){
         List<DialogueEntity> entityList = dialogueRepository.findAll();
 
@@ -61,6 +61,20 @@ public class DialogueWebController {
         }
 
         return dialogueList;
+    }
+
+    @GetMapping("editor")
+    public List<String> getSessionIdList(){
+
+        List<String> sessionList = new ArrayList<>();
+
+        List<DialogueEntity> dialogueEntities = dialogueRepository.findAll();
+        for (DialogueEntity dialogueEntity : dialogueEntities) {
+            sessionList.add(dialogueEntity.getId());
+        }
+
+        return sessionList;
+
     }
 
     @PutMapping("editor")

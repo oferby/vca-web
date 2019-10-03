@@ -1,10 +1,9 @@
 package com.huawei.vca.web;
 
 import com.huawei.vca.conversation.ConversationManager;
+import com.huawei.vca.conversation.GraphConversationManager;
 import com.huawei.vca.conversation.SessionController;
-import com.huawei.vca.message.BotUtterEvent;
-import com.huawei.vca.message.Dialogue;
-import com.huawei.vca.message.DialogueSummary;
+import com.huawei.vca.message.*;
 import com.huawei.vca.repository.BotUtterEntity;
 import com.huawei.vca.repository.controller.BotUtterRepository;
 import com.huawei.vca.repository.graph.*;
@@ -35,28 +34,21 @@ public class TrainWebSocketController {
     private ConversationManager conversationManager;
 
     @Autowired
-    private BotUtterRepository botUtterRepository;
-
-    @Autowired
-    private ConversationRepositoryController conversationRepositoryController;
-
-    @Autowired
-    private ConversationRepository conversationRepository;
-
-    private static String graphLocation = "graph_location";
+    private ConversationGraphController conversationGraphController;
 
     @MessageMapping("/train/parseDialogue")
     public void getIntentRequest(Dialogue dialogue, @Header("simpSessionId") String sessionId) {
 
         logger.debug("got new training input: " + dialogue.getText() + " on session id: " + dialogue.getSessionId());
         dialogue.setTraining(true);
+
+        conversationManager.handleDialogue(dialogue);
         sessionController.addOrUpdateDialogue(sessionId, dialogue);
 
-        dialogue = conversationManager.handleNluOnly(dialogue);
+        List<Event> history = dialogue.getHistory();
+        if (history.get(history.size() - 1) instanceof BotUtterEvent) {
 
-        if (this.addGraphLocation(dialogue)) {
-
-            this.addAction(dialogue);
+            this.sendResponseToAll(dialogue);
 
         } else {
 
@@ -70,66 +62,12 @@ public class TrainWebSocketController {
 
     }
 
-    private boolean addGraphLocation(Dialogue dialogue) {
-
-        if (dialogue.getProperty(graphLocation) == null) {
-
-            RootNode rootNode = conversationRepository.getRootNode();
-            List<ObservationNode> observationNodes = rootNode.getObservationNodes();
-            return this.addActionToDialogue(dialogue, observationNodes);
-
-        } else {
-
-            if (dialogue.getProperty(graphLocation).equals("-1")) {
-                return false;
-            }
-
-            Long graphId = Long.valueOf(dialogue.getProperty(graphLocation));
-            ActionNode actionNode = conversationRepository.findActionById(graphId);
-            if (actionNode == null || actionNode.getObservationNodes() == null) {
-                dialogue.addProperty(graphLocation, "-1");
-                dialogue.addProperty("best_action", "no action in graph");
-                return false;
-
-            }
-
-            return this.addActionToDialogue(dialogue, actionNode.getObservationNodes());
-        }
-
-    }
-
-    private boolean addActionToDialogue(Dialogue dialogue, List<ObservationNode> observationNodes) {
-
-        if (observationNodes == null)
-            return false;
-
-        for (ObservationNode observationNode : observationNodes) {
-            if (observationNode.getStringId().equals(dialogue.getLastNluEvent().getBestIntent().getIntent())) {
-                ObservationNode node = conversationRepository.findObservationNodeById(observationNode.getId());
-                if (node.getActionNode() != null) {
-                    if (dialogue.getProperties() != null)
-                        dialogue.getProperties().remove("best_action");
-
-                    dialogue.setText(node.getActionNode().getStringId());
-                    dialogue.addProperty(graphLocation, node.getActionNode().getId().toString());
-                    return true;
-                }
-
-            }
-        }
-
-        dialogue.addProperty(graphLocation, "-1");
-        dialogue.addProperty("best_action", "no action in graph");
-        return false;
-    }
-
-
     @MessageMapping("/train/saveDialogue")
     public void saveDialogue(Dialogue dialogue) {
 
         logger.debug("saving dialogue to graph");
 
-        conversationRepositoryController.saveDialogueToGraph(dialogue);
+        conversationGraphController.saveDialogueToGraph(dialogue);
 
         logger.debug("dialogue saved to graph");
 
@@ -137,38 +75,17 @@ public class TrainWebSocketController {
 
     @MessageMapping("/train/addAction")
     public void addAction(Dialogue dialogue) {
-        logger.debug("got new training action: " + dialogue.getText() + " on session id: " + dialogue.getSessionId());
 
-        if (dialogue.getProperties()!=null){
-            dialogue.getProperties().remove("best_action");
-        }
+        logger.debug("got new action to add: " + dialogue.getText());
+        conversationManager.addActionToDialogue(dialogue);
+        sendResponseToAll(dialogue);
 
-        Optional<BotUtterEntity> actionById = botUtterRepository.findById(dialogue.getText());
+    }
 
-        if (!actionById.isPresent()) {
-            throw new RuntimeException("invalid action id");
-        }
-
-        BotUtterEntity botUtterEntity = actionById.get();
-        BotUtterEvent botUtterEvent = new BotUtterEvent();
-        Set<String> textIterator = botUtterEntity.getTextSet();
-        String text;
-        if (textIterator.iterator().hasNext()) {
-            text = textIterator.iterator().next();
-
-        } else {
-            text = "** no messages found for action ** " + botUtterEntity.getId();
-        }
-        botUtterEvent.setId(botUtterEntity.getId());
-        botUtterEvent.setText(text);
-        dialogue.addToHistory(botUtterEvent);
-        dialogue.setText(text);
-
-        sessionController.addOrUpdateDialogue(dialogue.getSessionId(), dialogue);
+    private void sendResponseToAll(Dialogue dialogue){
         this.sendDialogueResponse(dialogue);
         this.sendUserUtterToMonitor(dialogue);
         this.sendSummaryResponse(dialogue);
-
     }
 
     public void sendDialogueResponse(Dialogue dialogueResponse) {

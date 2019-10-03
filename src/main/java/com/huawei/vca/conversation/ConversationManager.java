@@ -9,4 +9,6 @@ public interface ConversationManager {
 
     Dialogue handleNluOnly(Dialogue dialogue);
 
+    void addActionToDialogue(Dialogue dialogue);
+
 }

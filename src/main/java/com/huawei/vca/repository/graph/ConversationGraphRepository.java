@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ConversationRepository extends Neo4jRepository<StateNode, Long> {
+public interface ConversationGraphRepository extends Neo4jRepository<StateNode, Long> {
 
     @Query("MATCH (f:StateNode{name:'root'}) OPTIONAL MATCH (f)-[l:LEADS]->(to) RETURN f, collect(l), collect(to)")
     RootNode getRootNode();
