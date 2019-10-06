@@ -30,15 +30,15 @@ public final class IntentExampleProto {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_rasa_nlu_RasaData_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_rasa_nlu_NluRequest_descriptor;
+    internal_static_rasa_nlu_RasaNluRequest_descriptor;
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_rasa_nlu_NluRequest_fieldAccessorTable;
+      internal_static_rasa_nlu_RasaNluRequest_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_rasa_nlu_NluResponse_descriptor;
+    internal_static_rasa_nlu_RasaNluResponse_descriptor;
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_rasa_nlu_NluResponse_fieldAccessorTable;
+      internal_static_rasa_nlu_RasaNluResponse_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -54,12 +54,13 @@ public final class IntentExampleProto {
       "nt\030\001 \001(\t\022\014\n\004text\030\002 \001(\t\022\"\n\010entities\030\003 \003(\013" +
       "2\020.rasa_nlu.Entity\"<\n\010RasaData\0220\n\017common" +
       "_examples\030\001 \003(\0132\027.rasa_nlu.CommonExample" +
-      "\"7\n\nNluRequest\022)\n\rrasa_nlu_data\030\001 \001(\0132\022." +
-      "rasa_nlu.RasaData\"\033\n\013NluResponse\022\014\n\004done" +
-      "\030\001 \001(\t2P\n\016RasaNluService\022>\n\rsaveToRasaNl" +
-      "u\022\024.rasa_nlu.NluRequest\032\025.rasa_nlu.NluRe" +
-      "sponse\"\000B9\n!com.huawei.vca.nlu.intent.ex" +
-      "ampleB\022IntentExampleProtoP\001b\006proto3"
+      "\";\n\016RasaNluRequest\022)\n\rrasa_nlu_data\030\001 \001(" +
+      "\0132\022.rasa_nlu.RasaData\"\037\n\017RasaNluResponse" +
+      "\022\014\n\004done\030\001 \001(\t2X\n\016RasaNluService\022F\n\rsave" +
+      "ToRasaNlu\022\030.rasa_nlu.RasaNluRequest\032\031.ra" +
+      "sa_nlu.RasaNluResponse\"\000B9\n!com.huawei.v" +
+      "ca.nlu.intent.exampleB\022IntentExampleProt" +
+      "oP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -91,17 +92,17 @@ public final class IntentExampleProto {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_rasa_nlu_RasaData_descriptor,
         new java.lang.String[] { "CommonExamples", });
-    internal_static_rasa_nlu_NluRequest_descriptor =
+    internal_static_rasa_nlu_RasaNluRequest_descriptor =
       getDescriptor().getMessageTypes().get(3);
-    internal_static_rasa_nlu_NluRequest_fieldAccessorTable = new
+    internal_static_rasa_nlu_RasaNluRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_rasa_nlu_NluRequest_descriptor,
+        internal_static_rasa_nlu_RasaNluRequest_descriptor,
         new java.lang.String[] { "RasaNluData", });
-    internal_static_rasa_nlu_NluResponse_descriptor =
+    internal_static_rasa_nlu_RasaNluResponse_descriptor =
       getDescriptor().getMessageTypes().get(4);
-    internal_static_rasa_nlu_NluResponse_fieldAccessorTable = new
+    internal_static_rasa_nlu_RasaNluResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_rasa_nlu_NluResponse_descriptor,
+        internal_static_rasa_nlu_RasaNluResponse_descriptor,
         new java.lang.String[] { "Done", });
   }
 

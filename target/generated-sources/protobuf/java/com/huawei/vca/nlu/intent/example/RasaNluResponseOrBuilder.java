@@ -3,8 +3,8 @@
 
 package com.huawei.vca.nlu.intent.example;
 
-public interface NluResponseOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:rasa_nlu.NluResponse)
+public interface RasaNluResponseOrBuilder extends
+    // @@protoc_insertion_point(interface_extends:rasa_nlu.RasaNluResponse)
     com.google.protobuf.MessageOrBuilder {
 
   /**

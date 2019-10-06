@@ -27,30 +27,30 @@ public final class RasaNluServiceGrpc {
   public static final String SERVICE_NAME = "rasa_nlu.RasaNluService";
 
   // Static method descriptors that strictly reflect the proto.
-  private static volatile io.grpc.MethodDescriptor<com.huawei.vca.nlu.intent.example.NluRequest,
-      com.huawei.vca.nlu.intent.example.NluResponse> getSaveToRasaNluMethod;
+  private static volatile io.grpc.MethodDescriptor<com.huawei.vca.nlu.intent.example.RasaNluRequest,
+      com.huawei.vca.nlu.intent.example.RasaNluResponse> getSaveToRasaNluMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "saveToRasaNlu",
-      requestType = com.huawei.vca.nlu.intent.example.NluRequest.class,
-      responseType = com.huawei.vca.nlu.intent.example.NluResponse.class,
+      requestType = com.huawei.vca.nlu.intent.example.RasaNluRequest.class,
+      responseType = com.huawei.vca.nlu.intent.example.RasaNluResponse.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<com.huawei.vca.nlu.intent.example.NluRequest,
-      com.huawei.vca.nlu.intent.example.NluResponse> getSaveToRasaNluMethod() {
-    io.grpc.MethodDescriptor<com.huawei.vca.nlu.intent.example.NluRequest, com.huawei.vca.nlu.intent.example.NluResponse> getSaveToRasaNluMethod;
+  public static io.grpc.MethodDescriptor<com.huawei.vca.nlu.intent.example.RasaNluRequest,
+      com.huawei.vca.nlu.intent.example.RasaNluResponse> getSaveToRasaNluMethod() {
+    io.grpc.MethodDescriptor<com.huawei.vca.nlu.intent.example.RasaNluRequest, com.huawei.vca.nlu.intent.example.RasaNluResponse> getSaveToRasaNluMethod;
     if ((getSaveToRasaNluMethod = RasaNluServiceGrpc.getSaveToRasaNluMethod) == null) {
       synchronized (RasaNluServiceGrpc.class) {
         if ((getSaveToRasaNluMethod = RasaNluServiceGrpc.getSaveToRasaNluMethod) == null) {
           RasaNluServiceGrpc.getSaveToRasaNluMethod = getSaveToRasaNluMethod = 
-              io.grpc.MethodDescriptor.<com.huawei.vca.nlu.intent.example.NluRequest, com.huawei.vca.nlu.intent.example.NluResponse>newBuilder()
+              io.grpc.MethodDescriptor.<com.huawei.vca.nlu.intent.example.RasaNluRequest, com.huawei.vca.nlu.intent.example.RasaNluResponse>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(
                   "rasa_nlu.RasaNluService", "saveToRasaNlu"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.huawei.vca.nlu.intent.example.NluRequest.getDefaultInstance()))
+                  com.huawei.vca.nlu.intent.example.RasaNluRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.huawei.vca.nlu.intent.example.NluResponse.getDefaultInstance()))
+                  com.huawei.vca.nlu.intent.example.RasaNluResponse.getDefaultInstance()))
                   .setSchemaDescriptor(new RasaNluServiceMethodDescriptorSupplier("saveToRasaNlu"))
                   .build();
           }
@@ -88,8 +88,8 @@ public final class RasaNluServiceGrpc {
 
     /**
      */
-    public void saveToRasaNlu(com.huawei.vca.nlu.intent.example.NluRequest request,
-        io.grpc.stub.StreamObserver<com.huawei.vca.nlu.intent.example.NluResponse> responseObserver) {
+    public void saveToRasaNlu(com.huawei.vca.nlu.intent.example.RasaNluRequest request,
+        io.grpc.stub.StreamObserver<com.huawei.vca.nlu.intent.example.RasaNluResponse> responseObserver) {
       asyncUnimplementedUnaryCall(getSaveToRasaNluMethod(), responseObserver);
     }
 
@@ -99,8 +99,8 @@ public final class RasaNluServiceGrpc {
             getSaveToRasaNluMethod(),
             asyncUnaryCall(
               new MethodHandlers<
-                com.huawei.vca.nlu.intent.example.NluRequest,
-                com.huawei.vca.nlu.intent.example.NluResponse>(
+                com.huawei.vca.nlu.intent.example.RasaNluRequest,
+                com.huawei.vca.nlu.intent.example.RasaNluResponse>(
                   this, METHODID_SAVE_TO_RASA_NLU)))
           .build();
     }
@@ -126,8 +126,8 @@ public final class RasaNluServiceGrpc {
 
     /**
      */
-    public void saveToRasaNlu(com.huawei.vca.nlu.intent.example.NluRequest request,
-        io.grpc.stub.StreamObserver<com.huawei.vca.nlu.intent.example.NluResponse> responseObserver) {
+    public void saveToRasaNlu(com.huawei.vca.nlu.intent.example.RasaNluRequest request,
+        io.grpc.stub.StreamObserver<com.huawei.vca.nlu.intent.example.RasaNluResponse> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getSaveToRasaNluMethod(), getCallOptions()), request, responseObserver);
     }
@@ -153,7 +153,7 @@ public final class RasaNluServiceGrpc {
 
     /**
      */
-    public com.huawei.vca.nlu.intent.example.NluResponse saveToRasaNlu(com.huawei.vca.nlu.intent.example.NluRequest request) {
+    public com.huawei.vca.nlu.intent.example.RasaNluResponse saveToRasaNlu(com.huawei.vca.nlu.intent.example.RasaNluRequest request) {
       return blockingUnaryCall(
           getChannel(), getSaveToRasaNluMethod(), getCallOptions(), request);
     }
@@ -179,8 +179,8 @@ public final class RasaNluServiceGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<com.huawei.vca.nlu.intent.example.NluResponse> saveToRasaNlu(
-        com.huawei.vca.nlu.intent.example.NluRequest request) {
+    public com.google.common.util.concurrent.ListenableFuture<com.huawei.vca.nlu.intent.example.RasaNluResponse> saveToRasaNlu(
+        com.huawei.vca.nlu.intent.example.RasaNluRequest request) {
       return futureUnaryCall(
           getChannel().newCall(getSaveToRasaNluMethod(), getCallOptions()), request);
     }
@@ -206,8 +206,8 @@ public final class RasaNluServiceGrpc {
     public void invoke(Req request, io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
         case METHODID_SAVE_TO_RASA_NLU:
-          serviceImpl.saveToRasaNlu((com.huawei.vca.nlu.intent.example.NluRequest) request,
-              (io.grpc.stub.StreamObserver<com.huawei.vca.nlu.intent.example.NluResponse>) responseObserver);
+          serviceImpl.saveToRasaNlu((com.huawei.vca.nlu.intent.example.RasaNluRequest) request,
+              (io.grpc.stub.StreamObserver<com.huawei.vca.nlu.intent.example.RasaNluResponse>) responseObserver);
           break;
         default:
           throw new AssertionError();

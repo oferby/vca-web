@@ -4,18 +4,18 @@
 package com.huawei.vca.nlu.intent.example;
 
 /**
- * Protobuf type {@code rasa_nlu.NluResponse}
+ * Protobuf type {@code rasa_nlu.RasaNluResponse}
  */
-public  final class NluResponse extends
+public  final class RasaNluResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:rasa_nlu.NluResponse)
-    NluResponseOrBuilder {
+    // @@protoc_insertion_point(message_implements:rasa_nlu.RasaNluResponse)
+    RasaNluResponseOrBuilder {
 private static final long serialVersionUID = 0L;
-  // Use NluResponse.newBuilder() to construct.
-  private NluResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+  // Use RasaNluResponse.newBuilder() to construct.
+  private RasaNluResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private NluResponse() {
+  private RasaNluResponse() {
     done_ = "";
   }
 
@@ -24,7 +24,7 @@ private static final long serialVersionUID = 0L;
   getUnknownFields() {
     return this.unknownFields;
   }
-  private NluResponse(
+  private RasaNluResponse(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -70,15 +70,15 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return com.huawei.vca.nlu.intent.example.IntentExampleProto.internal_static_rasa_nlu_NluResponse_descriptor;
+    return com.huawei.vca.nlu.intent.example.IntentExampleProto.internal_static_rasa_nlu_RasaNluResponse_descriptor;
   }
 
   @java.lang.Override
   protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return com.huawei.vca.nlu.intent.example.IntentExampleProto.internal_static_rasa_nlu_NluResponse_fieldAccessorTable
+    return com.huawei.vca.nlu.intent.example.IntentExampleProto.internal_static_rasa_nlu_RasaNluResponse_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            com.huawei.vca.nlu.intent.example.NluResponse.class, com.huawei.vca.nlu.intent.example.NluResponse.Builder.class);
+            com.huawei.vca.nlu.intent.example.RasaNluResponse.class, com.huawei.vca.nlu.intent.example.RasaNluResponse.Builder.class);
   }
 
   public static final int DONE_FIELD_NUMBER = 1;
@@ -154,10 +154,10 @@ private static final long serialVersionUID = 0L;
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof com.huawei.vca.nlu.intent.example.NluResponse)) {
+    if (!(obj instanceof com.huawei.vca.nlu.intent.example.RasaNluResponse)) {
       return super.equals(obj);
     }
-    com.huawei.vca.nlu.intent.example.NluResponse other = (com.huawei.vca.nlu.intent.example.NluResponse) obj;
+    com.huawei.vca.nlu.intent.example.RasaNluResponse other = (com.huawei.vca.nlu.intent.example.RasaNluResponse) obj;
 
     if (!getDone()
         .equals(other.getDone())) return false;
@@ -179,69 +179,69 @@ private static final long serialVersionUID = 0L;
     return hash;
   }
 
-  public static com.huawei.vca.nlu.intent.example.NluResponse parseFrom(
+  public static com.huawei.vca.nlu.intent.example.RasaNluResponse parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static com.huawei.vca.nlu.intent.example.NluResponse parseFrom(
+  public static com.huawei.vca.nlu.intent.example.RasaNluResponse parseFrom(
       java.nio.ByteBuffer data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static com.huawei.vca.nlu.intent.example.NluResponse parseFrom(
+  public static com.huawei.vca.nlu.intent.example.RasaNluResponse parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static com.huawei.vca.nlu.intent.example.NluResponse parseFrom(
+  public static com.huawei.vca.nlu.intent.example.RasaNluResponse parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static com.huawei.vca.nlu.intent.example.NluResponse parseFrom(byte[] data)
+  public static com.huawei.vca.nlu.intent.example.RasaNluResponse parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static com.huawei.vca.nlu.intent.example.NluResponse parseFrom(
+  public static com.huawei.vca.nlu.intent.example.RasaNluResponse parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static com.huawei.vca.nlu.intent.example.NluResponse parseFrom(java.io.InputStream input)
+  public static com.huawei.vca.nlu.intent.example.RasaNluResponse parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static com.huawei.vca.nlu.intent.example.NluResponse parseFrom(
+  public static com.huawei.vca.nlu.intent.example.RasaNluResponse parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static com.huawei.vca.nlu.intent.example.NluResponse parseDelimitedFrom(java.io.InputStream input)
+  public static com.huawei.vca.nlu.intent.example.RasaNluResponse parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static com.huawei.vca.nlu.intent.example.NluResponse parseDelimitedFrom(
+  public static com.huawei.vca.nlu.intent.example.RasaNluResponse parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static com.huawei.vca.nlu.intent.example.NluResponse parseFrom(
+  public static com.huawei.vca.nlu.intent.example.RasaNluResponse parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static com.huawei.vca.nlu.intent.example.NluResponse parseFrom(
+  public static com.huawei.vca.nlu.intent.example.RasaNluResponse parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -254,7 +254,7 @@ private static final long serialVersionUID = 0L;
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(com.huawei.vca.nlu.intent.example.NluResponse prototype) {
+  public static Builder newBuilder(com.huawei.vca.nlu.intent.example.RasaNluResponse prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   @java.lang.Override
@@ -270,26 +270,26 @@ private static final long serialVersionUID = 0L;
     return builder;
   }
   /**
-   * Protobuf type {@code rasa_nlu.NluResponse}
+   * Protobuf type {@code rasa_nlu.RasaNluResponse}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:rasa_nlu.NluResponse)
-      com.huawei.vca.nlu.intent.example.NluResponseOrBuilder {
+      // @@protoc_insertion_point(builder_implements:rasa_nlu.RasaNluResponse)
+      com.huawei.vca.nlu.intent.example.RasaNluResponseOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.huawei.vca.nlu.intent.example.IntentExampleProto.internal_static_rasa_nlu_NluResponse_descriptor;
+      return com.huawei.vca.nlu.intent.example.IntentExampleProto.internal_static_rasa_nlu_RasaNluResponse_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.huawei.vca.nlu.intent.example.IntentExampleProto.internal_static_rasa_nlu_NluResponse_fieldAccessorTable
+      return com.huawei.vca.nlu.intent.example.IntentExampleProto.internal_static_rasa_nlu_RasaNluResponse_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.huawei.vca.nlu.intent.example.NluResponse.class, com.huawei.vca.nlu.intent.example.NluResponse.Builder.class);
+              com.huawei.vca.nlu.intent.example.RasaNluResponse.class, com.huawei.vca.nlu.intent.example.RasaNluResponse.Builder.class);
     }
 
-    // Construct using com.huawei.vca.nlu.intent.example.NluResponse.newBuilder()
+    // Construct using com.huawei.vca.nlu.intent.example.RasaNluResponse.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
@@ -315,17 +315,17 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return com.huawei.vca.nlu.intent.example.IntentExampleProto.internal_static_rasa_nlu_NluResponse_descriptor;
+      return com.huawei.vca.nlu.intent.example.IntentExampleProto.internal_static_rasa_nlu_RasaNluResponse_descriptor;
     }
 
     @java.lang.Override
-    public com.huawei.vca.nlu.intent.example.NluResponse getDefaultInstanceForType() {
-      return com.huawei.vca.nlu.intent.example.NluResponse.getDefaultInstance();
+    public com.huawei.vca.nlu.intent.example.RasaNluResponse getDefaultInstanceForType() {
+      return com.huawei.vca.nlu.intent.example.RasaNluResponse.getDefaultInstance();
     }
 
     @java.lang.Override
-    public com.huawei.vca.nlu.intent.example.NluResponse build() {
-      com.huawei.vca.nlu.intent.example.NluResponse result = buildPartial();
+    public com.huawei.vca.nlu.intent.example.RasaNluResponse build() {
+      com.huawei.vca.nlu.intent.example.RasaNluResponse result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
@@ -333,8 +333,8 @@ private static final long serialVersionUID = 0L;
     }
 
     @java.lang.Override
-    public com.huawei.vca.nlu.intent.example.NluResponse buildPartial() {
-      com.huawei.vca.nlu.intent.example.NluResponse result = new com.huawei.vca.nlu.intent.example.NluResponse(this);
+    public com.huawei.vca.nlu.intent.example.RasaNluResponse buildPartial() {
+      com.huawei.vca.nlu.intent.example.RasaNluResponse result = new com.huawei.vca.nlu.intent.example.RasaNluResponse(this);
       result.done_ = done_;
       onBuilt();
       return result;
@@ -374,16 +374,16 @@ private static final long serialVersionUID = 0L;
     }
     @java.lang.Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof com.huawei.vca.nlu.intent.example.NluResponse) {
-        return mergeFrom((com.huawei.vca.nlu.intent.example.NluResponse)other);
+      if (other instanceof com.huawei.vca.nlu.intent.example.RasaNluResponse) {
+        return mergeFrom((com.huawei.vca.nlu.intent.example.RasaNluResponse)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(com.huawei.vca.nlu.intent.example.NluResponse other) {
-      if (other == com.huawei.vca.nlu.intent.example.NluResponse.getDefaultInstance()) return this;
+    public Builder mergeFrom(com.huawei.vca.nlu.intent.example.RasaNluResponse other) {
+      if (other == com.huawei.vca.nlu.intent.example.RasaNluResponse.getDefaultInstance()) return this;
       if (!other.getDone().isEmpty()) {
         done_ = other.done_;
         onChanged();
@@ -403,11 +403,11 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      com.huawei.vca.nlu.intent.example.NluResponse parsedMessage = null;
+      com.huawei.vca.nlu.intent.example.RasaNluResponse parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (com.huawei.vca.nlu.intent.example.NluResponse) e.getUnfinishedMessage();
+        parsedMessage = (com.huawei.vca.nlu.intent.example.RasaNluResponse) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -498,41 +498,41 @@ private static final long serialVersionUID = 0L;
     }
 
 
-    // @@protoc_insertion_point(builder_scope:rasa_nlu.NluResponse)
+    // @@protoc_insertion_point(builder_scope:rasa_nlu.RasaNluResponse)
   }
 
-  // @@protoc_insertion_point(class_scope:rasa_nlu.NluResponse)
-  private static final com.huawei.vca.nlu.intent.example.NluResponse DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:rasa_nlu.RasaNluResponse)
+  private static final com.huawei.vca.nlu.intent.example.RasaNluResponse DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new com.huawei.vca.nlu.intent.example.NluResponse();
+    DEFAULT_INSTANCE = new com.huawei.vca.nlu.intent.example.RasaNluResponse();
   }
 
-  public static com.huawei.vca.nlu.intent.example.NluResponse getDefaultInstance() {
+  public static com.huawei.vca.nlu.intent.example.RasaNluResponse getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static final com.google.protobuf.Parser<NluResponse>
-      PARSER = new com.google.protobuf.AbstractParser<NluResponse>() {
+  private static final com.google.protobuf.Parser<RasaNluResponse>
+      PARSER = new com.google.protobuf.AbstractParser<RasaNluResponse>() {
     @java.lang.Override
-    public NluResponse parsePartialFrom(
+    public RasaNluResponse parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return new NluResponse(input, extensionRegistry);
+      return new RasaNluResponse(input, extensionRegistry);
     }
   };
 
-  public static com.google.protobuf.Parser<NluResponse> parser() {
+  public static com.google.protobuf.Parser<RasaNluResponse> parser() {
     return PARSER;
   }
 
   @java.lang.Override
-  public com.google.protobuf.Parser<NluResponse> getParserForType() {
+  public com.google.protobuf.Parser<RasaNluResponse> getParserForType() {
     return PARSER;
   }
 
   @java.lang.Override
-  public com.huawei.vca.nlu.intent.example.NluResponse getDefaultInstanceForType() {
+  public com.huawei.vca.nlu.intent.example.RasaNluResponse getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

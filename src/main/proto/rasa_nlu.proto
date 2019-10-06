@@ -7,7 +7,7 @@ option java_outer_classname = "IntentExampleProto";
 package rasa_nlu;
 
 service RasaNluService {
-    rpc saveToRasaNlu (NluRequest) returns (NluResponse) {
+    rpc saveToRasaNlu (RasaNluRequest) returns (RasaNluResponse) {
 
     }
 }
@@ -29,10 +29,10 @@ message RasaData {
     repeated CommonExample common_examples = 1;
 }
 
-message NluRequest {
+message RasaNluRequest {
     RasaData rasa_nlu_data = 1;
 }
 
-message NluResponse {
+message RasaNluResponse {
     string done = 1;
 }
