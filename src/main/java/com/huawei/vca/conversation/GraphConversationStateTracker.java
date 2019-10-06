@@ -87,7 +87,7 @@ public class GraphConversationStateTracker implements ConversationStateTracker {
         nluEvent.setBestIntent(new Intent(nluResponse.getIntent().getName(), nluResponse.getIntent().getConfidence()));
 
         for (Entity entity : nluResponse.getEntitiesList()) {
-            nluEvent.addSlot(new Slot(entity.getEntity(), entity.getValue(), entity.getConfidence()));
+            nluEvent.addSlot(new Slot(entity.getEntity(), entity.getValue(), entity.getConfidence(),entity.getStart(), entity.getEnd()));
         }
 
         return nluEvent;

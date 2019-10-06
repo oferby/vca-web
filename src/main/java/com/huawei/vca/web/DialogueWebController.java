@@ -1,13 +1,13 @@
 package com.huawei.vca.web;
 
-import com.huawei.vca.message.Dialogue;
+import com.huawei.vca.message.*;
 import com.huawei.vca.conversation.SessionController;
-import com.huawei.vca.message.DialogueSummary;
-import com.huawei.vca.message.Event;
-import com.huawei.vca.message.UserUtterEvent;
 import com.huawei.vca.repository.DialogueEntity;
 import com.huawei.vca.repository.controller.DialogueRepository;
 import com.huawei.vca.repository.graph.ConversationGraphController;
+import com.huawei.vca.repository.nlu.EntityExample;
+import com.huawei.vca.repository.nlu.IntentExample;
+import com.huawei.vca.repository.nlu.IntentExampleRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +34,9 @@ public class DialogueWebController {
 
     @Autowired
     private ConversationGraphController conversationGraphController;
+
+    @Autowired
+    private IntentExampleRepository intentExampleRepository;
 
     @GetMapping
     public Set<DialogueSummary> getSessionList(){
@@ -142,10 +145,47 @@ public class DialogueWebController {
         return userUtterEvents;
     }
 
-    @PutMapping("nlu")
+    @PostMapping("nlu")
     public void updateNlu(@RequestBody Set<UserUtterEvent> userUtterEvents){
 
+        List<IntentExample>intentExamples=new ArrayList<>();
+        for (UserUtterEvent userUtterEvent : userUtterEvents) {
+            IntentExample example = new IntentExample();
+            example.setText(userUtterEvent.getText());
+            example.setIntent(userUtterEvent.getNluEvent().getBestIntent().getIntent());
 
+            Set<Slot> slots = userUtterEvent.getNluEvent().getSlots();
+            if (slots !=null) {
+
+                for (Slot slot : slots) {
+
+                    EntityExample entityExample = new EntityExample();
+                    entityExample.setEntity(slot.getKey());
+                    entityExample.setValue(slot.getValue());
+                    entityExample.setStart(slot.getStart());
+                    entityExample.setEnd(slot.getEnd());
+
+                    example.addEntity(entityExample);
+
+                }
+
+            }
+
+            intentExamples.add(example);
+        }
+
+        intentExampleRepository.saveAll(intentExamples);
 
     }
+
+    @GetMapping("nlu/example")
+    public List<IntentExample>getIntentExamples(){
+        return intentExampleRepository.findAll();
+    }
+
+    @DeleteMapping("nlu/example")
+    public void deleteAllExamples(){
+        intentExampleRepository.deleteAll();
+    }
+
 }

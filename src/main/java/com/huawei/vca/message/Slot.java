@@ -19,6 +19,14 @@ public class Slot {
         this.confidence = confidence;
     }
 
+    public Slot(String key, String value, float confidence, Integer start, Integer end) {
+        this.key = key;
+        this.value = value;
+        this.confidence = confidence;
+        this.start = start;
+        this.end = end;
+    }
+
     public String getKey() {
         return key;
     }
