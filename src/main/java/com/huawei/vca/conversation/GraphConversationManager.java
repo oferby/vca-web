@@ -103,7 +103,7 @@ public class GraphConversationManager implements ConversationManager {
     }
 
     private void addDefaultUtterEvent(Dialogue dialogue) {
-        BotUtterEvent botUtterEvent = new BotUtterEvent("I'm sorry but I did not understand what you've said. Let me route your call to human.");
+        BotDefaultUtterEvent botUtterEvent = new BotDefaultUtterEvent("I'm sorry but I did not understand what you've said. Let me route your call to human.");
         dialogue.addToHistory(botUtterEvent);
         dialogue.setText(botUtterEvent.getText());
         dialogue.setNeedOperator(true);

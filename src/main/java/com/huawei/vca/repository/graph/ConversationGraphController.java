@@ -37,6 +37,10 @@ public class ConversationGraphController {
 
         for (Event event : history) {
 
+            if (event instanceof BotDefaultUtterEvent) {
+                continue;
+            }
+
             if (event instanceof BotUtterEvent) {
 
                 BotUtterEvent botUtterEvent = (BotUtterEvent) event;

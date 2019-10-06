@@ -127,14 +127,14 @@ function afterGetActions(data) {
 
 function saveDialogueToGraph() {
     console.log('saving dialogue to graph');
-    stompClient.send("/app/train/saveDialogue", {}, JSON.stringify(activeDialogue));
+    stompClient.send("/train/saveDialogue", {}, JSON.stringify(activeDialogue));
 }
 
 function addAction(value) {
     console.log('Sending bot action to server');
     actionId = value.innerText;
     activeDialogue.text = actionId;
-    stompClient.send("/app/train/addAction", {}, JSON.stringify(activeDialogue));
+    stompClient.send("/train/addAction", {}, JSON.stringify(activeDialogue));
 }
 
 function handleEvent(event) {

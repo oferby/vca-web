@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
         include = JsonTypeInfo.As.PROPERTY,
         property = "type")
 @JsonSubTypes({
+        @JsonSubTypes.Type(value = BotDefaultUtterEvent.class, name = "BotDefaultUtterEvent"),
         @JsonSubTypes.Type(value = BotUtterEvent.class, name = "BotUtterEvent"),
         @JsonSubTypes.Type(value = UserUtterEvent.class, name = "UserUtter")
 })
