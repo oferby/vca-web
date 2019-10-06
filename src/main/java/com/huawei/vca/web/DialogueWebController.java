@@ -3,17 +3,17 @@ package com.huawei.vca.web;
 import com.huawei.vca.message.Dialogue;
 import com.huawei.vca.conversation.SessionController;
 import com.huawei.vca.message.DialogueSummary;
+import com.huawei.vca.message.Event;
+import com.huawei.vca.message.UserUtterEvent;
 import com.huawei.vca.repository.DialogueEntity;
 import com.huawei.vca.repository.controller.DialogueRepository;
+import com.huawei.vca.repository.graph.ConversationGraphController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 
 @RestController
@@ -31,6 +31,9 @@ public class DialogueWebController {
 
     @Autowired
     private ExecutorService executorService;
+
+    @Autowired
+    private ConversationGraphController conversationGraphController;
 
     @GetMapping
     public Set<DialogueSummary> getSessionList(){
@@ -108,5 +111,41 @@ public class DialogueWebController {
         executorService.execute(()-> {
             dialogueRepository.deleteAll();
         });
+    }
+
+    @PostMapping("editor/to/map")
+    public void saveDialogue(@RequestBody Dialogue dialogue) {
+
+        logger.debug("saving dialogue to graph");
+        conversationGraphController.saveDialogueToGraph(dialogue);
+        logger.debug("dialogue saved to graph");
+    }
+
+
+    @GetMapping("nlu")
+    public Set<UserUtterEvent> getSavedUserUtters(){
+
+        Set<UserUtterEvent>userUtterEvents = new HashSet<>();
+
+        List<DialogueEntity> dialogueEntityList = dialogueRepository.findAll();
+        for (DialogueEntity dialogueEntity : dialogueEntityList) {
+
+            if (dialogueEntity.getDialogue().getHistory() == null)
+                continue;
+
+            for (Event event : dialogueEntity.getDialogue().getHistory()) {
+               if (event instanceof UserUtterEvent)
+                   userUtterEvents.add((UserUtterEvent) event);
+            }
+
+        }
+        return userUtterEvents;
+    }
+
+    @PutMapping("nlu")
+    public void updateNlu(@RequestBody Set<UserUtterEvent> userUtterEvents){
+
+
+
     }
 }

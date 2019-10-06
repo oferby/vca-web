@@ -7,6 +7,8 @@ public class Slot {
     private String key;
     private String value;
     private float confidence;
+    private Integer start;
+    private Integer end;
 
     public Slot() {
     }
@@ -41,6 +43,22 @@ public class Slot {
         this.confidence = confidence;
     }
 
+    public Integer getStart() {
+        return start;
+    }
+
+    public void setStart(Integer start) {
+        this.start = start;
+    }
+
+    public Integer getEnd() {
+        return end;
+    }
+
+    public void setEnd(Integer end) {
+        this.end = end;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -48,11 +66,13 @@ public class Slot {
         Slot slot = (Slot) o;
         return Float.compare(slot.getConfidence(), getConfidence()) == 0 &&
                 Objects.equals(getKey(), slot.getKey()) &&
-                Objects.equals(getValue(), slot.getValue());
+                Objects.equals(getValue(), slot.getValue()) &&
+                Objects.equals(getStart(), slot.getStart()) &&
+                Objects.equals(getEnd(), slot.getEnd());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getKey(), getValue(), getConfidence());
+        return Objects.hash(getKey(), getValue(), getConfidence(), getStart(), getEnd());
     }
 }

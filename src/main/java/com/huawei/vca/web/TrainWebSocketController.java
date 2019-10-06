@@ -34,6 +34,9 @@ public class TrainWebSocketController {
     @Autowired
     private WebSocketController webSocketController;
 
+    @Autowired
+    private DialogueWebController dialogueWebController;
+
     @MessageMapping("/train/parseDialogue")
     public void getIntentRequest(Dialogue dialogue, @Header("simpSessionId") String sessionId) {
 
@@ -63,11 +66,7 @@ public class TrainWebSocketController {
     @MessageMapping("/train/saveDialogue")
     public void saveDialogue(Dialogue dialogue) {
 
-        logger.debug("saving dialogue to graph");
-
-        conversationGraphController.saveDialogueToGraph(dialogue);
-
-        logger.debug("dialogue saved to graph");
+        dialogueWebController.saveDialogue(dialogue);
 
     }
 
