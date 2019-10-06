@@ -13,6 +13,7 @@ public class ConversationGraphController {
     private ConversationGraphRepository conversationGraphRepository;
 
     private static String graphLocation = "graph_location";
+    private static String observationLocation = "observation_location";
 
     public void saveDialogueToGraph(Dialogue dialogue) {
 
@@ -185,19 +186,50 @@ public class ConversationGraphController {
         if (observationNodes == null)
             return false;
 
+        boolean found;
+
         for (ObservationNode observationNode : observationNodes) {
             if (observationNode.getStringId().equals(dialogue.getLastNluEvent().getBestIntent().getIntent())) {
-                ObservationNode node = conversationGraphRepository.findObservationNodeById(observationNode.getId());
-                if (node.getActionNode() != null) {
-                    if (dialogue.getProperties() != null)
-                        dialogue.getProperties().remove("best_action");
 
-                    dialogue.setText(node.getActionNode().getStringId());
-                    dialogue.addProperty(graphLocation, node.getActionNode().getId().toString());
-                    return true;
+                found = true;
+
+                Map<String, String> properties = observationNode.getProperties();
+                Set<Slot> slots = dialogue.getLastNluEvent().getSlots();
+
+                if (slots != null || properties.size() != 0) {
+
+                    if (slots != null && properties.keySet().size() == slots.size()) {
+                        //                            same number of slots
+
+                        for (Slot slot : slots) {
+                            if (!properties.containsKey(slot.getKey()) || !properties.get(slot.getKey()).equals(slot.getValue())) {
+                                found = false;
+                                break;
+                            }
+                        }
+
+                    } else {
+                        found = false;
+                    }
                 }
 
+                if (found) {
+
+                    dialogue.addProperty(observationLocation, String.valueOf(observationNode.getId()));
+                    ObservationNode node = conversationGraphRepository.findObservationNodeById(observationNode.getId());
+                    if (node.getActionNode() != null) {
+
+                        if (dialogue.getProperties() != null)
+                            dialogue.getProperties().remove("best_action");
+
+                        dialogue.setText(node.getActionNode().getStringId());
+                        dialogue.addProperty(graphLocation, node.getActionNode().getId().toString());
+                        return true;
+                    }
+
+                }
             }
+
         }
 
         dialogue.addProperty(graphLocation, "-1");
@@ -205,5 +237,68 @@ public class ConversationGraphController {
         return false;
     }
 
+    private ObservationNode checkObservation(NluEvent nluEvent, List<ObservationNode> observationNodes) {
+        boolean found = false;
+
+        for (ObservationNode observationNode : observationNodes) {
+            if (observationNode.getStringId().equals(nluEvent.getBestIntent().getIntent())) {
+
+                found = true;
+
+                Map<String, String> properties = observationNode.getProperties();
+                Set<Slot> slots = nluEvent.getSlots();
+
+                if (slots != null || properties.size() != 0) {
+
+                    if (slots != null && properties.keySet().size() == slots.size()) {
+                        //                            same number of slots
+
+                        for (Slot slot : slots) {
+                            if (!properties.containsKey(slot.getKey()) || !properties.get(slot.getKey()).equals(slot.getValue())) {
+                                found = false;
+                                break;
+                            }
+                        }
+
+                    } else {
+                        found = false;
+                    }
+                }
+
+            }
+
+            if (found)
+                return observationNode;
+        }
+
+        return null;
+    }
+
+
+    public String getStatelessAction(Dialogue dialogue) {
+
+        RootNode rootNode = conversationGraphRepository.getRootNode();
+        List<ObservationNode> observationNodes = rootNode.getObservationNodes();
+
+        ObservationNode observationNode = this.checkObservation(dialogue.getLastNluEvent(), observationNodes);
+
+        if (observationNode == null){
+            return null;
+        }
+
+        observationNode = conversationGraphRepository.findObservationNodeById(observationNode.getId());
+
+        if (observationNode.getActionNode() == null)
+            return null;
+
+        ActionNode actionNode = conversationGraphRepository.findActionById(observationNode.getActionNode().getId());
+
+        if (actionNode.getObservationNodes() !=null)
+            return null;
+
+        dialogue.addProperty(observationLocation, String.valueOf(observationNode.getId()));
+        return actionNode.getStringId();
+
+    }
 
 }

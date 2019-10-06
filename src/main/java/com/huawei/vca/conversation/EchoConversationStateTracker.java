@@ -6,10 +6,9 @@ import com.huawei.vca.intent.Entity;
 import com.huawei.vca.intent.NluResponse;
 import com.huawei.vca.message.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
 //@Controller
-public class EchoConversationManager implements ConversationManager {
+public class EchoConversationStateTracker implements ConversationStateTracker {
 
     @Autowired
     private NluService nluService;

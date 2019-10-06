@@ -16,9 +16,9 @@ import java.util.Optional;
 import java.util.Set;
 
 @Controller
-public class GraphConversationManager implements ConversationManager {
+public class GraphConversationStateTracker implements ConversationStateTracker {
 
-    private static final Logger logger = LoggerFactory.getLogger(GraphConversationManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(GraphConversationStateTracker.class);
 
     @Autowired
     private NluService nluService;
@@ -29,15 +29,37 @@ public class GraphConversationManager implements ConversationManager {
     @Autowired
     private ConversationGraphController conversationGraphController;
 
+    private static String graphLocation = "graph_location";
+    private static String observationLocation = "observation_location";
+
     @Override
     public Dialogue handleDialogue(Dialogue dialogue) {
+
+        String currentGraphLocation = null;
+        if (dialogue.getProperties() != null && dialogue.getProperties().get(graphLocation) != null){
+            currentGraphLocation = dialogue.getProperties().get(graphLocation);
+        }
 
         this.handleUserUtter(dialogue);
 
         if (this.conversationGraphController.addGraphLocation(dialogue))
             this.addActionToDialogue(dialogue);
-        else
-            this.addDefaultUtterEvent(dialogue);
+        else {
+
+            String statelessAction = this.conversationGraphController.getStatelessAction(dialogue);
+            if (statelessAction != null) {
+                dialogue.setText(statelessAction);
+                this.addActionToDialogue(dialogue);
+                if (currentGraphLocation!=null)
+                    dialogue.addProperty(graphLocation, currentGraphLocation);
+
+                return dialogue;
+            }
+
+            if (!dialogue.isTraining())
+                this.addDefaultUtterEvent(dialogue);
+
+        }
 
         return dialogue;
     }
@@ -79,6 +101,15 @@ public class GraphConversationManager implements ConversationManager {
             dialogue.getProperties().remove("best_action");
         }
 
+        if (dialogue.getProperties() != null && dialogue.getProperties().get(observationLocation) != null) {
+            Event event = dialogue.getHistory().get(dialogue.getHistory().size() - 1);
+            if (event instanceof UserUtterEvent) {
+                event.setLocation(dialogue.getProperties().get(observationLocation));
+                dialogue.getProperties().remove(observationLocation);
+            }
+        }
+
+
         Optional<BotUtterEntity> actionById = botUtterRepository.findById(dialogue.getText());
 
         if (!actionById.isPresent()) {
@@ -87,6 +118,10 @@ public class GraphConversationManager implements ConversationManager {
 
         BotUtterEntity botUtterEntity = actionById.get();
         BotUtterEvent botUtterEvent = new BotUtterEvent();
+        botUtterEvent.setLocation(dialogue.getProperties().get(graphLocation));
+
+//        TODO
+//        change to random
         Set<String> textIterator = botUtterEntity.getTextSet();
         String text;
         if (textIterator.iterator().hasNext()) {
@@ -108,4 +143,6 @@ public class GraphConversationManager implements ConversationManager {
         dialogue.setText(botUtterEvent.getText());
         dialogue.setNeedOperator(true);
     }
+
+
 }

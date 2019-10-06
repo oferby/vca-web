@@ -1,6 +1,6 @@
 package com.huawei.vca.web;
 
-import com.huawei.vca.conversation.ConversationManager;
+import com.huawei.vca.conversation.ConversationStateTracker;
 import com.huawei.vca.message.Confidence;
 import com.huawei.vca.message.Dialogue;
 import com.huawei.vca.conversation.SessionController;
@@ -31,14 +31,14 @@ public class WebSocketController {
     private SimpMessagingTemplate template;
 
     @Autowired
-    private ConversationManager conversationManager;
+    private ConversationStateTracker conversationStateTracker;
 
     @MessageMapping("/parseDialogue")
     public void getIntentRequest(Dialogue dialogue, @Header("simpSessionId") String sessionId) {
 
         logger.debug("got new user input: " + dialogue.getText() + " on session id: " + dialogue.getSessionId());
 
-        dialogue = conversationManager.handleDialogue(dialogue);
+        dialogue = conversationStateTracker.handleDialogue(dialogue);
         sessionController.addOrUpdateDialogue(sessionId, dialogue);
 
         this.sendResponseToAll(dialogue);

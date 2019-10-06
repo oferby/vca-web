@@ -1,11 +1,8 @@
 package com.huawei.vca.web;
 
-import com.huawei.vca.conversation.ConversationManager;
-import com.huawei.vca.conversation.GraphConversationManager;
+import com.huawei.vca.conversation.ConversationStateTracker;
 import com.huawei.vca.conversation.SessionController;
 import com.huawei.vca.message.*;
-import com.huawei.vca.repository.BotUtterEntity;
-import com.huawei.vca.repository.controller.BotUtterRepository;
 import com.huawei.vca.repository.graph.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +13,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 @Controller
 public class TrainWebSocketController {
@@ -31,7 +26,7 @@ public class TrainWebSocketController {
     private SessionController sessionController;
 
     @Autowired
-    private ConversationManager conversationManager;
+    private ConversationStateTracker conversationStateTracker;
 
     @Autowired
     private ConversationGraphController conversationGraphController;
@@ -45,7 +40,7 @@ public class TrainWebSocketController {
         logger.debug("got new training input: " + dialogue.getText() + " on session id: " + dialogue.getSessionId());
         dialogue.setTraining(true);
 
-        conversationManager.handleDialogue(dialogue);
+        conversationStateTracker.handleDialogue(dialogue);
         sessionController.addOrUpdateDialogue(sessionId, dialogue);
 
         List<Event> history = dialogue.getHistory();
@@ -80,7 +75,7 @@ public class TrainWebSocketController {
     public void addAction(Dialogue dialogue) {
 
         logger.debug("got new action to add: " + dialogue.getText());
-        conversationManager.addActionToDialogue(dialogue);
+        conversationStateTracker.addActionToDialogue(dialogue);
         this.webSocketController.sendResponseToAll(dialogue);
 
     }
