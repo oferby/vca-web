@@ -76,6 +76,7 @@ public class TrainWebSocketController {
 
         logger.debug("got new action to add: " + dialogue.getText());
         conversationStateTracker.addActionToDialogue(dialogue);
+        sessionController.addOrUpdateDialogue(dialogue.getSessionId(), dialogue);
         this.webSocketController.sendResponseToAll(dialogue);
 
     }
