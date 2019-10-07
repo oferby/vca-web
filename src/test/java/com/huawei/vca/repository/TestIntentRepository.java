@@ -19,7 +19,7 @@ public class TestIntentRepository {
     @Autowired
     private IntentRepository intentRepository;
 
-    @Test
+//    @Test
     public void testCRUD(){
 
         IntentEntity intentEntity = this.getIntentEntity();
@@ -74,7 +74,7 @@ public class TestIntentRepository {
 
     }
 
-    @Test
+//    @Test
     public void addTestIntents() {
 
         intentRepository.deleteAll();
@@ -87,7 +87,7 @@ public class TestIntentRepository {
 
     }
 
-    @Test
+//    @Test
     public void testFind(){
 
         List<IntentEntity> all = intentRepository.findAll();

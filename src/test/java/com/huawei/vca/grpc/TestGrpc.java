@@ -14,7 +14,10 @@ public class TestGrpc {
     @Autowired
     private NluService nluService;
 
-    @Test
+    @Autowired
+    private RasaNluServiceImpl rasaNluService;
+
+//    @Test
     public void testNluService() {
 
         String text = "I would like to have lunch";
@@ -23,7 +26,12 @@ public class TestGrpc {
 
         System.out.println(nluResponse);
 
+    }
 
+//    @Test
+    public void testRasaNlu() {
+
+        rasaNluService.saveExamplesToRasaNlu();
 
     }
 

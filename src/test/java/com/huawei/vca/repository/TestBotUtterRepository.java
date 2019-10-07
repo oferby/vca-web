@@ -19,8 +19,8 @@ public class TestBotUtterRepository {
     @Autowired
     private BotUtterRepository botUtterRepository;
 
-    @Test
-    public void testCRUD(){
+//    @Test
+    public void testCRUD() {
 
         BotUtterEntity botUtterEntity = this.getBotUtterEntity();
 
@@ -41,7 +41,7 @@ public class TestBotUtterRepository {
 
     }
 
-    @Test
+//    @Test
     public void addActions(){
 
         this.botUtterRepository.deleteAll();
@@ -84,7 +84,7 @@ public class TestBotUtterRepository {
 
     }
 
-    @Test
+//    @Test
     public void deleteAll() {
         this.botUtterRepository.deleteAll();
     }
