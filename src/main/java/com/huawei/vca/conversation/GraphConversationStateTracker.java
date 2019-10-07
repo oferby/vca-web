@@ -118,6 +118,10 @@ public class GraphConversationStateTracker implements ConversationStateTracker {
 
         BotUtterEntity botUtterEntity = actionById.get();
         BotUtterEvent botUtterEvent = new BotUtterEvent();
+
+        if (dialogue.getProperties() == null)
+            dialogue.addProperty(graphLocation, "-1");
+
         botUtterEvent.setLocation(dialogue.getProperties().get(graphLocation));
 
 //        TODO

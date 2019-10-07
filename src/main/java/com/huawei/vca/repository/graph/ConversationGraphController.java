@@ -280,6 +280,9 @@ public class ConversationGraphController {
         RootNode rootNode = conversationGraphRepository.getRootNode();
         List<ObservationNode> observationNodes = rootNode.getObservationNodes();
 
+        if (observationNodes == null)
+            return null;
+
         ObservationNode observationNode = this.checkObservation(dialogue.getLastNluEvent(), observationNodes);
 
         if (observationNode == null){
