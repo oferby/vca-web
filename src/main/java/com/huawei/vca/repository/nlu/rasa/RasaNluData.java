@@ -1,6 +1,4 @@
-package com.huawei.vca.utils;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+package com.huawei.vca.repository.nlu.rasa;
 import java.util.List;
 
 public class RasaNluData {

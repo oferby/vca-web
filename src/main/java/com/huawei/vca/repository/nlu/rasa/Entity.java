@@ -1,4 +1,4 @@
-package com.huawei.vca.utils;
+package com.huawei.vca.repository.nlu.rasa;
 
 public class Entity {
 

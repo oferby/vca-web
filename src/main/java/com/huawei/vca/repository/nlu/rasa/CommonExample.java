@@ -1,11 +1,20 @@
-package com.huawei.vca.utils;
+package com.huawei.vca.repository.nlu.rasa;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
+@Document(collection = "rasa_common_example")
 public class CommonExample {
 
+    @Id
+    private String id;
+
     private String intent;
+
     private String text;
+
     private List<Entity> entities;
 
     public String getIntent() {
@@ -30,5 +39,9 @@ public class CommonExample {
 
     public void setEntities(List<Entity> entities) {
         this.entities = entities;
+    }
+
+    public String getId() {
+        return id;
     }
 }

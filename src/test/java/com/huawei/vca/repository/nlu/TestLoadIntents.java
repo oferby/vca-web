@@ -1,21 +1,28 @@
 package com.huawei.vca.repository.nlu;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.huawei.vca.utils.RasaDataRoot;
-import org.junit.Test;
+import com.huawei.vca.repository.nlu.rasa.RasaDataRoot;
+import com.huawei.vca.repository.nlu.rasa.RasaExampleRepository;
+import com.huawei.vca.repository.nlu.rasa.RasaSynonymRepository;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 
 @RunWith(SpringRunner.class)
-//@SpringBootTest
+@SpringBootTest
 public class TestLoadIntents {
 
-    @Test
+    @Autowired
+    private RasaExampleRepository rasaExampleRepository;
+
+    @Autowired
+    private RasaSynonymRepository rasaSynonymRepository;
+
+//    @Test
     public void load() throws IOException {
 
         // read json and write to db
@@ -28,6 +35,9 @@ public class TestLoadIntents {
 
         assert rasaDataRoot != null;
 
+        rasaExampleRepository.saveAll(rasaDataRoot.getRasa_nlu_data().getCommon_examples());
+
+        rasaSynonymRepository.saveAll(rasaDataRoot.getRasa_nlu_data().getEntity_synonyms());
 
     }
 
