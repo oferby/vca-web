@@ -1,17 +1,24 @@
 var intents_dict = {};
+var textset_dict = {};
 var index = 0;
 var app;
-var dataUrl = '/data/intents/';
+var dataUrl = backendServer + '/data/intents/';
 
 Vue.component('intent-item', {
     props: ['intents'],
-    template: '<div class="intent-item"><input v-bind:id="intents.intent" type="text" v-model="intents.intent" onclick="show_examples(this)"><input type="button" value="Save"><input type="button" value="X" v-on:click="$emit(\'remove\')"></div>'
+    template: '<div class="row form-group"><div class="col-sm-1"><button class="btn" @click="$emit(\'remove\')"><i class="fa fa-remove"></i></button></div><div class="col-sm-3"><button class="btn btn-primary" v-bind:id="intents.intent" v-model="intents.intent" onclick="show_examples(this)">{{intents.intent}}</button></div></div>'
+
+//    <input class="form-control" readonly v-bind:id="intents.intent" type="text" v-model="intents.intent" onclick="show_examples(this)"></div></div>'
   });
+
+  //<input type="button" value="X" v-on:click="$emit(\'remove\')">
 
 Vue.component('example-item', {
     props: ['example', 'intent_label'],
-    template: '<div class="intent-item"><input v-bind:id="example" type="text" v-model="example" ><input type="button" value="Save"><input type="button" value="X" v-on:click="$emit(\'remove\')"></div>'
+    template: '<div class="intent-item"><input v-bind:id="example" type="text" data-role="tagsinput" v-model="example" ><button class="btn"><i class="fa fa-save"></i> Save</button><button class="btn" @click="$emit(\'remove\')"><i class="fa fa-remove"></i> Remove</button></div>'
   });
+//  template: '<button class="btn btn-primary btn-xs" v-bind:id="example" v-model="example" onclick="show_examples(this)">{{example}}</button>'
+  //    template: '<div class="intent-item"><input v-bind:id="example" type="text" v-model="example" ><button class="btn"><i class="fa fa-save"></i> Save</button><button class="btn" @click="$emit(\'remove\')"><i class="fa fa-remove"></i> Remove</button></div>'
 
 function remove(id, indx) {
     console.log('remove item: ' + id)
@@ -124,24 +131,53 @@ function getData(callback) {
 
 
 function add_intent_to_map(value){
+   // build the first index - from intents to textset
    intents_dict[value.intent] = value;
+
+   // build the second index - from textset to intents
+   value.textSet.forEach(function (ts) {
+     if (ts in textset_dict) {
+       textset_dict[ts].push(value.intent);
+     } else {
+       textset_dict[ts] = [ value.intent ];
+     }
+   })
 }
 
-
 function success(data){
-    console.log( "got data: " + data);
-
     data.forEach(add_intent_to_map);
     sorted_intent_list = Object.values(intents_dict).sort()
     app = new Vue({
             el: '#app',
             data: {
+              intentFilter: "",
+              //intent_list: [""],
+              //example_list: "",
+              //intent_label: "",
               intent_list: sorted_intent_list,
               example_list: sorted_intent_list[0].textSet,
-              intent_label: sorted_intent_list[0].intent
-            }
-          })
+              intent_label: sorted_intent_list[0].intent,
+            },
+            computed: {
+              filterIntentsByTextsetKeywords() {
+                  // filter intents by intent name
+                  // return this.intent_list.filter(el => {return el.intent.toLowerCase().includes(this.intentFilter.toLowerCase())})
 
+                  // filter intents by textset keywords
+                  // construct a set for all intents that have a word in their textset, which contains the search filter
+                  const filteredTextSet = new Set()
+                  for (ts in textset_dict) {
+                    if (ts.toLowerCase().includes(this.intentFilter.toLowerCase())) {
+                      textset_dict[ts].forEach(val => {
+                        filteredTextSet.add(val);
+                      });
+                    }
+                  }
+                  // using the set, filter the intent list
+                  return this.intent_list.filter(el => {return filteredTextSet.has(el.intent)})
+                }
+              }
+            })
 }
 
 $( document ).ready(function() {
