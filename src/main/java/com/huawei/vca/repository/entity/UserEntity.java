@@ -1,4 +1,4 @@
-package com.huawei.vca.repository;
+package com.huawei.vca.repository.entity;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Objects;
 
 @Document(collection = "users")
-public class User {
+public class UserEntity {
 
     @Id
     private String userId;
@@ -31,10 +31,10 @@ public class User {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof User)) return false;
-        User user = (User) o;
-        return Objects.equals(getUserId(), user.getUserId()) &&
-                Objects.equals(getName(), user.getName());
+        if (!(o instanceof UserEntity)) return false;
+        UserEntity userEntity = (UserEntity) o;
+        return Objects.equals(getUserId(), userEntity.getUserId()) &&
+                Objects.equals(getName(), userEntity.getName());
     }
 
     @Override

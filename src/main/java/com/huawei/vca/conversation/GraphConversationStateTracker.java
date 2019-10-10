@@ -4,7 +4,7 @@ import com.huawei.vca.grpc.NluService;
 import com.huawei.vca.intent.Entity;
 import com.huawei.vca.intent.NluResponse;
 import com.huawei.vca.message.*;
-import com.huawei.vca.repository.BotUtterEntity;
+import com.huawei.vca.repository.entity.BotUtterEntity;
 import com.huawei.vca.repository.controller.BotUtterRepository;
 import com.huawei.vca.repository.graph.ConversationGraphController;
 import org.slf4j.Logger;
@@ -54,6 +54,11 @@ public class GraphConversationStateTracker implements ConversationStateTracker {
                     dialogue.addProperty(graphLocation, currentGraphLocation);
 
                 return dialogue;
+            } else {
+                if (this.checkKnowledgebase(dialogue)){
+                    this.addActionToDialogue(dialogue);
+                    return dialogue;
+                }
             }
 
             if (!dialogue.isTraining())
@@ -148,5 +153,10 @@ public class GraphConversationStateTracker implements ConversationStateTracker {
         dialogue.setNeedOperator(true);
     }
 
+    private boolean checkKnowledgebase(Dialogue dialogue) {
+
+
+        return false;
+    }
 
 }

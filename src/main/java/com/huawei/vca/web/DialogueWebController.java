@@ -2,9 +2,10 @@ package com.huawei.vca.web;
 
 import com.huawei.vca.message.*;
 import com.huawei.vca.conversation.SessionController;
-import com.huawei.vca.repository.DialogueEntity;
+import com.huawei.vca.repository.entity.DialogueEntity;
 import com.huawei.vca.repository.controller.DialogueRepository;
 import com.huawei.vca.repository.graph.ConversationGraphController;
+import com.huawei.vca.repository.graph.ConversationGraphRepository;
 import com.huawei.vca.repository.nlu.EntityExample;
 import com.huawei.vca.repository.nlu.IntentExample;
 import com.huawei.vca.repository.nlu.IntentExampleRepository;
@@ -34,6 +35,9 @@ public class DialogueWebController {
 
     @Autowired
     private ConversationGraphController conversationGraphController;
+
+    @Autowired
+    private ConversationGraphRepository conversationGraphRepository;
 
     @Autowired
     private IntentExampleRepository intentExampleRepository;
@@ -122,6 +126,12 @@ public class DialogueWebController {
         logger.debug("saving dialogue to graph");
         conversationGraphController.saveDialogueToGraph(dialogue);
         logger.debug("dialogue saved to graph");
+    }
+
+    @DeleteMapping("graph/node/{id}")
+    public void deleteNodeFromGraph(@PathVariable  String id){
+        logger.debug("deleting from graph node id: " + id);
+        conversationGraphRepository.deletePathStartingWithId(Long.valueOf(id));
     }
 
 

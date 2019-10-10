@@ -13,6 +13,11 @@ public class Slot {
     public Slot() {
     }
 
+    public Slot(String key, String value) {
+        this.key = key;
+        this.value = value;
+    }
+
     public Slot(String key, String value, float confidence) {
         this.key = key;
         this.value = value;

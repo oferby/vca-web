@@ -1,7 +1,5 @@
 package com.huawei.vca.repository;
 
-import com.huawei.vca.repository.controller.Turn;
-
 import java.time.LocalDateTime;
 
 public class ConversationTurn {
