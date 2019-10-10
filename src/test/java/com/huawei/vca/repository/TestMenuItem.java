@@ -121,4 +121,52 @@ public class TestMenuItem {
 
     }
 
+    @Test
+    public void addMenuItems(){
+
+        menuItemRepository.deleteAll();
+        List<MenuItemEntity> menuItemEntities = new ArrayList<>();
+
+        MenuItemEntity menuItemEntity = new MenuItemEntity();
+        menuItemEntity.setDescription("Medium Beef Burger with white bread, BBQ sauce, pickles, chips and beer.");
+        menuItemEntity.addSlot("food:ingredient:meat","beef");
+        menuItemEntity.addSlot("food:main_dish","burger");
+        menuItemEntity.addSlot("food:main_dish:burger:cook_level","medium");
+        menuItemEntity.addSlot("food:ingredient:plant:vegetable","pickles");
+        menuItemEntity.addSlot("food:condiment:sauce:burger_sauce", "barbecue sauce");
+        menuItemEntities.add(menuItemEntity);
+
+        menuItemEntity = new MenuItemEntity();
+        menuItemEntity.setDescription("Medium Beef Burger with white bread, BBQ sauce, onions, chips and beer.");
+        menuItemEntity.addSlot("food:ingredient:meat","beef");
+        menuItemEntity.addSlot("food:main_dish","burger");
+        menuItemEntity.addSlot("food:main_dish:burger:cook_level","medium");
+        menuItemEntity.addSlot("food:ingredient:plant:vegetable","onions");
+        menuItemEntity.addSlot("food:condiment:sauce:burger_sauce", "barbecue sauce");
+        menuItemEntities.add(menuItemEntity);
+
+        menuItemRepository.saveAll(menuItemEntities);
+
+    }
+
+    @Test
+    public void queryMenuItems(){
+
+        List<Slot> slotList = new ArrayList<>();
+        List<Slot> notInSlotList = new ArrayList<>();
+
+        Slot slot1 = new Slot("food:main_dish","burger");
+        Slot slot2 = new Slot("food:ingredient:plant:vegetable","onions");
+
+        slotList.add(slot1);
+        List<MenuItemEntity> result = mongoTemplate.find(query(where("slots").all(slotList)), MenuItemEntity.class);
+
+        assert result.size() == 2;
+
+        slotList.add(slot2);
+
+        assert result.size() == 1;
+
+
+    }
 }

@@ -50,6 +50,16 @@ public class MenuItemEntity {
         slots.add(slot);
     }
 
+    public void addSlot(String key, String value) {
+        Slot slot = new Slot(key, value);
+
+        if (slots == null) {
+            slots = new HashSet<>();
+        }
+
+        slots.add(slot);
+    }
+
     public String getImageUrl() {
         return imageUrl;
     }
@@ -85,5 +95,15 @@ public class MenuItemEntity {
     @Override
     public int hashCode() {
         return Objects.hash(getId(), getDescription(), getSlots(), getImageUrl());
+    }
+
+    @Override
+    public String toString() {
+        return "MenuItemEntity{" +
+                "id='" + id + '\'' +
+                ", description='" + description + '\'' +
+                ", slots=" + slots +
+                ", imageUrl='" + imageUrl + '\'' +
+                '}';
     }
 }

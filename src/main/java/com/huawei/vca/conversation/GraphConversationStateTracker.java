@@ -3,6 +3,8 @@ package com.huawei.vca.conversation;
 import com.huawei.vca.grpc.NluService;
 import com.huawei.vca.intent.Entity;
 import com.huawei.vca.intent.NluResponse;
+import com.huawei.vca.knowledgebase.GoalPrediction;
+import com.huawei.vca.knowledgebase.KnowledgebaseManager;
 import com.huawei.vca.message.*;
 import com.huawei.vca.repository.entity.BotUtterEntity;
 import com.huawei.vca.repository.controller.BotUtterRepository;
@@ -29,6 +31,9 @@ public class GraphConversationStateTracker implements ConversationStateTracker {
     @Autowired
     private ConversationGraphController conversationGraphController;
 
+    @Autowired
+    private KnowledgebaseManager knowledgebaseManager;
+
     private static String graphLocation = "graph_location";
     private static String observationLocation = "observation_location";
 
@@ -42,6 +47,9 @@ public class GraphConversationStateTracker implements ConversationStateTracker {
 
         this.handleUserUtter(dialogue);
 
+        this.checkKnowledgebase(dialogue);
+
+
         if (this.conversationGraphController.addGraphLocation(dialogue))
             this.addActionToDialogue(dialogue);
         else {
@@ -54,12 +62,14 @@ public class GraphConversationStateTracker implements ConversationStateTracker {
                     dialogue.addProperty(graphLocation, currentGraphLocation);
 
                 return dialogue;
-            } else {
-                if (this.checkKnowledgebase(dialogue)){
-                    this.addActionToDialogue(dialogue);
-                    return dialogue;
-                }
             }
+
+//            else {
+//                if (this.checkKnowledgebase(dialogue)){
+//                    this.addActionToDialogue(dialogue);
+//                    return dialogue;
+//                }
+//            }
 
             if (!dialogue.isTraining())
                 this.addDefaultUtterEvent(dialogue);
@@ -155,6 +165,13 @@ public class GraphConversationStateTracker implements ConversationStateTracker {
 
     private boolean checkKnowledgebase(Dialogue dialogue) {
 
+        GoalPrediction userGoal = knowledgebaseManager.findUserGoal(dialogue);
+        logger.debug("User Goal prediction: " + userGoal);
+
+        if (userGoal.getBestNextQuestion() !=null) {
+
+            return true;
+        }
 
         return false;
     }

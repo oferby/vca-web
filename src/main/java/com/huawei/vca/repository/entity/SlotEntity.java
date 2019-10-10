@@ -1,21 +1,18 @@
 package com.huawei.vca.repository.entity;
 
-import com.huawei.vca.message.BotUtterEvent;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Document(collection = "feature_group")
-public class FeatureGroupEntity {
+@Document(collection = "slots")
+public class SlotEntity {
 
     @Id
     private String name;
 
     private Set<String> values;
-
-    private BotUtterEntity relatedQuestion;
 
     public String getName() {
         return name;
@@ -40,11 +37,4 @@ public class FeatureGroupEntity {
         this.values.add(value);
     }
 
-    public BotUtterEntity getRelatedQuestion() {
-        return relatedQuestion;
-    }
-
-    public void setRelatedQuestion(BotUtterEntity relatedQuestion) {
-        this.relatedQuestion = relatedQuestion;
-    }
 }

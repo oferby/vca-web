@@ -1,37 +1,46 @@
 package com.huawei.vca.knowledgebase;
 
-import com.huawei.vca.repository.entity.FeatureGroupEntity;
+import com.huawei.vca.repository.entity.SlotEntity;
 import com.huawei.vca.repository.entity.MenuItemEntity;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class GoalPrediction {
 
-    private Set<MenuItemEntity> possibleGoals;
-    private FeatureGroupEntity bestNextQuestion;
+    private List<MenuItemEntity> possibleGoals;
+    private SlotEntity bestNextQuestion;
 
-    public Set<MenuItemEntity> getPossibleGoals() {
+    public List<MenuItemEntity> getPossibleGoals() {
         return possibleGoals;
     }
 
-    public void setPossibleGoals(Set<MenuItemEntity> possibleGoals) {
+    public void setPossibleGoals(List<MenuItemEntity> possibleGoals) {
         this.possibleGoals = possibleGoals;
     }
 
-    public FeatureGroupEntity getBestNextQuestion() {
+    public SlotEntity getBestNextQuestion() {
         return bestNextQuestion;
     }
 
-    public void setBestNextQuestion(FeatureGroupEntity bestNextQuestion) {
+    public void setBestNextQuestion(SlotEntity bestNextQuestion) {
         this.bestNextQuestion = bestNextQuestion;
     }
 
     public void addPossibleGoal(MenuItemEntity menuItemEntity) {
         if (possibleGoals == null){
-            this.possibleGoals = new HashSet<>();
+            this.possibleGoals = new ArrayList<>();
         }
 
         this.possibleGoals.add(menuItemEntity);
+    }
+
+    @Override
+    public String toString() {
+        return "GoalPrediction{" +
+                "possibleGoals=" + possibleGoals +
+                ", bestNextQuestion=" + bestNextQuestion +
+                '}';
     }
 }

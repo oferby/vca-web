@@ -1,5 +1,7 @@
 package com.huawei.vca.message;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Objects;
 
 public class Slot {
@@ -87,5 +89,24 @@ public class Slot {
     @Override
     public int hashCode() {
         return Objects.hash(getKey(), getValue(), getConfidence(), getStart(), getEnd());
+    }
+
+    @Override
+    public String toString() {
+        return "Slot{" +
+                "key='" + key + '\'' +
+                ", value='" + value + '\'' +
+                ", confidence=" + confidence +
+                ", start=" + start +
+                ", end=" + end +
+                '}';
+    }
+
+    @JsonIgnore
+    public Slot getSmallCopy() {
+        Slot newCopy = new Slot();
+        newCopy.setKey(this.key);
+        newCopy.setValue(this.value);
+        return newCopy;
     }
 }
