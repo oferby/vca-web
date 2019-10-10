@@ -29,7 +29,6 @@ public class ConversationGraphController {
         }
 
         rootNode.increaseVisited();
-        toSave.add(rootNode);
 
         ActionNode nextActionNode = null;
         ObservationNode nextObservationNode = null;
@@ -147,8 +146,23 @@ public class ConversationGraphController {
 
         }
 
+        Set<ObservationNode>observationNodes = new HashSet<>();
+        Set<ActionNode>actionNodes = new HashSet<>();
+        Set<StateNode> nodeSet = new HashSet<>();
 
-        SortedSet<StateNode> nodeSet = new TreeSet<>(toSave);
+        nodeSet.add(rootNode);
+
+        for (StateNode stateNode : toSave) {
+            if (stateNode instanceof ActionNode){
+                actionNodes.add((ActionNode) stateNode);
+            } else {
+                observationNodes.add((ObservationNode) stateNode);
+            }
+        }
+
+        nodeSet.addAll(actionNodes);
+        nodeSet.addAll(observationNodes);
+
         conversationGraphRepository.saveAll(nodeSet);
 
     }
