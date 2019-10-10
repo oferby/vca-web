@@ -1,0 +1,7 @@
+/* if a tag or the user input is a duplicate, it should be crossed out */
+ .vue-tags-input .ti-duplicate span,
+ .vue-tags-input .ti-new-tag-input.ti-duplicate {
+   text-decoration: underline;
+   text-decoration-color: red;
+   text-decoration-style: wavy;
+ }
