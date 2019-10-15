@@ -35,7 +35,7 @@ public class MealUserGoalEntity implements Comparable<MealUserGoalEntity>{
 
     @Override // NOT IMPLEMENTED!!!!
     public int compareTo(MealUserGoalEntity entity) {
-        throw new java.lang.UnsupportedOperationException("Not supported yet.");
+        throw new java.lang.UnsupportedOperationException("MealUserGoalEntity comparison not supported yet.");
     }
 }
 
