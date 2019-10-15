@@ -121,7 +121,7 @@ public class TestMenuItem {
 
     }
 
-    @Test
+//    @Test
     public void addMenuItems(){
 
         menuItemRepository.deleteAll();
@@ -164,6 +164,8 @@ public class TestMenuItem {
         assert result.size() == 2;
 
         slotList.add(slot2);
+
+        result = mongoTemplate.find(query(where("slots").all(slotList)), MenuItemEntity.class);
 
         assert result.size() == 1;
 
