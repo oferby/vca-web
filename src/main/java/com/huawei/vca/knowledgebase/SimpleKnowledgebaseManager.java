@@ -38,6 +38,8 @@ public class SimpleKnowledgebaseManager implements SkillController {
 
 //        add here what to ask next or return the above object
 
+        predictedAction.setConfidence((float) 0.0);
+
         return predictedAction;
     }
 

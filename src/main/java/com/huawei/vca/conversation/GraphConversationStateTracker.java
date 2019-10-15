@@ -4,6 +4,7 @@ import com.huawei.vca.conversation.skill.SkillController;
 import com.huawei.vca.message.*;
 import com.huawei.vca.repository.entity.BotUtterEntity;
 import com.huawei.vca.repository.controller.BotUtterRepository;
+import com.huawei.vca.repository.graph.ActionNode;
 import com.huawei.vca.repository.graph.ConversationGraphController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,111 +19,27 @@ public class GraphConversationStateTracker implements SkillController {
 
     private static final Logger logger = LoggerFactory.getLogger(GraphConversationStateTracker.class);
 
-
-    @Autowired
-    private BotUtterRepository botUtterRepository;
-
     @Autowired
     private ConversationGraphController conversationGraphController;
 
-
     private static String graphLocation = "graph_location";
-    private static String observationLocation = "observation_location";
 
     @Override
     public PredictedAction getPredictedAction(Dialogue dialogue) {
 
         PredictedAction predictedAction = new PredictedAction();
 
+        ActionNode actionNode = this.conversationGraphController.getGraphLocation(dialogue);
+        if (actionNode == null){
+            predictedAction.addProperty(graphLocation, "-1");
+            return predictedAction;
+        }
+
+        predictedAction.setActionId(actionNode.getStringId());
+        predictedAction.setConfidence((float) 1.0);
+        predictedAction.addProperty(graphLocation, actionNode.getId().toString());
+
         return predictedAction;
-    }
-
-    public Dialogue handleDialogue(Dialogue dialogue) {
-
-        String currentGraphLocation = null;
-        if (dialogue.getProperties() != null && dialogue.getProperties().get(graphLocation) != null){
-            currentGraphLocation = dialogue.getProperties().get(graphLocation);
-        }
-
-        if (this.conversationGraphController.addGraphLocation(dialogue))
-            this.addActionToDialogue(dialogue);
-        else {
-
-            String statelessAction = this.conversationGraphController.getStatelessAction(dialogue);
-            if (statelessAction != null) {
-                dialogue.setText(statelessAction);
-                this.addActionToDialogue(dialogue);
-                if (currentGraphLocation!=null)
-                    dialogue.addProperty(graphLocation, currentGraphLocation);
-
-                return dialogue;
-            }
-
-            if (!dialogue.isTraining())
-                this.addDefaultUtterEvent(dialogue);
-
-        }
-
-        return dialogue;
-    }
-
-
-
-
-
-    public void addActionToDialogue(Dialogue dialogue) {
-
-        logger.debug("got new action: " + dialogue.getText() + " on session id: " + dialogue.getSessionId());
-
-        if (dialogue.getProperties() != null) {
-            dialogue.getProperties().remove("best_action");
-        }
-
-        if (dialogue.getProperties() != null && dialogue.getProperties().get(observationLocation) != null) {
-            Event event = dialogue.getHistory().get(dialogue.getHistory().size() - 1);
-            if (event instanceof UserUtterEvent) {
-                event.setLocation(dialogue.getProperties().get(observationLocation));
-                dialogue.getProperties().remove(observationLocation);
-            }
-        }
-
-
-        Optional<BotUtterEntity> actionById = botUtterRepository.findById(dialogue.getText());
-
-        if (!actionById.isPresent()) {
-            throw new RuntimeException("invalid action id");
-        }
-
-        BotUtterEntity botUtterEntity = actionById.get();
-        BotUtterEvent botUtterEvent = new BotUtterEvent();
-
-        if (dialogue.getProperties() == null)
-            dialogue.addProperty(graphLocation, "-1");
-
-        botUtterEvent.setLocation(dialogue.getProperties().get(graphLocation));
-
-//        TODO
-//        change to random
-        Set<String> textIterator = botUtterEntity.getTextSet();
-        String text;
-        if (textIterator.iterator().hasNext()) {
-            text = textIterator.iterator().next();
-
-        } else {
-            text = "** no messages found for action ** " + botUtterEntity.getId();
-        }
-        botUtterEvent.setId(botUtterEntity.getId());
-        botUtterEvent.setText(text);
-        dialogue.addToHistory(botUtterEvent);
-        dialogue.setText(text);
-
-    }
-
-    private void addDefaultUtterEvent(Dialogue dialogue) {
-        BotDefaultUtterEvent botUtterEvent = new BotDefaultUtterEvent("I'm sorry but I did not understand what you've said. Let me route your call to human.");
-        dialogue.addToHistory(botUtterEvent);
-        dialogue.setText(botUtterEvent.getText());
-        dialogue.setNeedOperator(true);
     }
 
 
