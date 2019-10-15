@@ -1,5 +1,6 @@
 package com.huawei.vca.knowledgebase;
 
+import com.huawei.vca.conversation.skill.SkillController;
 import com.huawei.vca.message.*;
 import com.huawei.vca.repository.controller.MenuItemRepository;
 import com.huawei.vca.repository.entity.MenuItemEntity;
@@ -18,7 +19,7 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
 @Controller
-public class SimpleKnowledgebaseManager implements KnowledgebaseManager{
+public class SimpleKnowledgebaseManager implements SkillController {
 
     private static final Logger logger = LoggerFactory.getLogger(SimpleKnowledgebaseManager.class);
 
@@ -31,7 +32,16 @@ public class SimpleKnowledgebaseManager implements KnowledgebaseManager{
     private String goalPrediction = "goal_prediction";
 
     @Override
-    public GoalPrediction findUserGoal(Dialogue dialogue) {
+    public PredictedAction getPredictedAction(Dialogue dialogue) {
+
+        PredictedAction predictedAction = new PredictedAction();
+
+//        add here what to ask next or return the above object
+
+        return predictedAction;
+    }
+
+    private GoalPrediction findUserGoal(Dialogue dialogue) {
 
         List<Slot> informSlots = new ArrayList<>();
         List<Slot> denySlots = new ArrayList<>();
@@ -99,6 +109,5 @@ public class SimpleKnowledgebaseManager implements KnowledgebaseManager{
         logger.debug("calculated prediction for user goal: " + goalPrediction);
         return goalPrediction;
     }
-
 
 }

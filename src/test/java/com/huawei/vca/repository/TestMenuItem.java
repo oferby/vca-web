@@ -37,7 +37,7 @@ public class TestMenuItem {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    @Test
+//    @Test
     public void testCRUD(){
 
 

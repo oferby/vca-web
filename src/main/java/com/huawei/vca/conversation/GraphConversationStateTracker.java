@@ -1,10 +1,6 @@
 package com.huawei.vca.conversation;
 
-import com.huawei.vca.grpc.NluService;
-import com.huawei.vca.intent.Entity;
-import com.huawei.vca.intent.NluResponse;
-import com.huawei.vca.knowledgebase.GoalPrediction;
-import com.huawei.vca.knowledgebase.KnowledgebaseManager;
+import com.huawei.vca.conversation.skill.SkillController;
 import com.huawei.vca.message.*;
 import com.huawei.vca.repository.entity.BotUtterEntity;
 import com.huawei.vca.repository.controller.BotUtterRepository;
@@ -18,12 +14,10 @@ import java.util.Optional;
 import java.util.Set;
 
 @Controller
-public class GraphConversationStateTracker implements ConversationStateTracker {
+public class GraphConversationStateTracker implements SkillController {
 
     private static final Logger logger = LoggerFactory.getLogger(GraphConversationStateTracker.class);
 
-    @Autowired
-    private NluService nluService;
 
     @Autowired
     private BotUtterRepository botUtterRepository;
@@ -31,24 +25,24 @@ public class GraphConversationStateTracker implements ConversationStateTracker {
     @Autowired
     private ConversationGraphController conversationGraphController;
 
-    @Autowired
-    private KnowledgebaseManager knowledgebaseManager;
 
     private static String graphLocation = "graph_location";
     private static String observationLocation = "observation_location";
 
     @Override
+    public PredictedAction getPredictedAction(Dialogue dialogue) {
+
+        PredictedAction predictedAction = new PredictedAction();
+
+        return predictedAction;
+    }
+
     public Dialogue handleDialogue(Dialogue dialogue) {
 
         String currentGraphLocation = null;
         if (dialogue.getProperties() != null && dialogue.getProperties().get(graphLocation) != null){
             currentGraphLocation = dialogue.getProperties().get(graphLocation);
         }
-
-        this.handleUserUtter(dialogue);
-
-        this.checkKnowledgebase(dialogue);
-
 
         if (this.conversationGraphController.addGraphLocation(dialogue))
             this.addActionToDialogue(dialogue);
@@ -64,13 +58,6 @@ public class GraphConversationStateTracker implements ConversationStateTracker {
                 return dialogue;
             }
 
-//            else {
-//                if (this.checkKnowledgebase(dialogue)){
-//                    this.addActionToDialogue(dialogue);
-//                    return dialogue;
-//                }
-//            }
-
             if (!dialogue.isTraining())
                 this.addDefaultUtterEvent(dialogue);
 
@@ -79,34 +66,9 @@ public class GraphConversationStateTracker implements ConversationStateTracker {
         return dialogue;
     }
 
-    @Override
-    public Dialogue handleNluOnly(Dialogue dialogue) {
-        this.handleUserUtter(dialogue);
-        return dialogue;
-    }
 
-    private void handleUserUtter(Dialogue dialogue) {
 
-        String text = dialogue.getText();
-        UserUtterEvent userUtterEvent = new UserUtterEvent(text);
-        dialogue.addToHistory(userUtterEvent);
-        NluEvent nluEvent = handleNlu(text);
-        userUtterEvent.setNluEvent(nluEvent);
-        dialogue.setLastNluEvent(nluEvent);
 
-    }
-
-    private NluEvent handleNlu(String text) {
-        NluResponse nluResponse = nluService.getNluResponse(text);
-        NluEvent nluEvent = new NluEvent();
-        nluEvent.setBestIntent(new Intent(nluResponse.getIntent().getName(), nluResponse.getIntent().getConfidence()));
-
-        for (Entity entity : nluResponse.getEntitiesList()) {
-            nluEvent.addSlot(new Slot(entity.getEntity(), entity.getValue(), entity.getConfidence(),entity.getStart(), entity.getEnd()));
-        }
-
-        return nluEvent;
-    }
 
     public void addActionToDialogue(Dialogue dialogue) {
 
@@ -163,17 +125,5 @@ public class GraphConversationStateTracker implements ConversationStateTracker {
         dialogue.setNeedOperator(true);
     }
 
-    private boolean checkKnowledgebase(Dialogue dialogue) {
-
-        GoalPrediction userGoal = knowledgebaseManager.findUserGoal(dialogue);
-        logger.debug("User Goal prediction: " + userGoal);
-
-        if (userGoal.getBestNextQuestion() !=null) {
-
-            return true;
-        }
-
-        return false;
-    }
 
 }
