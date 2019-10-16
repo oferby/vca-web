@@ -46,12 +46,19 @@ public class SimpleKnowledgebaseManager implements SkillController {
 
         GoalPrediction userGoal = findUserGoal(dialogue);
 
-
-
-
         logger.debug("got prediction from guess: " + predictedAction);
         return predictedAction;
     }
+
+
+    private void findBestAction(GoalPrediction goalPrediction) {
+
+
+
+
+
+    }
+
 
 //    private PredictedAction findBestActionMostValues(GoalPrediction userGoal) {
 //        PredictedAction predictedAction = new PredictedAction();
@@ -221,7 +228,11 @@ public class SimpleKnowledgebaseManager implements SkillController {
 
         }
 
-        logger.debug("calculated prediction for user goal. size: " + goalPrediction.getPossibleGoals().size());
+        int size = 0;
+        if (goalPrediction.getPossibleGoals() != null)
+            size = goalPrediction.getPossibleGoals().size();
+
+        logger.debug("calculated prediction for user goal." + size);
         return goalPrediction;
     }
 
