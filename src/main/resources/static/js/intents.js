@@ -6,8 +6,7 @@ var dataUrl = backendServer + '/data/intents/';
 
 Vue.component('intent-item', {
     props: ['intents'],
-    template: '<div class="btn-group" role="group"><button class="btn btn-primary" @click="$emit(\'remove\')"><i class="glyphicon glyphicon-remove"></i></button><button class="btn btn-primary" v-bind:id="intents" v-model="intents" onclick="show_examples(this)" onblur="filterChanged()">{{intents}}</button></div>'
-//    template: '<div class="row form-group"><div class="col-sm-1"><button class="btn" @click="$emit(\'remove\')"><i class="glyphicon glyphicon-remove"></i></button></div><div class="col-sm-3"><button class="btn btn-primary" v-bind:id="intents" v-model="intents" onclick="show_examples(this)">{{intents}}</button></div></div>'
+    template: '<div class="btn-group" role="group"><button class="btn btn-primary" @click="$emit(\'remove\')"><i class="glyphicon glyphicon-remove"></i></button><button class="btn btn-primary" v-bind:id="intents" v-model="intents" onclick="onSelectIntent(this)" >{{intents}}</button></div>'
   });
 
 Vue.component('example-item', {
@@ -16,7 +15,8 @@ Vue.component('example-item', {
   });
 
 function remove(id, indx) {
-    alert("todo");
+    alert("todo; remove");
+	return
     console.log('remove item: ' + id)
     app.intent_list.splice(indx, 1)
     delete intents_dict[id]
@@ -26,7 +26,8 @@ function remove(id, indx) {
     this.deleteData(dataUrl + id)
 }
 
-function filterChanged() {
+function blurIntent() {
+	app.selectedIntent=""
 	app.onFilterChange()
 }
 
@@ -40,6 +41,8 @@ function addExample() {
 
 }
 function removeExample(indx){
+    alert("todo; removeExample");
+
     intentObject = intents_dict[app.selectedIntent]
     intentObject.textSet.splice(indx, 1)
     updateData(dataUrl+'/intents', intentObject)
@@ -48,13 +51,14 @@ function successAfterUpdate(data) {
     console.log( "getting updated data from server." );
 }
 function successAfterAddNew(intent) {
-    alert("todo")
+    alert("todo successAfterAddNew")
     console.log( "getting data from server after add new: " + intent );
     intents_dict[data.intent] = intent
     app.intent_list.unshift(intent)
     app.setExampleList(intent)
 }
 function addIntent() {
+    alert("todo addIntent")
     var text = $("#search_text").val()
     if (text == '') return
     $("#search_text").val("")
@@ -74,7 +78,15 @@ function addNew(url, data, callback) {
     });
 
 }
-function updateData(url, data, callback) {
+
+function onUpdateDataError(e) {
+	console.log("!! ajax updated failed");
+}
+
+function updateData(url, data, onSuccess, onError) {
+	if (onError == undefined)
+		onError = onUpdateDataError
+	
     var jsonData = JSON.stringify(data)
     $.ajax({
      dataType: "json",
@@ -83,11 +95,12 @@ function updateData(url, data, callback) {
      url: url,
      data: jsonData,
      method: "PUT",
-     success: callback
+         success: onSuccess,
+		 error: onError
     });
 
  }
-function deleteData(url, data, callback) {
+function deleteData(url, data, onSuccess, onError) {
 
      $.ajax({
          dataType: "json",
@@ -96,17 +109,30 @@ function deleteData(url, data, callback) {
          url: url,
          data: data,
          method: "DELETE",
-         success: callback
+         success: onSuccess,
+		 error: onError
      });
 
  }
 
- function show_examples(caller) {
-     console.log('show example event');
+ function onSelectIntent(caller) {
+     console.log('intent selected');
      intent = intents_dict[caller.id];
-     selectedIntent = intent.intent;
+     app.selectedIntent = intent.intent;
      app.setExampleList(intent);
  }
+ 
+function onUpdateDataSuccessful(updatedIntent, fnNextCallback) {
+	intents_dict[updatedIntent.intent] = updatedIntent;
+	fnNextCallback();
+}
+	
+function notifyUser(msg) {
+	app.userNotification = msg;
+	$('#user-notif').fadeIn();
+	setTimeout(function() { $('#user-notif').fadeOut('slow')}, 3000);
+}
+
 
 function init(data){
     data.forEach(add_intent_to_map);
@@ -119,11 +145,12 @@ function init(data){
               selectedIntent: "",
               filterChanged: true,
               resultsCount: "0",
+			  userNotification: "",
               tag: "",
               tags: [],
               tagsValidation: [{
                 classes: 'min-length',
-                rule: tag => tag.text.length <= 1
+                rule: tag => tag.text.length <= 2
               }]
             },
             methods: {
@@ -135,11 +162,75 @@ function init(data){
               },
               onTagsChange: function(newTags) {
                 console.log("onTagsChange");
-                intentObject = intents_dict[app.selectedIntent]
-                intentObject.textSet = newTags.map(t => t.text)
-                updateData(dataUrl+'/intents', intentObject, successAfterUpdate)
-                return true
               },
+			  onTagAdd: function(tagAdd){
+					if (this.selectedIntent == "") {
+						notifyUser("no intent selected: cannot add tag");
+						return;
+					}
+				  
+					// validate new tag
+					if (tagAdd.tag.text.length < 3) {
+						notifyUser("Tag must be at least 3 charaters long");
+						return;
+					}
+				  
+					if (intents_dict[this.selectedIntent].textSet.includes(tagAdd.tag.text)) {
+						notifyUser("Tag already exists");
+						return;
+					}
+					
+					modIntent = intents_dict[this.selectedIntent]
+					modIntent.textSet.push(tagAdd.tag.text);
+					updateData(dataUrl + modIntent.intent, modIntent, function() { onUpdateDataSuccessful(modIntent, tagAdd.addTag); });
+			  },
+			  onTagDel: function(tagDel){
+				if (this.selectedIntent == "") {
+					// remove all intents that are using this tag
+					textset_dict[tagDel.tag.text].forEach(intent => {
+						var modIntent = intents_dict[intent];
+						modIntent.textSet.splice(intents_dict[intent].textSet.indexOf(tagDel.tag.text),1);
+						updateData(dataUrl + modIntent.intent, modIntent, function() { onUpdateDataSuccessful(modIntent, tagDel.deleteTag); });
+					});
+				} else {
+					// remove tag only from currently selected intent
+					var modIntent = intents_dict[this.selectedIntent];
+					modIntent.textSet.splice(intents_dict[intent].textSet.indexOf(tagDel.tag.text),1);
+					updateData(dataUrl + modIntent.intent, modIntent, function() { onUpdateDataSuccessful(modIntent, tagDel.deleteTag); });
+				}
+			  },
+			  onTagSave: function(tagSave){
+					// validate new tag
+					if (tagSave.tag.text.length < 3) {
+						notifyUser("Tag must be at least 3 charaters long");
+						return;
+					}
+					
+					if (this.selectedIntent != "") {					
+						if (intents_dict[this.selectedIntent].textSet.includes(tagSave.tag.text)) {
+							notifyUser("Tag already exists");
+							return;
+						}
+						
+						textset_dict[tagSave.tag.text].forEach(intent => {
+							var modIntent = intents_dict[intent];
+							modIntent.textSet.splice(intents_dict[intent].textSet.indexOf(tagSave.tag.text),1);
+							modIntent.textSet.push(tagSave.tag.text);
+							updateData(dataUrl + modIntent.intent, modIntent, function() { onUpdateDataSuccessful(modIntent, tagSave.saveTag); });
+						});
+						
+					} else {
+						if (textset_dict[tagSave.tag.text] != undefined) {
+							notifyUser("Tag already exists");
+							return;
+						}
+						
+						modIntent = intents_dict[this.selectedIntent]
+						modIntent.textSet.splice(intents_dict[intent].textSet.indexOf(tagSave.tag.text),1);
+						modIntent.textSet.push(tagSave.tag.text);
+						updateData(dataUrl + modIntent.intent, modIntent, function() { onUpdateDataSuccessful(modIntent, tagSave.saveTag); });
+					}
+				},
               onFilterChange: function() {
                 console.log("onFilterChange");
                 this.filterChanged = true
@@ -265,3 +356,9 @@ function toggleFilterClearButton() {
       .trigger('propertychange').focus();
   });
 }
+
+$(document).keyup(function(e) {
+     if (e.key === "Escape") { 
+        blurIntent();
+    }
+});
