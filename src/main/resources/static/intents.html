@@ -4,38 +4,50 @@
     <meta charset="UTF-8">
     <title>Intents Management</title>
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
     <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/vue-tags-input/vue-tags-input.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/css/intents.css">
+    <link rel="stylesheet" href="/css/input-tags.css">
 </head>
 <body>
-<div id="app">
-    <input id="search_text" type="text">
-    <div>
-        <input type="button" value="Add" onclick="addIntent()">
+<br>
+<div id="app" class="container-fluid">
+  <div class="row form-group">
+    <div class="col-md-8">
+      <input class="searchbar" type="text" id="searchFilter" v-model="intentFilter" @input="onFilterChange" placeholder="Start typing text to find corresponding intents"/>
     </div>
-
-
-    <div class="split left">
-
+  </div>
+  <div class="row">
+    <div class="col-md-3 split left datapane overflow-auto" style="direction: rtl">
+      <div style="direction: ltr">
         <intent-item
-                v-for="(intents, indx) in intent_list"
-                v-bind:intents="intents"
-                v-on:remove="remove(intents.intent, indx)"
+                  v-for="(intents, indx) in filterIntentsByTextsetKeywords"
+                  v-bind:intents="intents"
+                  v-on:remove="remove(intents.intent, indx)"
         ></intent-item>
+      </div>
     </div>
-    <div class="split right">
-        <label id="intent_label">Intent: {{intent_label}}</label>
-        <input id="input_example" type="text"><input type="button" value="Add" onclick="addExample()">
-        <example-item
-                v-for="(example, indx) in example_list"
-                v-bind:example="example"
-                v-on:remove="removeExample(indx)"
-        ></example-item>
+    <div class="col-md-8 split right datapane overflow-auto no-border">
+      <div >
+        <vue-tags-input
+              v-model="tag"
+              :tags="tags"
+              @tags-changed="newTags => onTagsChange(newTags)"
+              placeholder="+"
+              allow-edit-tags="true"
+              autocomplete-filter-duplicates="false"
+              avoid-adding-duplicates="false"
+              :validation="tagsValidation"
+
+            />
+      </div>
     </div>
+  </div>
 </div>
-
-
-</div>
+<script src="js/constants.js"></script>
 <script src="js/intents.js"></script>
 </body>
 </html>
