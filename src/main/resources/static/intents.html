@@ -7,22 +7,35 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
     <script src="/webjars/jquery/jquery.min.js"></script>
     <script src="/webjars/vue-tags-input/vue-tags-input.js"></script>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/intents.css">
     <link rel="stylesheet" href="/css/input-tags.css">
 </head>
 <body>
 <br>
+
 <div id="app" class="container-fluid">
-  <div class="row form-group">
+  <div class="row">
     <div class="col-md-8">
-      <input class="searchbar" type="text" id="searchFilter" v-model="intentFilter" @input="onFilterChange" placeholder="Start typing text to find corresponding intents"/>
+      <div class="input-group">
+        <span class="input-group-addon input-group-text"><i class="glyphicon glyphicon-search"></i></span>
+        <div class="form-group has-feedback has-clear">
+<!--          <i class="glyphicon glyphicon-search"></i-->
+          <input class="form-control searchbar" type="text" id="searchFilter" v-model="intentFilter" @input="onFilterChange" placeholder="Start typing text to find corresponding intents"/>
+          <span class="form-control-clear glyphicon glyphicon-remove form-control-feedback hidden" @click="onFilterClear"></span>
+        </div>
+      </div>
     </div>
   </div>
   <div class="row">
-    <div class="col-md-3 split left datapane overflow-auto" style="direction: rtl">
-      <div style="direction: ltr">
+    <div class="col-md-8">
+      <center><small><b>{{resultsCount}}</b> tags found</small></center>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-3  left" style="direction: rtl">
+      <div class="btn-toolbar p50-md-5" style="direction: ltr">
         <intent-item
                   v-for="(intents, indx) in filterIntentsByTextsetKeywords"
                   v-bind:intents="intents"

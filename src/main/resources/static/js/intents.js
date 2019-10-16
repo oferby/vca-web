@@ -6,12 +6,13 @@ var dataUrl = backendServer + '/data/intents/';
 
 Vue.component('intent-item', {
     props: ['intents'],
-    template: '<div class="row form-group"><div class="col-sm-1"><button class="btn" @click="$emit(\'remove\')"><i class="fa fa-remove"></i></button></div><div class="col-sm-3"><button class="btn btn-primary" v-bind:id="intents" v-model="intents" onclick="show_examples(this)">{{intents}}</button></div></div>'
+    template: '<div class="btn-group" role="group"><button class="btn btn-primary" @click="$emit(\'remove\')"><i class="glyphicon glyphicon-remove"></i></button><button class="btn btn-primary" v-bind:id="intents" v-model="intents" onclick="show_examples(this)">{{intents}}</button></div>'
+//    template: '<div class="row form-group"><div class="col-sm-1"><button class="btn" @click="$emit(\'remove\')"><i class="glyphicon glyphicon-remove"></i></button></div><div class="col-sm-3"><button class="btn btn-primary" v-bind:id="intents" v-model="intents" onclick="show_examples(this)">{{intents}}</button></div></div>'
   });
 
 Vue.component('example-item', {
     props: ['example'],
-    template: '<div class="intent-item"><input v-bind:id="example" type="text" data-role="tagsinput" v-model="example" ><button class="btn"><i class="fa fa-save"></i> Save</button><button class="btn" @click="$emit(\'remove\')"><i class="fa fa-remove"></i> Remove</button></div>'
+    template: '<div class="intent-item"><input v-bind:id="example" type="text" data-role="tagsinput" v-model="example" ><button class="btn"><i class="glyphicon glyphicon-ok"></i> Save</button><button class="btn" @click="$emit(\'remove\')"><i class="fa fa-remove"></i> Remove</button></div>'
   });
 
 function remove(id, indx) {
@@ -112,9 +113,10 @@ function init(data){
             data: {
               intentFilter: "",
               intentsList: sorted_intent_list,
-              example_list: intents_dict[sorted_intent_list[0]].textSet,
+//              example_list: intents_dict[sorted_intent_list[0]].textSet,
               selectedIntent: "",
               filterChanged: true,
+              resultsCount: "0",
               tag: "",
               tags: [],
               tagsValidation: [{
@@ -125,9 +127,8 @@ function init(data){
             methods: {
               setExampleList (intent) {
                 console.log("setExampleList");
-                this.example_list = intent.textSet.filter(f => f.includes(this.intentFilter));
-//                this.intent_label = intent.intent;
-                this.tags = this.example_list;
+				this.tags = []
+				filterIntents(this.intentFilter, intent.textSet, undefined , this.tags)
               },
               onTagsChange: function(newTags) {
                 console.log("onTagsChange");
@@ -139,45 +140,43 @@ function init(data){
               onFilterChange: function() {
                 console.log("onFilterChange");
                 this.filterChanged = true
+                toggleFilterClearButton()
                 return true
-              }
+              },
+			  onFilterClear: function() {
+				this.intentFilter="";
+                this.filterChanged = true
+                toggleFilterClearButton()
+                return true				  
+			  }
             },
             computed: {
-              filterIntentsByTextsetKeywords: function() {
-                console.log("filterIntentsByTextsetKeywords( filterChanged = "+this.filterChanged+")");
+				filterIntentsByTextsetKeywords: function() {
+						console.log("filterIntentsByTextsetKeywords( filterChanged = "+this.filterChanged+")");
 
-                  if (!this.filterChanged)
-                    return this.intentsList
-                  else
-                    this.intentsList = sorted_intent_list
+						if (!this.filterChanged)
+							return this.intentsList
+						else
+							this.intentsList = sorted_intent_list
 
-                  if (this.intentFilter.length > 0)
-                    this.tags = []
-                  // filter intents by intent name
-                  // return this.intent_list.filter(el => {return el.intent.toLowerCase().includes(this.intentFilter.toLowerCase())})
+						this.tags = []
 
-                  // filter intents by textset keywords
-                  // construct a set for all intents that have a word in their textset, which contains the search filter
-                  const filteredTextSet = new Set()
-                  for (ts in textset_dict) {
-                    if (ts.toLowerCase().indexOf(this.intentFilter.toLowerCase())>=0) {
-                      if (this.intentFilter.length > 0)
-                        this.tags.push(ts);
-                      textset_dict[ts].forEach(function(val) {
-                        filteredTextSet.add(val);
-                      });
-                    }
-                  }
-                  // using the set, filter the intent list
-                  this.filterChanged=false
-                  var new_list = this.intentsList.filter(function(el) {return filteredTextSet.has(el)})
-                  this.intentsList = new_list
-                  return this.intentsList
-                }
-              }
+						// filter intents by textset keywords
+						// construct a set for all intents that have a word in their textset, which contains the search filter
+						const filteredTextSet = new Set()
+						
+						filterIntents(this.intentFilter, Object.keys(textset_dict), textset_dict, this.tags, filteredTextSet);
+						
+
+						// using the set, filter the intent list
+						this.filterChanged=false
+						var new_list = this.intentsList.filter(function(el) {return filteredTextSet.has(el)})
+						this.intentsList = new_list
+						this.resultsCount = this.tags.length
+						return this.intentsList
+					}
+				}
             })
-        //show_example_for_intent(sorted_intent_list[0])
-}
 
 
 
@@ -186,6 +185,36 @@ $( document ).ready(function() {
     getData(init);
 
 });
+
+function filterIntents(filterInput, dictInput, textsetInput, tagsOutput, textsetOutput) {
+	// impl: break the filter to words ([ ,.]), remove (["']) and do an "AND" search
+	if (filterInput.length>0) {
+		
+		var cleanFilterVec = filterInput.replace(/["']/g, "").replace(/[,.]/g, " ").toLowerCase().split(" ");
+		dictInput.forEach(ts => {
+			// clear all special characters from textset word
+			cts = ts.replace(/["'.,]/g,"").toLowerCase();
+			allFound=true;
+			for (i=0 ; i < cleanFilterVec.length ; i++) {
+				f = cleanFilterVec[i];
+				if (cts.indexOf(f)<0) {
+					allFound=false;
+					break;
+				}								
+			}
+			if (allFound) {
+				tagsOutput.push(ts);
+				
+				if (textsetInput != undefined && textsetOutput != undefined) {
+					textsetInput[ts].forEach(val => {
+						textsetOutput.add(val);
+					});
+				}
+			}								
+		});
+	}
+}
+
 function add_intent_to_map(value){
   console.log("add_intent_to_map");
    // build the first index - from intents to textset
@@ -209,3 +238,16 @@ function getData(callback) {
     });
 
 };
+
+function toggleFilterClearButton() {
+  $('.has-clear input[type="text"]').on('input propertychange', function() {
+    var $this = $(this);
+    var visible = Boolean($this.val());
+    $this.siblings('.form-control-clear').toggleClass('hidden', !visible);
+  }).trigger('propertychange');
+
+  $('.form-control-clear').click(function() {
+    $(this).siblings('input[type="text"]').val('')
+      .trigger('propertychange').focus();
+  });
+}
