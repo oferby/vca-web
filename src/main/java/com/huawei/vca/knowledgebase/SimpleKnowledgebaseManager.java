@@ -45,11 +45,11 @@ public class SimpleKnowledgebaseManager implements SkillController {
 
         GoalPrediction userGoal = findUserGoal(dialogue);
         PredictedAction predictedAction = findBestAction(userGoal);
-        logger.debug("got prediction: " + predictedAction);
+        logger.debug("got prediction from guess: " + predictedAction);
         return predictedAction;
     }
 
-    private PredictedAction findBestAction(GoalPrediction userGoal) {
+    private PredictedAction findBestActionMostValues(GoalPrediction userGoal) {
         PredictedAction predictedAction = new PredictedAction();
         List<MenuItemEntity> possibleGoals = userGoal.getPossibleGoals();
         if (possibleGoals.size() == 0) {  //no goals remaining, return blank
@@ -86,6 +86,66 @@ public class SimpleKnowledgebaseManager implements SkillController {
             LinkedHashSet currentValueList = new LinkedHashSet<>(maxEntry.getValue());
             maxEntry.getKey().setValues(currentValueList);
             BotUtterEvent botUtterEvent = responseGenerator.generateQueryResponseForSlot(maxEntry.getKey());
+            predictedAction.setActionId(botUtterEvent.getId());
+            predictedAction.setConfidence((float) 0.95);
+            return predictedAction;
+        }
+    }
+
+    private PredictedAction findBestActionLinkedList(GoalPrediction userGoal) {
+
+        PredictedAction predictedAction = new PredictedAction();
+        List<MenuItemEntity> possibleGoals = userGoal.getPossibleGoals();
+        if (possibleGoals.size() == 0) {  //no goals remaining, return blank
+            return predictedAction;
+        } else if (possibleGoals.size() == 1) { //1 goal remaining, return offer for it
+            BotUtterEvent botUtterEvent = responseGenerator.generateResponse(possibleGoals.get(0));
+            predictedAction.setActionId(botUtterEvent.getId());
+            predictedAction.setConfidence((float) 0.8);
+            return predictedAction;
+        } else { //more than one goal remaining, choose next action based on slots
+            List<SlotEntity> slotSpace = slotRepository.findAll();
+            List<Slot> informedSlots = userGoal.getInformSlots();
+            Map<String, List<String>> actionTree = new HashMap<>();
+            List<String> burgerActions = Arrays.asList("food:ingredient:meat", "food:main_dish:burger:cook_level",
+                    "food:condiment:sauce:burger_sauce", "food:ingredient:plant:vegetable", "food:bread");
+            List<String> pastaActions = Arrays.asList("food:main_dish:pasta", "food:condiment:sauce:pasta_sauce",
+                    "food:ingredient:plant:vegetable");
+            List<String> generalActions = Arrays.asList("food:side_dish", "food:drink");
+            actionTree.put("burger", burgerActions);
+            actionTree.put("pasta", pastaActions);
+            actionTree.put("general", generalActions);
+
+            //remove informed slots from slot space
+            //is there a better way to do this than nested for loops?
+            //this won't work if someone changed their mind
+            for (Slot slot : informedSlots) {
+                String informedKey = slot.getKey();
+                String informedValue = slot.getValue();
+                if (informedValue.contains("burger") || informedKey.contains("burger")
+                        || informedKey.contains("cook_level") || informedKey.contains("bread")) {
+                    actionTree.remove("pasta");
+                    actionTree.get("burger").remove(informedKey);
+                } else if (informedValue.contains("pasta") || informedKey.contains("pasta")) {
+                    actionTree.remove("burger");
+                    actionTree.get("pasta").remove(informedKey);
+                } else if (informedKey.contains("side") || informedKey.contains("drink")) {
+                    actionTree.get("general").remove(informedKey);
+                }
+            }
+            SlotEntity nextSlot = null;
+            if (actionTree.keySet().size() < 1 || actionTree.keySet().size() > 2) {
+                throw new IllegalArgumentException("no categories left in action tree");
+            } else if (actionTree.keySet().size() == 1) {
+                nextSlot = findByName(slotSpace, actionTree.get("general").get(0));
+            } else if (actionTree.containsKey("burger")) {
+                nextSlot = findByName(slotSpace, actionTree.get("burger").get(0));
+            } else {
+                nextSlot = findByName(slotSpace, actionTree.get("pasta").get(0));
+            }
+
+            if (nextSlot == null) {throw new IllegalArgumentException("no actions found in action space");}
+            BotUtterEvent botUtterEvent = responseGenerator.generateQueryResponseForSlot(nextSlot);
             predictedAction.setActionId(botUtterEvent.getId());
             predictedAction.setConfidence((float) 0.7);
             return predictedAction;
