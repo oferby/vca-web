@@ -79,7 +79,7 @@ public class ResponseGeneratorImpl implements ResponseGenerator{
 
         String text = optionalBotUtterEntity.get().getTextSet().iterator().next();
         if (slotEntity.getValues().size() > 0 ) {
-            text = text + "\nThese are the options:";
+            text = text + " These are the options:";
         }
 
         botUtterEvent.setText(text);

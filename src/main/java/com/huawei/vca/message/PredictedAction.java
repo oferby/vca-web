@@ -61,5 +61,19 @@ public class PredictedAction implements Comparable<PredictedAction>{
         return 0;
     }
 
+    @Override
+    public String toString() {
+        String botUtterString = null;
+        if (botEvent != null & botEvent instanceof BotUtterEvent) {
+            botUtterString = ((BotUtterEvent) botEvent).getId();
+            if (botUtterString == null)
+                botUtterString = ((BotUtterEvent) botEvent).getText();
+        }
 
+        return "PredictedAction{" +
+                "botEvent=" +  botUtterString +
+                ", confidence=" + confidence +
+                ", properties=" + properties +
+                '}';
+    }
 }

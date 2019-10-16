@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.VariableOperators;
 import org.springframework.stereotype.Controller;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
@@ -38,7 +39,9 @@ public class SimpleKnowledgebaseManager implements SkillController {
     @Autowired
     private ResponseGenerator responseGenerator;
 
-    private String goalPrediction = "goal_prediction";
+//    private String goalPrediction = "goal_prediction";
+
+    private List<String>slotValues = new ArrayList<>();
 
     @Override
     public PredictedAction getPredictedAction(Dialogue dialogue) {
@@ -98,13 +101,24 @@ public class SimpleKnowledgebaseManager implements SkillController {
 
         }
 
-        if (!slotMap.containsKey("food:main_dish") || slotMap.get("food:main_dish").keySet().size() > 1) {
-            Optional<SlotEntity> optionalSlotEntity = slotRepository.findById("food:main_dish");
+        for (String slotValue : slotValues) {
+            boolean found = this.searchSlots(slotMap, goalPrediction, slotValue);
+            if (found)
+                return;
+        }
+
+    }
+
+
+    private boolean searchSlots(Map<String, Map<String, Integer>> slotMap, GoalPrediction goalPrediction, String searchValue) {
+
+        if (!slotMap.containsKey(searchValue) || slotMap.get(searchValue).keySet().size() > 1) {
+            Optional<SlotEntity> optionalSlotEntity = slotRepository.findById(searchValue);
             assert optionalSlotEntity.isPresent();
 
             SlotEntity slotEntity = optionalSlotEntity.get();
             Set<String> tempValues = new HashSet<>(slotEntity.getValues());
-            Set<String> values = slotMap.get("food:main_dish").keySet();
+            Set<String> values = slotMap.get(searchValue).keySet();
             for (String value : slotEntity.getValues()) {
                 if (!values.contains(value)) {
                     tempValues.remove(value);
@@ -112,16 +126,10 @@ public class SimpleKnowledgebaseManager implements SkillController {
             }
             slotEntity.setValues(tempValues);
             goalPrediction.setBestNextQuestion(slotEntity);
-            return;
+            return true;
         }
 
-        if (!slotMap.containsKey("food:main_dish") || slotMap.get("food:main_dish").keySet().size() > 1) {
-            Optional<SlotEntity> optionalSlotEntity = slotRepository.findById("food:main_dish");
-            assert optionalSlotEntity.isPresent();
-            goalPrediction.setBestNextQuestion(optionalSlotEntity.get());
-            return;
-        }
-
+        return false;
 
     }
 
@@ -195,8 +203,16 @@ public class SimpleKnowledgebaseManager implements SkillController {
         if (goalPrediction.getPossibleGoals() != null)
             size = goalPrediction.getPossibleGoals().size();
 
-        logger.debug("calculated prediction for user goal." + size);
+        logger.debug("calculated prediction for user goal. size: " + size);
         return goalPrediction;
+    }
+
+    @PostConstruct
+    private void setup() {
+        slotValues.add("food:main_dish");
+        slotValues.add("food:ingredient:meat");
+        slotValues.add("food:main_dish:burger:cook_level");
+        slotValues.add("food:condiment:sauce:burger_sauce");
     }
 
 }
