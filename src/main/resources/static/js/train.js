@@ -65,7 +65,7 @@ function addUserInput(text) {
 
 function addIntentInput(text) {
 
-    $('#smartbotBody').append('<div class="messageBox outgoing intent"><div class="messageText">' + text + '</div></div>');
+    $('#smartbotBody').append('<div class="messageBox outgoing intent wrapword"><div class="messageText wrapword">' + text + '</div></div>');
 
 }
 
