@@ -28,7 +28,9 @@ public class TestMealUserGoalEntity {
 
     @Test
     public void testFindAll() {
+        String description = "menu_item";
         List<MealUserGoalEntity> all = mealUserGoalRepository.findAll();
+        int i = 0;
         for (MealUserGoalEntity meal : all) {
             MenuItemEntity menuItemEntity = new MenuItemEntity();
             Map props = meal.getProperties();
@@ -47,8 +49,8 @@ public class TestMealUserGoalEntity {
                     Slot slot = new Slot(k.toString(), v.toString());
                     menuItemEntity.addSlot(slot);
                 }
-                menuItemEntity.setDescription("test");
             });
+            menuItemEntity.setDescription("menu_item_" + i++);
             menuItemRepository.save(menuItemEntity);
         }
     }
