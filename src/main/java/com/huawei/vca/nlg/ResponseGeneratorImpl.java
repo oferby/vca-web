@@ -1,6 +1,7 @@
 package com.huawei.vca.nlg;
 
 import com.huawei.vca.message.BotUtterEvent;
+import com.huawei.vca.message.Option;
 import com.huawei.vca.repository.controller.BotUtterRepository;
 import com.huawei.vca.repository.entity.BotUtterEntity;
 import com.huawei.vca.repository.entity.MenuItemEntity;
@@ -10,8 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Controller
 public class ResponseGeneratorImpl implements ResponseGenerator{
@@ -32,18 +32,15 @@ public class ResponseGeneratorImpl implements ResponseGenerator{
         BotUtterEntity botUtterEntity = actionById.get();
         BotUtterEvent botUtterEvent = new BotUtterEvent();
 
-//        TODO
-//        change to random
-        Set<String> textIterator = botUtterEntity.getTextSet();
-        String text;
-        if (textIterator.iterator().hasNext()) {
-            text = textIterator.iterator().next();
-
-        } else {
-            text = "** no messages found for action ** " + botUtterEntity.getId();
+        Set<String> textSet = botUtterEntity.getTextSet();
+        if (textSet.size() > 0) {
+            List<String>stringList = new ArrayList<>(textSet);
+            Random rand = new Random();
+            int r = rand.nextInt(stringList.size());
+            botUtterEvent.setText(stringList.get(r));
         }
+
         botUtterEvent.setId(botUtterEntity.getId());
-        botUtterEvent.setText(text);
 
         return botUtterEvent;
 
@@ -56,6 +53,22 @@ public class ResponseGeneratorImpl implements ResponseGenerator{
 
     @Override
     public BotUtterEvent generateQueryResponseForSlot(SlotEntity slotEntity) {
-        return null;
+
+        String slotName = slotEntity.getName();
+        String utterId = "utter.ask.slot." + slotName;
+
+        Optional<BotUtterEntity> optionalBotUtterEntity = botUtterRepository.findById(utterId);
+
+        if (!optionalBotUtterEntity.isPresent())
+            throw new RuntimeException("did not find utter for slot: " + slotName);
+
+        BotUtterEvent botUtterEvent = new BotUtterEvent();
+        botUtterEvent.setText(optionalBotUtterEntity.get().getTextSet().iterator().next());
+
+        for (String value : slotEntity.getValues()) {
+            botUtterEvent.addOption(new Option(value,value));
+        }
+
+        return botUtterEvent;
     }
 }

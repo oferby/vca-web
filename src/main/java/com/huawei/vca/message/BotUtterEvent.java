@@ -7,7 +7,6 @@ public class BotUtterEvent extends BotEvent{
 
     private String id;
     private String text;
-    private Integer actionId;
     private List<Option> options;
     private List<ImageInfo> imageInfoList;
 
@@ -32,18 +31,6 @@ public class BotUtterEvent extends BotEvent{
 
     public void setText(String text) {
         this.text = text;
-    }
-
-    public Integer getActionId() {
-        return actionId;
-    }
-
-    public void setActionId(Integer actionId) {
-        this.actionId = actionId;
-    }
-
-    public List<Option> getOptions() {
-        return options;
     }
 
     public void setOptions(List<Option> options) {
