@@ -40,6 +40,7 @@
                   v-for="(intents, indx) in filterIntentsByTextsetKeywords"
                   v-bind:intents="intents"
                   v-on:remove="remove(intents.intent, indx)"
+                  v-on:blur="filterChanged()"
         ></intent-item>
       </div>
     </div>

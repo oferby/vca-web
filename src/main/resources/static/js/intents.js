@@ -6,7 +6,7 @@ var dataUrl = backendServer + '/data/intents/';
 
 Vue.component('intent-item', {
     props: ['intents'],
-    template: '<div class="btn-group" role="group"><button class="btn btn-primary" @click="$emit(\'remove\')"><i class="glyphicon glyphicon-remove"></i></button><button class="btn btn-primary" v-bind:id="intents" v-model="intents" onclick="show_examples(this)">{{intents}}</button></div>'
+    template: '<div class="btn-group" role="group"><button class="btn btn-primary" @click="$emit(\'remove\')"><i class="glyphicon glyphicon-remove"></i></button><button class="btn btn-primary" v-bind:id="intents" v-model="intents" onclick="show_examples(this)" onblur="filterChanged()">{{intents}}</button></div>'
 //    template: '<div class="row form-group"><div class="col-sm-1"><button class="btn" @click="$emit(\'remove\')"><i class="glyphicon glyphicon-remove"></i></button></div><div class="col-sm-3"><button class="btn btn-primary" v-bind:id="intents" v-model="intents" onclick="show_examples(this)">{{intents}}</button></div></div>'
   });
 
@@ -24,6 +24,10 @@ function remove(id, indx) {
     intentObject = intents_dict[nextIntent]
     app.setExampleList(nextIntent)
     this.deleteData(dataUrl + id)
+}
+
+function filterChanged() {
+	app.onFilterChange()
 }
 
 function addExample() {
@@ -106,14 +110,12 @@ function deleteData(url, data, callback) {
 
 function init(data){
     data.forEach(add_intent_to_map);
-//    sorted_intent_list =  Object.keys(intents_dict).map(function(e) {return intents_dict[e].intent}).sort();
     sorted_intent_list =  Object.keys(intents_dict).sort();
     app = new Vue({
             el: '#app',
             data: {
               intentFilter: "",
               intentsList: sorted_intent_list,
-//              example_list: intents_dict[sorted_intent_list[0]].textSet,
               selectedIntent: "",
               filterChanged: true,
               resultsCount: "0",
@@ -129,6 +131,7 @@ function init(data){
                 console.log("setExampleList");
 				this.tags = []
 				filterIntents(this.intentFilter, intent.textSet, undefined , this.tags)
+				this.resultsCount = this.tags.length
               },
               onTagsChange: function(newTags) {
                 console.log("onTagsChange");
@@ -170,13 +173,19 @@ function init(data){
 
 						// using the set, filter the intent list
 						this.filterChanged=false
-						var new_list = this.intentsList.filter(function(el) {return filteredTextSet.has(el)})
-						this.intentsList = new_list
+						
+						if (this.intentFilter.length>0) {
+							this.intentsList = this.intentsList.filter(function(el) {return filteredTextSet.has(el)})
+						} else {
+							this.intentsList = sorted_intent_list
+						}
+						
 						this.resultsCount = this.tags.length
 						return this.intentsList
 					}
 				}
             })
+}
 
 
 
@@ -212,6 +221,11 @@ function filterIntents(filterInput, dictInput, textsetInput, tagsOutput, textset
 				}
 			}								
 		});
+	}
+	else {
+		dictInput.forEach(ts => {
+			tagsOutput.push(ts);
+		})
 	}
 }
 
