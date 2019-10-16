@@ -1,6 +1,7 @@
 package com.huawei.vca.web;
 
 import com.huawei.vca.conversation.ConversationStateTracker;
+import com.huawei.vca.conversation.DialogueManager;
 import com.huawei.vca.conversation.SessionController;
 import com.huawei.vca.message.*;
 import com.huawei.vca.repository.graph.*;
@@ -21,16 +22,10 @@ public class TrainWebSocketController {
     private static final Logger logger = LoggerFactory.getLogger(TrainWebSocketController.class);
 
     @Autowired
-    private SimpMessagingTemplate template;
-
-    @Autowired
     private SessionController sessionController;
 
     @Autowired
     private ConversationStateTracker conversationStateTracker;
-
-    @Autowired
-    private ConversationGraphController conversationGraphController;
 
     @Autowired
     private WebSocketController webSocketController;
@@ -40,6 +35,9 @@ public class TrainWebSocketController {
 
     @Autowired
     private ExecutorService executorService;
+
+    @Autowired
+    private DialogueManager dialogueManager;
 
     @MessageMapping("/train/parseDialogue")
     public void getIntentRequest(Dialogue dialogue, @Header("simpSessionId") String sessionId) {
@@ -86,7 +84,7 @@ public class TrainWebSocketController {
         logger.debug("got new action to add: " + dialogue.getText());
 
         executorService.execute(() -> {
-            conversationStateTracker.addActionToDialogue(dialogue);
+            dialogueManager.addActionToDialogue(dialogue);
             sessionController.addOrUpdateDialogue(dialogue.getSessionId(), dialogue);
             this.webSocketController.sendResponseToAll(dialogue);
         });

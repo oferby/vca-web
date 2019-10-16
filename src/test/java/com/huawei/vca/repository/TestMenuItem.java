@@ -13,10 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
@@ -184,4 +181,51 @@ public class TestMenuItem {
         menuItemRepository.deleteAll(result);
 
     }
+
+
+    @Test
+    public void testUserGoal() {
+
+        List<Slot> slotList = new ArrayList<>();
+        slotList.add(new Slot("food:main_dish", "burger"));
+
+        List<MenuItemEntity> result = mongoTemplate.find(query(where("slots").all(slotList)), MenuItemEntity.class);
+
+        assert !result.isEmpty();
+
+        slotList.add(new Slot("food:ingredient:meat", "beef"));
+        result = mongoTemplate.find(query(where("slots").all(slotList)), MenuItemEntity.class);
+
+        assert !result.isEmpty();
+
+        slotList.add(new Slot("food:main_dish:burger:cook_level", "medium"));
+
+        result = mongoTemplate.find(query(where("slots").all(slotList)), MenuItemEntity.class);
+
+        assert !result.isEmpty();
+
+        slotList.add(new Slot("food:condiment:sauce:burger_sauce","barbecue sauce"));
+
+        result = mongoTemplate.find(query(where("slots").all(slotList)), MenuItemEntity.class);
+
+        assert !result.isEmpty();
+
+        Set<Slot> toAsk = new HashSet<>();
+        for (Slot slot : result.get(0).getSlots()) {
+            if (!result.get(1).getSlots().contains(slot)){
+                toAsk.add(slot);
+            }
+        }
+
+        for (Slot slot : result.get(1).getSlots()) {
+            if (!result.get(0).getSlots().contains(slot)){
+                toAsk.add(slot);
+            }
+        }
+
+        assert !toAsk.isEmpty();
+    }
+
+
+
 }

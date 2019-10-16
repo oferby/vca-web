@@ -9,6 +9,4 @@ public interface ConversationStateTracker {
 
     Dialogue handleNluOnly(Dialogue dialogue);
 
-    void addActionToDialogue(Dialogue dialogue);
-
 }

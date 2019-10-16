@@ -24,9 +24,10 @@ public class TestSimpleKnowledgebaseManager {
     private ConversationGraphRepository conversationGraphRepository;
 
     @Test
-    public void dev_test() {
-        //Iterable<ID> idArray[] = new Long[]{123444444, 1234544444444};
-        //RootNode rootNode = conversationGraphRepository.findAllById(idArray);
-        System.out.println();
+    public void testFindingNextSlotToAsk() {
+
+
+
+
     }
 }

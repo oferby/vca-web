@@ -36,10 +36,7 @@ public class EchoConversationStateTracker implements ConversationStateTracker {
 
     }
 
-    @Override
-    public void addActionToDialogue(Dialogue dialogue) {
 
-    }
 
     private void handleUserUtter(Dialogue dialogue) {
 

@@ -2,6 +2,9 @@ package com.huawei.vca.repository.graph;
 
 import com.huawei.vca.conversation.skill.SkillController;
 import com.huawei.vca.message.*;
+import com.huawei.vca.nlg.ResponseGenerator;
+import com.huawei.vca.repository.controller.BotUtterRepository;
+import com.huawei.vca.repository.entity.BotUtterEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,9 @@ public class ConversationGraphController implements SkillController {
     @Autowired
     private ConversationGraphRepository conversationGraphRepository;
 
+    @Autowired
+    private ResponseGenerator responseGenerator;
+
     private static String graphLocation = "graph_location";
     private static String observationLocation = "observation_location";
 
@@ -31,7 +37,8 @@ public class ConversationGraphController implements SkillController {
             return predictedAction;
         }
 
-        predictedAction.setActionId(actionNode.getStringId());
+        BotUtterEvent botUtterEvent = responseGenerator.generateResponse(actionNode.getStringId());
+        predictedAction.setBotEvent(botUtterEvent);
         predictedAction.setConfidence((float) 0.9);
         predictedAction.addProperty(graphLocation, actionNode.getId().toString());
 

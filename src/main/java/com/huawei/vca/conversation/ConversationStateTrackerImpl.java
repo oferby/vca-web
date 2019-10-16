@@ -56,8 +56,8 @@ public class ConversationStateTrackerImpl implements ConversationStateTracker{
 
         } else {
 
-            dialogue.setText(bestPredictedAction.getActionId());
-            this.addActionToDialogue(dialogue);
+            dialogue.setText(((BotUtterEvent)bestPredictedAction.getBotEvent()).getText());
+            dialogue.addToHistory(bestPredictedAction.getBotEvent());
 
             Map<String, String> properties = bestPredictedAction.getProperties();
             if (properties != null) {
@@ -110,14 +110,6 @@ public class ConversationStateTrackerImpl implements ConversationStateTracker{
     }
 
 
-    public void addActionToDialogue(Dialogue dialogue) {
 
-        logger.debug("set new action: " + dialogue.getText() + " on session id: " + dialogue.getSessionId());
-
-        BotUtterEvent botUtterEvent = this.responseGenerator.generateResponse(dialogue.getText());
-        dialogue.addToHistory(botUtterEvent);
-        dialogue.setText(botUtterEvent.getText());
-
-    }
 
 }

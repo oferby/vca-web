@@ -5,16 +5,16 @@ import java.util.Map;
 
 public class PredictedAction implements Comparable<PredictedAction>{
 
-    private String actionId;
+    private BotEvent botEvent;
     private float confidence = 0;
     private Map<String, String> properties;
 
-    public String getActionId() {
-        return actionId;
+    public BotEvent getBotEvent() {
+        return botEvent;
     }
 
-    public void setActionId(String actionId) {
-        this.actionId = actionId;
+    public void setBotEvent(BotEvent botEvent) {
+        this.botEvent = botEvent;
     }
 
     public float getConfidence() {
@@ -61,12 +61,5 @@ public class PredictedAction implements Comparable<PredictedAction>{
         return 0;
     }
 
-    @Override
-    public String toString() {
-        return "PredictedAction{" +
-                "actionId='" + actionId + '\'' +
-                ", confidence=" + confidence +
-                ", properties=" + properties +
-                '}';
-    }
+
 }
