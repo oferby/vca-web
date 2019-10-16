@@ -5,6 +5,7 @@ import com.huawei.vca.grpc.NluService;
 import com.huawei.vca.intent.Entity;
 import com.huawei.vca.intent.NluResponse;
 import com.huawei.vca.message.*;
+import com.huawei.vca.nlg.ResponseGenerator;
 import com.huawei.vca.repository.controller.BotUtterRepository;
 import com.huawei.vca.repository.entity.BotUtterEntity;
 import org.slf4j.Logger;
@@ -17,7 +18,7 @@ import java.util.*;
 @Controller
 public class ConversationStateTrackerImpl implements ConversationStateTracker{
 
-    private static final Logger logger = LoggerFactory.getLogger(ConversationStateTrackerImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private NluService nluService;
@@ -26,7 +27,7 @@ public class ConversationStateTrackerImpl implements ConversationStateTracker{
     private List<SkillController> skillControllers;
 
     @Autowired
-    private BotUtterRepository botUtterRepository;
+    private ResponseGenerator responseGenerator;
 
     private static String graphLocation = "graph_location";
 
@@ -113,29 +114,9 @@ public class ConversationStateTrackerImpl implements ConversationStateTracker{
 
         logger.debug("set new action: " + dialogue.getText() + " on session id: " + dialogue.getSessionId());
 
-        Optional<BotUtterEntity> actionById = botUtterRepository.findById(dialogue.getText());
-
-        if (!actionById.isPresent()) {
-            throw new RuntimeException("invalid action id");
-        }
-
-        BotUtterEntity botUtterEntity = actionById.get();
-        BotUtterEvent botUtterEvent = new BotUtterEvent();
-
-//        TODO
-//        change to random
-        Set<String> textIterator = botUtterEntity.getTextSet();
-        String text;
-        if (textIterator.iterator().hasNext()) {
-            text = textIterator.iterator().next();
-
-        } else {
-            text = "** no messages found for action ** " + botUtterEntity.getId();
-        }
-        botUtterEvent.setId(botUtterEntity.getId());
-        botUtterEvent.setText(text);
+        BotUtterEvent botUtterEvent = this.responseGenerator.generateResponse(dialogue.getText());
         dialogue.addToHistory(botUtterEvent);
-        dialogue.setText(text);
+        dialogue.setText(botUtterEvent.getText());
 
     }
 
