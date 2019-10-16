@@ -6,7 +6,7 @@ import java.util.Map;
 public class PredictedAction implements Comparable<PredictedAction>{
 
     private String actionId;
-    private float confidence;
+    private float confidence = 0;
     private Map<String, String> properties;
 
     public String getActionId() {
@@ -59,5 +59,14 @@ public class PredictedAction implements Comparable<PredictedAction>{
             return 1;
 
         return 0;
+    }
+
+    @Override
+    public String toString() {
+        return "PredictedAction{" +
+                "actionId='" + actionId + '\'' +
+                ", confidence=" + confidence +
+                ", properties=" + properties +
+                '}';
     }
 }

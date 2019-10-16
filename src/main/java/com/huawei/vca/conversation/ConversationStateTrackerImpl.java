@@ -28,6 +28,8 @@ public class ConversationStateTrackerImpl implements ConversationStateTracker{
     @Autowired
     private BotUtterRepository botUtterRepository;
 
+    private static String graphLocation = "graph_location";
+
     @Override
     public Dialogue handleDialogue(Dialogue dialogue) {
 
@@ -44,6 +46,8 @@ public class ConversationStateTrackerImpl implements ConversationStateTracker{
         PredictedAction bestPredictedAction = predictedActions.get(0);
 
         if (bestPredictedAction.getConfidence() == 0) {
+
+            dialogue.addProperty(graphLocation, "-1");
 
             if (!dialogue.isTraining())
                 this.addDefaultUtterEvent(dialogue);
@@ -107,7 +111,7 @@ public class ConversationStateTrackerImpl implements ConversationStateTracker{
 
     public void addActionToDialogue(Dialogue dialogue) {
 
-        logger.debug("got new action: " + dialogue.getText() + " on session id: " + dialogue.getSessionId());
+        logger.debug("set new action: " + dialogue.getText() + " on session id: " + dialogue.getSessionId());
 
         Optional<BotUtterEntity> actionById = botUtterRepository.findById(dialogue.getText());
 

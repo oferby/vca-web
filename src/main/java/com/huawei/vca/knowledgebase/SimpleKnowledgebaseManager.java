@@ -21,7 +21,7 @@ import static org.springframework.data.mongodb.core.query.Query.query;
 @Controller
 public class SimpleKnowledgebaseManager implements SkillController {
 
-    private static final Logger logger = LoggerFactory.getLogger(SimpleKnowledgebaseManager.class);
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private MenuItemRepository menuItemRepository;
@@ -39,6 +39,7 @@ public class SimpleKnowledgebaseManager implements SkillController {
 //        add here what to ask next or return the above object
 
         predictedAction.setConfidence((float) 0.0);
+        logger.debug("got prediction: " + predictedAction);
 
         return predictedAction;
     }
@@ -57,8 +58,8 @@ public class SimpleKnowledgebaseManager implements SkillController {
 
                 String intent = nluEvent.getBestIntent().getIntent();
 
-                if (intent.equals("inform")){
-                    Set<Slot>foodSlots = new HashSet<>();
+                if (intent.equals("inform")) {
+                    Set<Slot> foodSlots = new HashSet<>();
 
                     for (Slot slot : slots) {
                         if (slot.getKey().startsWith("food"))
@@ -66,8 +67,8 @@ public class SimpleKnowledgebaseManager implements SkillController {
                     }
                     informSlots.addAll(foodSlots);
 
-                } else if (intent.equals("deny")){
-                    Set<Slot>foodSlots = new HashSet<>();
+                } else if (intent.equals("deny")) {
+                    Set<Slot> foodSlots = new HashSet<>();
                     for (Slot slot : slots) {
                         if (slot.getKey().startsWith("food"))
                             foodSlots.add(slot.getSmallCopy());
@@ -84,11 +85,10 @@ public class SimpleKnowledgebaseManager implements SkillController {
 
         return this.getGoalPrediction(informSlots, denySlots);
 
-
     }
 
 
-    private GoalPrediction getGoalPrediction(List<Slot>informSlots, List<Slot>denySlots){
+    private GoalPrediction getGoalPrediction(List<Slot> informSlots, List<Slot> denySlots) {
 
         GoalPrediction goalPrediction = new GoalPrediction();
 
@@ -96,9 +96,9 @@ public class SimpleKnowledgebaseManager implements SkillController {
 
             List<MenuItemEntity> result = mongoTemplate.find(query(where("slots").all(informSlots)), MenuItemEntity.class);
 
-            if (denySlots.size() > 0){
+            if (denySlots.size() > 0) {
 
-                List<MenuItemEntity> notResult =  mongoTemplate.find(query(where("slots").not().all(denySlots)), MenuItemEntity.class);
+                List<MenuItemEntity> notResult = mongoTemplate.find(query(where("slots").not().all(denySlots)), MenuItemEntity.class);
                 List<MenuItemEntity> intersection = MenuItemEntity.intersection(result, notResult);
                 goalPrediction.setPossibleGoals(intersection);
 
