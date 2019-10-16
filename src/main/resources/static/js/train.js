@@ -10,7 +10,7 @@ function getTime() {
     return today.getHours() + ":" + today.getMinutes();
 }
 
-function sendIntent(userInput){
+function sendIntent(userInput) {
     intent.text = userInput;
     console.log('Sending user input to server');
     dialogue.text = userInput;
@@ -29,8 +29,8 @@ function connect() {
             'sessionId': sessionId
         };
 
-        stompClient.subscribe('/topic/dialogue/'+sessionId, function (hint) {
-            dialogue  = JSON.parse(hint.body);
+        stompClient.subscribe('/topic/dialogue/' + sessionId, function (hint) {
+            dialogue = JSON.parse(hint.body);
             addBotResponse(dialogue);
 
         });
@@ -59,52 +59,66 @@ function showChatbot() {
 
 function addUserInput(text) {
 
-    $('#smartbotBody').append('<div class="messageBox outgoing"><div class="messageText">'+text+'</div><div class="messageTime">'+getTime()+'</div></div>');
+    $('#smartbotBody').append('<div class="messageBox outgoing"><div class="messageText">' + text + '</div><div class="messageTime">' + getTime() + '</div></div>');
 
 }
 
 function addIntentInput(text) {
 
-    $('#smartbotBody').append('<div class="messageBox outgoing intent"><div class="messageText">'+text+'</div></div>');
+    $('#smartbotBody').append('<div class="messageBox outgoing intent"><div class="messageText">' + text + '</div></div>');
 
 }
 
 function addBotText(text) {
 
-    $('#smartbotBody').append('<div class="messageBox incoming"><div class="messageText">'+text+'</div><div class="messageTime">'+getTime()+'</div></div>');
+    $('#smartbotBody').append('<div class="messageBox incoming"><div class="messageText">' + text + '</div><div class="messageTime">' + getTime() + '</div></div>');
 
 }
 
-function scroll_window(){
+function addMessageButton(option) {
+    $('#smartbotBody').append('<input type="button" class="message-button" onclick="sendIntent(this.value)" value=' + option.id + '>');
+}
+
+function scroll_window() {
     var element = document.getElementById("smartbotBody");
     element.scrollTop = element.scrollHeight - element.clientHeight;
 
 }
 
-function addBotResponse(dialogue){
+function addBotResponse(dialogue) {
 
     if (dialogue.lastNluEvent != null) {
 
-        var nluInfo = dialogue.lastNluEvent;
+        let nluInfo = dialogue.lastNluEvent;
         if (nluInfo != null) {
             intent = nluInfo.bestIntent.intent + " " + nluInfo.bestIntent.confidence;
             addIntentInput(intent);
 
             slots = nluInfo.slots;
             if (slots != null) {
-                slots.forEach(function(slot){
+                slots.forEach(function (slot) {
                     text = slot.key + ":" + slot.value + "(" + slot.confidence + ")";
                     addIntentInput(text)
                 })
             }
 
         }
+
+
     }
 
     if (dialogue.text != null) {
         addBotText(dialogue.text);
     }
 
+    let options = dialogue.history[dialogue.history.length - 1].options;
+    if (options != null) {
+        $('#smartbotBody').append('<div class="messageBox incoming">');
+        options.forEach(function (option) {
+            addMessageButton(option);
+        });
+        $('#smartbotBody').append('</div>');
+    }
     scroll_window();
 
 }
@@ -113,21 +127,20 @@ function addBotResponse(dialogue){
 function getData(dataUrl, callback) {
 
     $.ajax({
-      dataType: "json",
-      url: dataUrl,
-      processData: false,
-      success: callback
+        dataType: "json",
+        url: dataUrl,
+        processData: false,
+        success: callback
     });
 
 }
 
-$(document).ready( function(){
+$(document).ready(function () {
 
     connect();
 
-    $('#user-input').keyup(function(e){
-        if(e.keyCode === 13)
-        {
+    $('#user-input').keyup(function (e) {
+        if (e.keyCode === 13) {
             var userInput = $('#user-input').val();
             $('#user-input').val('');
             addUserInput(userInput);

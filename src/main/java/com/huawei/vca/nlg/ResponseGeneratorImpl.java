@@ -3,6 +3,7 @@ package com.huawei.vca.nlg;
 import com.huawei.vca.message.BotUtterEvent;
 import com.huawei.vca.message.Option;
 import com.huawei.vca.repository.controller.BotUtterRepository;
+import com.huawei.vca.repository.controller.SlotRepository;
 import com.huawei.vca.repository.entity.BotUtterEntity;
 import com.huawei.vca.repository.entity.MenuItemEntity;
 import com.huawei.vca.repository.entity.SlotEntity;
@@ -21,8 +22,20 @@ public class ResponseGeneratorImpl implements ResponseGenerator{
     @Autowired
     private BotUtterRepository botUtterRepository;
 
+    @Autowired
+    private SlotRepository slotRepository;
+
     @Override
     public BotUtterEvent generateResponse(String actionId) {
+
+        if (actionId.startsWith("utter.ask.slot.")) {
+            String[] split = actionId.split("\\.");
+            String slotName = split[split.length - 1];
+            Optional<SlotEntity> optionalSlotEntity = slotRepository.findById(slotName);
+            assert optionalSlotEntity.isPresent();
+            return this.generateQueryResponseForSlot(optionalSlotEntity.get());
+        }
+
         Optional<BotUtterEntity> actionById = botUtterRepository.findById(actionId);
 
         if (!actionById.isPresent()) {
@@ -63,7 +76,13 @@ public class ResponseGeneratorImpl implements ResponseGenerator{
             throw new RuntimeException("did not find utter for slot: " + slotName);
 
         BotUtterEvent botUtterEvent = new BotUtterEvent();
-        botUtterEvent.setText(optionalBotUtterEntity.get().getTextSet().iterator().next());
+
+        String text = optionalBotUtterEntity.get().getTextSet().iterator().next();
+        if (slotEntity.getValues().size() > 0 ) {
+            text = text + "\nThese are the options:";
+        }
+
+        botUtterEvent.setText(text);
 
         for (String value : slotEntity.getValues()) {
             botUtterEvent.addOption(new Option(value,value));

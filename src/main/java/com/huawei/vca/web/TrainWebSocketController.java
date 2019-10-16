@@ -13,6 +13,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 @Controller
 public class TrainWebSocketController {
@@ -37,29 +38,38 @@ public class TrainWebSocketController {
     @Autowired
     private DialogueWebController dialogueWebController;
 
+    @Autowired
+    private ExecutorService executorService;
+
     @MessageMapping("/train/parseDialogue")
     public void getIntentRequest(Dialogue dialogue, @Header("simpSessionId") String sessionId) {
 
         logger.debug("got new training input: " + dialogue.getText() + " on session id: " + dialogue.getSessionId());
-        dialogue.setTraining(true);
 
-        conversationStateTracker.handleDialogue(dialogue);
-        sessionController.addOrUpdateDialogue(sessionId, dialogue);
+        executorService.execute(()-> {
 
-        List<Event> history = dialogue.getHistory();
-        if (history.get(history.size() - 1) instanceof BotUtterEvent) {
+            dialogue.setTraining(true);
 
-            this.webSocketController.sendResponseToAll(dialogue);
+            conversationStateTracker.handleDialogue(dialogue);
+            sessionController.addOrUpdateDialogue(sessionId, dialogue);
 
-        } else {
+            List<Event> history = dialogue.getHistory();
+            if (history.get(history.size() - 1) instanceof BotUtterEvent) {
 
-            this.webSocketController.sendUserUtterToMonitor(dialogue);
-            this.webSocketController.sendSummaryResponse(dialogue);
+                this.webSocketController.sendResponseToAll(dialogue);
 
-            dialogue.setText(null);
-            this.webSocketController.sendDialogueResponse(dialogue);
+            } else {
 
-        }
+                this.webSocketController.sendUserUtterToMonitor(dialogue);
+                this.webSocketController.sendSummaryResponse(dialogue);
+
+                dialogue.setText(null);
+                this.webSocketController.sendDialogueResponse(dialogue);
+
+            }
+
+
+        });
 
     }
 
@@ -74,9 +84,12 @@ public class TrainWebSocketController {
     public void addAction(Dialogue dialogue) {
 
         logger.debug("got new action to add: " + dialogue.getText());
-        conversationStateTracker.addActionToDialogue(dialogue);
-        sessionController.addOrUpdateDialogue(dialogue.getSessionId(), dialogue);
-        this.webSocketController.sendResponseToAll(dialogue);
+
+        executorService.execute(() -> {
+            conversationStateTracker.addActionToDialogue(dialogue);
+            sessionController.addOrUpdateDialogue(dialogue.getSessionId(), dialogue);
+            this.webSocketController.sendResponseToAll(dialogue);
+        });
 
     }
 

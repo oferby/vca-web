@@ -43,6 +43,10 @@ public class BotUtterEvent extends BotEvent{
         options.add(option);
     }
 
+    public List<Option> getOptions() {
+        return options;
+    }
+
     public List<ImageInfo> getImageInfoList() {
         return imageInfoList;
     }

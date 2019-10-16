@@ -149,6 +149,10 @@ public class TestBotUtterRepository {
 
         assert botUtterEvent != null;
 
+        String utterId = "utter.ask.slot." + slotId;
+        botUtterEvent = responseGenerator.generateResponse(utterId);
+
+        assert botUtterEvent != null;
 
     }
 }

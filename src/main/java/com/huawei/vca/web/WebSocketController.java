@@ -13,6 +13,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
+import java.util.concurrent.ExecutorService;
+
 /*
  * This class is a starting point for user input that comes from web socket.
  * Different channels can exist to send user inputs to the dialogue
@@ -32,6 +34,9 @@ public class WebSocketController {
 
     @Autowired
     private ConversationStateTracker conversationStateTracker;
+
+    @Autowired
+    private ExecutorService executorService;
 
     @MessageMapping("/parseDialogue")
     public void getIntentRequest(Dialogue dialogue, @Header("simpSessionId") String sessionId) {
