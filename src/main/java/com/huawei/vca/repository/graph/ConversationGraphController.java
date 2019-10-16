@@ -32,7 +32,7 @@ public class ConversationGraphController implements SkillController {
         }
 
         predictedAction.setActionId(actionNode.getStringId());
-        predictedAction.setConfidence((float) 1.0);
+        predictedAction.setConfidence((float) 0.9);
         predictedAction.addProperty(graphLocation, actionNode.getId().toString());
 
         logger.debug("got prediction: " + predictedAction);

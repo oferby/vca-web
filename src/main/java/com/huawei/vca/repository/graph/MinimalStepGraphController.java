@@ -50,7 +50,7 @@ public class MinimalStepGraphController implements SkillController {
         if (actionNode.getObservationNodes() != null)
             return predictedAction;
 
-        predictedAction.setConfidence((float) 0.6);
+        predictedAction.setConfidence((float) 1.0);
         predictedAction.setActionId(actionNode.getStringId());
 
         logger.debug("got prediction: " + predictedAction);
