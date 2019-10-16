@@ -1,10 +1,15 @@
 package com.huawei.vca.message;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BotUtterEvent extends BotEvent{
 
     private String id;
     private String text;
     private Integer actionId;
+    private List<Option> options;
+    private List<ImageInfo> imageInfoList;
 
     public BotUtterEvent() {
     }
@@ -35,5 +40,27 @@ public class BotUtterEvent extends BotEvent{
 
     public void setActionId(Integer actionId) {
         this.actionId = actionId;
+    }
+
+    public List<Option> getOptions() {
+        return options;
+    }
+
+    public void setOptions(List<Option> options) {
+        this.options = options;
+    }
+
+    public void addOption(Option option) {
+        if (this.options == null)
+            this.options = new ArrayList<>();
+        options.add(option);
+    }
+
+    public List<ImageInfo> getImageInfoList() {
+        return imageInfoList;
+    }
+
+    public void setImageInfoList(List<ImageInfo> imageInfoList) {
+        this.imageInfoList = imageInfoList;
     }
 }
