@@ -6,36 +6,57 @@
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
     <script src="/webjars/jquery/jquery.min.js"></script>
-    <script src="https://unpkg.com/@johmun/vue-tags-input/dist/vue-tags-input.js"></script>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="js/vue-tags-input.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/intents.css">
     <link rel="stylesheet" href="/css/input-tags.css">
 </head>
 <body>
 <br>
+
 <div id="app" class="container-fluid">
-  <div class="row form-group">
+  <div class="row">
     <div class="col-md-8">
-      <input class="searchbar" type="text" id="searchFilter" v-model="intentFilter" @input="onFilterChange" placeholder="Start typing text to find corresponding intents"/>
+      <div class="input-group">
+        <span class="input-group-addon input-group-text"><i class="glyphicon glyphicon-search"></i></span>
+        <div class="form-group has-feedback has-clear">
+<!--          <i class="glyphicon glyphicon-search"></i-->
+          <input class="form-control searchbar" type="text" id="searchFilter" v-model="intentFilter" @input="onFilterChange" placeholder="Start typing text to find corresponding intents"/>
+          <span class="form-control-clear glyphicon glyphicon-remove form-control-feedback hidden" @click="onFilterClear"></span>
+        </div>
+      </div>
     </div>
   </div>
   <div class="row">
-    <div class="col-md-3 split left datapane overflow-auto" style="direction: rtl">
+    <div class="col-md-8">
+      <center><small><b>{{resultsCount}}</b> tags found</small></center>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-3 left" style="direction: rtl">
       <div style="direction: ltr">
+		<span class="rounded">
         <intent-item
-                  v-for="(intents, indx) in filterIntentsByTextsetKeywords"
-                  v-bind:intents="intents"
-                  v-on:remove="remove(intents.intent, indx)"
-        ></intent-item>
+			v-for="(intents, indx) in filterIntentsByTextsetKeywords"
+			v-bind:intents="intents"
+			v-on:remove="remove(intents.intent, indx)"
+			v-on:blur="filterChanged()"></intent-item>
+		<span class="label label-default" onclick="$('#addIntent').show().focus()"><i class="glyphicon glyphicon-plus"></i></span>
+		</span>
+		<input type="text" id="addIntent" class="hidden">
       </div>
     </div>
     <div class="col-md-8 split right datapane overflow-auto no-border">
+	  <span id="user-notif" class="label label-warning">{{userNotification}}</span>
       <div >
         <vue-tags-input
               v-model="tag"
               :tags="tags"
               @tags-changed="newTags => onTagsChange(newTags)"
+			  @before-adding-tag="tagAdd => onTagAdd(tagAdd)"
+			  @before-deleting-tag="tagDel => onTagDel(tagDel)"
+			  @before-saving-tag="tagSave => onTagSave(tagSave)"
               placeholder="+"
               allow-edit-tags="true"
               autocomplete-filter-duplicates="false"
@@ -44,6 +65,7 @@
 
             />
       </div>
+	  <span id="user-notif" class="label label-warning">{{userNotification}}</span>
     </div>
   </div>
 </div>

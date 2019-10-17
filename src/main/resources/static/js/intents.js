@@ -4,18 +4,33 @@ var index = 0;
 var app;
 var dataUrl = '/data/intents/';
 
+function trimEmptyTextNodes (el) {
+  for (let node of el.childNodes) {
+    if (node.nodeType === Node.TEXT_NODE && node.data.trim() === '') {
+      node.remove()
+    }
+  }
+}
+
+Vue.directive('trim-whitespace', {
+  inserted: trimEmptyTextNodes,
+  componentUpdated: trimEmptyTextNodes
+})
+
 Vue.component('intent-item', {
     props: ['intents'],
-    template: '<div class="row form-group"><div class="col-sm-1"><button class="btn" @click="$emit(\'remove\')"><i class="fa fa-remove"></i></button></div><div class="col-sm-3"><button class="btn btn-primary" v-bind:id="intents" v-model="intents" onclick="show_examples(this)">{{intents}}</button></div></div>'
+    template: '<span><span class="label label-primary" v-bind:id="intents" v-model="intents" onclick="onSelectIntent(this)" >{{ intents }} <i class="glyphicon glyphicon-remove" @click="$emit(\'remove\')"></i></span></span>'
+//    template: '<div class="btn-group label" role="group"><button class="btn btn-primary" @click="$emit(\'remove\')"><i class="glyphicon glyphicon-remove"></i></button><button class="btn btn-primary" v-bind:id="intents" v-model="intents" onclick="onSelectIntent(this)" >{{intents}}</button></div>'
   });
 
 Vue.component('example-item', {
     props: ['example'],
-    template: '<div class="intent-item"><input v-bind:id="example" type="text" data-role="tagsinput" v-model="example" ><button class="btn"><i class="fa fa-save"></i> Save</button><button class="btn" @click="$emit(\'remove\')"><i class="fa fa-remove"></i> Remove</button></div>'
+    template: '<div class="intent-item"><input v-bind:id="example" type="text" data-role="tagsinput" v-model="example" ><button class="btn"><i class="glyphicon glyphicon-ok"></i> Save</button><button class="btn" @click="$emit(\'remove\')"><i class="fa fa-remove"></i> Remove</button></div>'
   });
 
 function remove(id, indx) {
-    alert("todo");
+    alert("todo; remove");
+	return
     console.log('remove item: ' + id)
     app.intent_list.splice(indx, 1)
     delete intents_dict[id]
@@ -23,6 +38,11 @@ function remove(id, indx) {
     intentObject = intents_dict[nextIntent]
     app.setExampleList(nextIntent)
     this.deleteData(dataUrl + id)
+}
+
+function blurIntent() {
+	app.selectedIntent=""
+	app.onFilterChange()
 }
 
 function addExample() {
@@ -35,6 +55,8 @@ function addExample() {
 
 }
 function removeExample(indx){
+    alert("todo; removeExample");
+
     intentObject = intents_dict[app.selectedIntent]
     intentObject.textSet.splice(indx, 1)
     updateData(dataUrl+'/intents', intentObject)
@@ -43,13 +65,14 @@ function successAfterUpdate(data) {
     console.log( "getting updated data from server." );
 }
 function successAfterAddNew(intent) {
-    alert("todo")
+    alert("todo successAfterAddNew")
     console.log( "getting data from server after add new: " + intent );
     intents_dict[data.intent] = intent
     app.intent_list.unshift(intent)
     app.setExampleList(intent)
 }
 function addIntent() {
+    alert("todo addIntent")
     var text = $("#search_text").val()
     if (text == '') return
     $("#search_text").val("")
@@ -69,7 +92,15 @@ function addNew(url, data, callback) {
     });
 
 }
-function updateData(url, data, callback) {
+
+function onUpdateDataError(e) {
+	console.log("!! ajax updated failed");
+}
+
+function updateData(url, data, onSuccess, onError) {
+	if (onError == undefined)
+		onError = onUpdateDataError
+	
     var jsonData = JSON.stringify(data)
     $.ajax({
      dataType: "json",
@@ -78,11 +109,12 @@ function updateData(url, data, callback) {
      url: url,
      data: jsonData,
      method: "PUT",
-     success: callback
+         success: onSuccess,
+		 error: onError
     });
 
  }
-function deleteData(url, data, callback) {
+function deleteData(url, data, onSuccess, onError) {
 
      $.ajax({
          dataType: "json",
@@ -91,92 +123,171 @@ function deleteData(url, data, callback) {
          url: url,
          data: data,
          method: "DELETE",
-         success: callback
+         success: onSuccess,
+		 error: onError
      });
 
  }
 
- function show_examples(caller) {
-     console.log('show example event');
+ function onSelectIntent(caller) {
+     console.log('intent selected');
      intent = intents_dict[caller.id];
-     selectedIntent = intent.intent;
+     app.selectedIntent = intent.intent;
      app.setExampleList(intent);
  }
+ 
+function onUpdateDataSuccessful(updatedIntent, fnNextCallback) {
+	intents_dict[updatedIntent.intent] = updatedIntent;
+	fnNextCallback();
+}
+	
+function notifyUser(msg) {
+	app.userNotification = msg;
+	$('#user-notif').fadeIn();
+	setTimeout(function() { $('#user-notif').fadeOut('slow')}, 3000);
+}
+
 
 function init(data){
     data.forEach(add_intent_to_map);
-//    sorted_intent_list =  Object.keys(intents_dict).map(function(e) {return intents_dict[e].intent}).sort();
     sorted_intent_list =  Object.keys(intents_dict).sort();
     app = new Vue({
             el: '#app',
             data: {
               intentFilter: "",
               intentsList: sorted_intent_list,
-              example_list: intents_dict[sorted_intent_list[0]].textSet,
               selectedIntent: "",
               filterChanged: true,
+              resultsCount: "0",
+			  userNotification: "",
               tag: "",
               tags: [],
               tagsValidation: [{
                 classes: 'min-length',
-                rule: tag => tag.text.length <= 1
+                rule: tag => tag.text.length <= 2
               }]
             },
             methods: {
-              setExampleList (intent) {
-                console.log("setExampleList");
-                this.example_list = intent.textSet.filter(f => f.includes(this.intentFilter));
-//                this.intent_label = intent.intent;
-                this.tags = this.example_list;
-              },
-              onTagsChange: function(newTags) {
-                console.log("onTagsChange");
-                intentObject = intents_dict[app.selectedIntent]
-                intentObject.textSet = newTags.map(t => t.text)
-                updateData(dataUrl+'/intents', intentObject, successAfterUpdate)
-                return true
-              },
-              onFilterChange: function() {
-                console.log("onFilterChange");
-                this.filterChanged = true
-                return true
-              }
+				setExampleList (intent) {
+					console.log("setExampleList");
+					this.tags = []
+					filterIntents(this.intentFilter, intent.textSet, undefined , this.tags)
+					this.resultsCount = this.tags.length
+				},
+				onTagsChange: function(newTags) {
+					console.log("onTagsChange");
+				},
+				onTagAdd: function(tagAdd){
+					if (this.selectedIntent == "") {
+						notifyUser("no intent selected: cannot add tag");
+						return;
+					}
+				  
+					// validate new tag
+					if (tagAdd.tag.text.length < 3) {
+						notifyUser("Tag must be at least 3 charaters long");
+						return;
+					}
+				  
+					if (intents_dict[this.selectedIntent].textSet.includes(tagAdd.tag.text)) {
+						notifyUser("Tag already exists");
+						return;
+					}
+					
+					modIntent = intents_dict[this.selectedIntent]
+					modIntent.textSet.push(tagAdd.tag.text);
+					updateData(dataUrl + modIntent.intent, modIntent, function() { onUpdateDataSuccessful(modIntent, tagAdd.addTag); });
+				},
+				onTagDel: function(tagDel){
+					if (this.selectedIntent == "") {
+						// remove all intents that are using this tag
+						textset_dict[tagDel.tag.text].forEach(intent => {
+							var modIntent = intents_dict[intent];
+							modIntent.textSet.splice(intents_dict[intent].textSet.indexOf(tagDel.tag.text),1);
+							updateData(dataUrl + modIntent.intent, modIntent, function() { onUpdateDataSuccessful(modIntent, tagDel.deleteTag); });
+						});
+					} else {
+						// remove tag only from currently selected intent
+						var modIntent = intents_dict[this.selectedIntent];
+						modIntent.textSet.splice(intents_dict[intent].textSet.indexOf(tagDel.tag.text),1);
+						updateData(dataUrl + modIntent.intent, modIntent, function() { onUpdateDataSuccessful(modIntent, tagDel.deleteTag); });
+					}
+				},
+				onTagSave: function(tagSave){
+					// validate new tag
+					if (tagSave.tag.text.length < 3) {
+						notifyUser("Tag must be at least 3 charaters long");
+						return;
+					}
+					
+					if (this.selectedIntent != "") {					
+						if (intents_dict[this.selectedIntent].textSet.includes(tagSave.tag.text)) {
+							notifyUser("Tag already exists");
+							return;
+						}						
+						textset_dict[tagSave.tag.text].forEach(intent => {
+							var modIntent = intents_dict[intent];
+							modIntent.textSet.splice(intents_dict[intent].textSet.indexOf(tagSave.tag.text),1);
+							modIntent.textSet.push(tagSave.tag.text);
+							updateData(dataUrl + modIntent.intent, modIntent, function() { onUpdateDataSuccessful(modIntent, tagSave.saveTag); });
+						});						
+					} else {
+						if (textset_dict[tagSave.tag.text] != undefined) {
+							notifyUser("Tag already exists");
+							return;
+						}
+						
+						modIntent = intents_dict[this.selectedIntent]
+						modIntent.textSet.splice(intents_dict[intent].textSet.indexOf(tagSave.tag.text),1);
+						modIntent.textSet.push(tagSave.tag.text);
+						updateData(dataUrl + modIntent.intent, modIntent, function() { onUpdateDataSuccessful(modIntent, tagSave.saveTag); });
+					}
+				},
+				onFilterChange: function() {
+					console.log("onFilterChange");
+					this.filterChanged = true
+					toggleFilterClearButton()
+					return true
+				},
+				onFilterClear: function() {
+					this.intentFilter="";
+					this.filterChanged = true
+					toggleFilterClearButton()
+					return true				  
+				}
             },
             computed: {
-              filterIntentsByTextsetKeywords: function() {
-                console.log("filterIntentsByTextsetKeywords( filterChanged = "+this.filterChanged+")");
+				filterIntentsByTextsetKeywords: function() {
+						console.log("filterIntentsByTextsetKeywords( filterChanged = "+this.filterChanged+")");
 
-                  if (!this.filterChanged)
-                    return this.intentsList
-                  else
-                    this.intentsList = sorted_intent_list
+						if (!this.filterChanged)
+							return this.intentsList
+						else
+							this.intentsList = sorted_intent_list
 
-                  if (this.intentFilter.length > 0)
-                    this.tags = []
-                  // filter intents by intent name
-                  // return this.intent_list.filter(el => {return el.intent.toLowerCase().includes(this.intentFilter.toLowerCase())})
+						this.tags = []
 
-                  // filter intents by textset keywords
-                  // construct a set for all intents that have a word in their textset, which contains the search filter
-                  const filteredTextSet = new Set()
-                  for (ts in textset_dict) {
-                    if (ts.toLowerCase().indexOf(this.intentFilter.toLowerCase())>=0) {
-                      if (this.intentFilter.length > 0)
-                        this.tags.push(ts);
-                      textset_dict[ts].forEach(function(val) {
-                        filteredTextSet.add(val);
-                      });
-                    }
-                  }
-                  // using the set, filter the intent list
-                  this.filterChanged=false
-                  var new_list = this.intentsList.filter(function(el) {return filteredTextSet.has(el)})
-                  this.intentsList = new_list
-                  return this.intentsList
-                }
-              }
+						// filter intents by textset keywords
+						// construct a set for all intents that have a word in their textset, which contains the search filter
+						const filteredTextSet = new Set()
+						
+						filterIntents(this.intentFilter, Object.keys(textset_dict), textset_dict, this.tags, filteredTextSet);
+						
+
+						// using the set, filter the intent list
+						this.filterChanged=false
+						
+						if (this.intentFilter.length>0) {
+							this.intentsList = this.intentsList.filter(function(el) {return filteredTextSet.has(el)})
+						} else {
+							this.intentsList = sorted_intent_list
+						}
+						
+						this.resultsCount = this.tags.length
+						return this.intentsList
+					}
+				}
             })
-        //show_example_for_intent(sorted_intent_list[0])
 }
 
 
@@ -186,6 +297,41 @@ $( document ).ready(function() {
     getData(init);
 
 });
+
+function filterIntents(filterInput, dictInput, textsetInput, tagsOutput, textsetOutput) {
+	// impl: break the filter to words ([ ,.]), remove (["']) and do an "AND" search
+	if (filterInput.length>0) {
+		
+		var cleanFilterVec = filterInput.replace(/["']/g, "").replace(/[,.]/g, " ").toLowerCase().split(" ");
+		dictInput.forEach(ts => {
+			// clear all special characters from textset word
+			cts = ts.replace(/["'.,]/g,"").toLowerCase();
+			allFound=true;
+			for (i=0 ; i < cleanFilterVec.length ; i++) {
+				f = cleanFilterVec[i];
+				if (cts.indexOf(f)<0) {
+					allFound=false;
+					break;
+				}								
+			}
+			if (allFound) {
+				tagsOutput.push(ts);
+				
+				if (textsetInput != undefined && textsetOutput != undefined) {
+					textsetInput[ts].forEach(val => {
+						textsetOutput.add(val);
+					});
+				}
+			}								
+		});
+	}
+	else {
+		dictInput.forEach(ts => {
+			tagsOutput.push(ts);
+		})
+	}
+}
+
 function add_intent_to_map(value){
   console.log("add_intent_to_map");
    // build the first index - from intents to textset
@@ -209,3 +355,22 @@ function getData(callback) {
     });
 
 };
+
+function toggleFilterClearButton() {
+  $('.has-clear input[type="text"]').on('input propertychange', function() {
+    var $this = $(this);
+    var visible = Boolean($this.val());
+    $this.siblings('.form-control-clear').toggleClass('hidden', !visible);
+  }).trigger('propertychange');
+
+  $('.form-control-clear').click(function() {
+    $(this).siblings('input[type="text"]').val('')
+      .trigger('propertychange').focus();
+  });
+}
+
+$(document).keyup(function(e) {
+     if (e.key === "Escape") { 
+        blurIntent();
+    }
+});
