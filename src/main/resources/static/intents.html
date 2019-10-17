@@ -34,14 +34,17 @@
   </div>
   <br>
   <div class="row">
-    <div class="col-md-3  left" style="direction: rtl">
-      <div class="btn-toolbar p50-md-5" style="direction: ltr">
+    <div class="col-md-3 left" style="direction: rtl">
+      <div style="direction: ltr">
+		<span class="rounded">
         <intent-item
-                  v-for="(intents, indx) in filterIntentsByTextsetKeywords"
-                  v-bind:intents="intents"
-                  v-on:remove="remove(intents.intent, indx)"
-                  v-on:blur="filterChanged()"
-        ></intent-item>
+			v-for="(intents, indx) in filterIntentsByTextsetKeywords"
+			v-bind:intents="intents"
+			v-on:remove="remove(intents.intent, indx)"
+			v-on:blur="filterChanged()"></intent-item>
+		<span class="label label-default" onclick="$('#addIntent').show().focus()"><i class="glyphicon glyphicon-plus"></i></span>
+		</span>
+		<input type="text" id="addIntent" class="hidden">
       </div>
     </div>
     <div class="col-md-8 split right datapane overflow-auto no-border">

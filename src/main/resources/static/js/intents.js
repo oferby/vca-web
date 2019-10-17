@@ -4,9 +4,23 @@ var index = 0;
 var app;
 var dataUrl = backendServer + '/data/intents/';
 
+function trimEmptyTextNodes (el) {
+  for (let node of el.childNodes) {
+    if (node.nodeType === Node.TEXT_NODE && node.data.trim() === '') {
+      node.remove()
+    }
+  }
+}
+
+Vue.directive('trim-whitespace', {
+  inserted: trimEmptyTextNodes,
+  componentUpdated: trimEmptyTextNodes
+})
+
 Vue.component('intent-item', {
     props: ['intents'],
-    template: '<div class="btn-group" role="group"><button class="btn btn-primary" @click="$emit(\'remove\')"><i class="glyphicon glyphicon-remove"></i></button><button class="btn btn-primary" v-bind:id="intents" v-model="intents" onclick="onSelectIntent(this)" >{{intents}}</button></div>'
+    template: '<span><span class="label label-primary" v-bind:id="intents" v-model="intents" onclick="onSelectIntent(this)" >{{ intents }} <i class="glyphicon glyphicon-remove" @click="$emit(\'remove\')"></i></span></span>'
+//    template: '<div class="btn-group label" role="group"><button class="btn btn-primary" @click="$emit(\'remove\')"><i class="glyphicon glyphicon-remove"></i></button><button class="btn btn-primary" v-bind:id="intents" v-model="intents" onclick="onSelectIntent(this)" >{{intents}}</button></div>'
   });
 
 Vue.component('example-item', {
@@ -154,16 +168,16 @@ function init(data){
               }]
             },
             methods: {
-              setExampleList (intent) {
-                console.log("setExampleList");
-				this.tags = []
-				filterIntents(this.intentFilter, intent.textSet, undefined , this.tags)
-				this.resultsCount = this.tags.length
-              },
-              onTagsChange: function(newTags) {
-                console.log("onTagsChange");
-              },
-			  onTagAdd: function(tagAdd){
+				setExampleList (intent) {
+					console.log("setExampleList");
+					this.tags = []
+					filterIntents(this.intentFilter, intent.textSet, undefined , this.tags)
+					this.resultsCount = this.tags.length
+				},
+				onTagsChange: function(newTags) {
+					console.log("onTagsChange");
+				},
+				onTagAdd: function(tagAdd){
 					if (this.selectedIntent == "") {
 						notifyUser("no intent selected: cannot add tag");
 						return;
@@ -183,23 +197,23 @@ function init(data){
 					modIntent = intents_dict[this.selectedIntent]
 					modIntent.textSet.push(tagAdd.tag.text);
 					updateData(dataUrl + modIntent.intent, modIntent, function() { onUpdateDataSuccessful(modIntent, tagAdd.addTag); });
-			  },
-			  onTagDel: function(tagDel){
-				if (this.selectedIntent == "") {
-					// remove all intents that are using this tag
-					textset_dict[tagDel.tag.text].forEach(intent => {
-						var modIntent = intents_dict[intent];
+				},
+				onTagDel: function(tagDel){
+					if (this.selectedIntent == "") {
+						// remove all intents that are using this tag
+						textset_dict[tagDel.tag.text].forEach(intent => {
+							var modIntent = intents_dict[intent];
+							modIntent.textSet.splice(intents_dict[intent].textSet.indexOf(tagDel.tag.text),1);
+							updateData(dataUrl + modIntent.intent, modIntent, function() { onUpdateDataSuccessful(modIntent, tagDel.deleteTag); });
+						});
+					} else {
+						// remove tag only from currently selected intent
+						var modIntent = intents_dict[this.selectedIntent];
 						modIntent.textSet.splice(intents_dict[intent].textSet.indexOf(tagDel.tag.text),1);
 						updateData(dataUrl + modIntent.intent, modIntent, function() { onUpdateDataSuccessful(modIntent, tagDel.deleteTag); });
-					});
-				} else {
-					// remove tag only from currently selected intent
-					var modIntent = intents_dict[this.selectedIntent];
-					modIntent.textSet.splice(intents_dict[intent].textSet.indexOf(tagDel.tag.text),1);
-					updateData(dataUrl + modIntent.intent, modIntent, function() { onUpdateDataSuccessful(modIntent, tagDel.deleteTag); });
-				}
-			  },
-			  onTagSave: function(tagSave){
+					}
+				},
+				onTagSave: function(tagSave){
 					// validate new tag
 					if (tagSave.tag.text.length < 3) {
 						notifyUser("Tag must be at least 3 charaters long");
@@ -210,15 +224,13 @@ function init(data){
 						if (intents_dict[this.selectedIntent].textSet.includes(tagSave.tag.text)) {
 							notifyUser("Tag already exists");
 							return;
-						}
-						
+						}						
 						textset_dict[tagSave.tag.text].forEach(intent => {
 							var modIntent = intents_dict[intent];
 							modIntent.textSet.splice(intents_dict[intent].textSet.indexOf(tagSave.tag.text),1);
 							modIntent.textSet.push(tagSave.tag.text);
 							updateData(dataUrl + modIntent.intent, modIntent, function() { onUpdateDataSuccessful(modIntent, tagSave.saveTag); });
-						});
-						
+						});						
 					} else {
 						if (textset_dict[tagSave.tag.text] != undefined) {
 							notifyUser("Tag already exists");
@@ -231,18 +243,18 @@ function init(data){
 						updateData(dataUrl + modIntent.intent, modIntent, function() { onUpdateDataSuccessful(modIntent, tagSave.saveTag); });
 					}
 				},
-              onFilterChange: function() {
-                console.log("onFilterChange");
-                this.filterChanged = true
-                toggleFilterClearButton()
-                return true
-              },
-			  onFilterClear: function() {
-				this.intentFilter="";
-                this.filterChanged = true
-                toggleFilterClearButton()
-                return true				  
-			  }
+				onFilterChange: function() {
+					console.log("onFilterChange");
+					this.filterChanged = true
+					toggleFilterClearButton()
+					return true
+				},
+				onFilterClear: function() {
+					this.intentFilter="";
+					this.filterChanged = true
+					toggleFilterClearButton()
+					return true				  
+				}
             },
             computed: {
 				filterIntentsByTextsetKeywords: function() {
