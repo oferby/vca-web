@@ -41,7 +41,7 @@ public class SimpleKnowledgebaseManager implements SkillController {
 
 //    private String goalPrediction = "goal_prediction";
 
-    private List<String>slotValues = new ArrayList<>();
+    private List<String> slotValues = new ArrayList<>();
 
     @Override
     public PredictedAction getPredictedAction(Dialogue dialogue) {
@@ -55,7 +55,7 @@ public class SimpleKnowledgebaseManager implements SkillController {
             this.addBotUtterEvent(predictedAction, userGoal);
         }
 
-        logger.debug("got prediction from guess: " + predictedAction);
+        logger.debug("got prediction from KB: " + predictedAction);
         return predictedAction;
     }
 
@@ -66,7 +66,7 @@ public class SimpleKnowledgebaseManager implements SkillController {
         BotUtterEvent botUtterEvent = responseGenerator.generateQueryResponseForSlot(slotEntity);
 
         predictedAction.setBotEvent(botUtterEvent);
-        predictedAction.setConfidence((float) 0.8);
+        predictedAction.setConfidence((float) 0.95);
 
     }
 
@@ -112,7 +112,20 @@ public class SimpleKnowledgebaseManager implements SkillController {
 
     private boolean searchSlots(Map<String, Map<String, Integer>> slotMap, GoalPrediction goalPrediction, String searchValue) {
 
-        if (!slotMap.containsKey(searchValue) || slotMap.get(searchValue).keySet().size() > 1) {
+        if (slotMap.containsKey(searchValue) && slotMap.get(searchValue).keySet().size() > 1) {
+
+            int possibleGoals = goalPrediction.getPossibleGoals().size();
+            boolean maxFound = false;
+            for (Integer value : slotMap.get(searchValue).values()) {
+                if (value == possibleGoals){
+                    maxFound = true;
+                    break;
+                }
+            }
+
+            if (maxFound)
+                return false;
+
             Optional<SlotEntity> optionalSlotEntity = slotRepository.findById(searchValue);
             assert optionalSlotEntity.isPresent();
 
@@ -181,6 +194,8 @@ public class SimpleKnowledgebaseManager implements SkillController {
     private GoalPrediction getGoalPrediction(List<Slot> informSlots, List<Slot> denySlots) {
 
         GoalPrediction goalPrediction = new GoalPrediction();
+        goalPrediction.setInformSlots(informSlots);
+        goalPrediction.setDenySlots(denySlots);
 
         if (informSlots.size() > 0) {
 
@@ -213,6 +228,14 @@ public class SimpleKnowledgebaseManager implements SkillController {
         slotValues.add("food:ingredient:meat");
         slotValues.add("food:main_dish:burger:cook_level");
         slotValues.add("food:condiment:sauce:burger_sauce");
+
+        slotValues.add("food:main_dish:pasta");
+        slotValues.add("food:condiment:sauce:pasta_sauce");
+        slotValues.add("food:ingredient:plant:vegetable");
+        slotValues.add("food:drink:hard");
+        slotValues.add("food:drink:soft");
+
+
     }
 
 }

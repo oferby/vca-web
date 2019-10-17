@@ -1,16 +1,34 @@
 package com.huawei.vca.knowledgebase;
 
+import com.huawei.vca.message.Slot;
 import com.huawei.vca.repository.entity.SlotEntity;
 import com.huawei.vca.repository.entity.MenuItemEntity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class GoalPrediction {
 
+    private List<Slot> informSlots;
+    private List<Slot> denySlots;
     private List<MenuItemEntity> possibleGoals;
     private SlotEntity bestNextQuestion;
+
+    public List<Slot> getInformSlots() {
+        return informSlots;
+    }
+
+    public void setInformSlots(List<Slot> informSlots) {
+        this.informSlots = informSlots;
+    }
+
+    public List<Slot> getDenySlots() {
+        return denySlots;
+    }
+
+    public void setDenySlots(List<Slot> denySlots) {
+        this.denySlots = denySlots;
+    }
 
     public List<MenuItemEntity> getPossibleGoals() {
         return possibleGoals;
