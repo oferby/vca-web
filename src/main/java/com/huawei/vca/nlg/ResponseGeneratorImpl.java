@@ -15,7 +15,7 @@ import org.springframework.stereotype.Controller;
 import java.util.*;
 
 @Controller
-public class ResponseGeneratorImpl implements ResponseGenerator{
+public class ResponseGeneratorImpl implements ResponseGenerator {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -45,14 +45,8 @@ public class ResponseGeneratorImpl implements ResponseGenerator{
         BotUtterEntity botUtterEntity = actionById.get();
         BotUtterEvent botUtterEvent = new BotUtterEvent();
 
-        Set<String> textSet = botUtterEntity.getTextSet();
-        if (textSet.size() > 0) {
-            List<String>stringList = new ArrayList<>(textSet);
-            Random rand = new Random();
-            int r = rand.nextInt(stringList.size());
-            botUtterEvent.setText(stringList.get(r));
-        }
-
+        String text = this.getRandomTextFromCollection(botUtterEntity.getTextSet());
+        botUtterEvent.setText(text);
         botUtterEvent.setId(botUtterEntity.getId());
 
         return botUtterEvent;
@@ -60,8 +54,32 @@ public class ResponseGeneratorImpl implements ResponseGenerator{
     }
 
     @Override
-    public BotUtterEvent generateResponse(MenuItemEntity menuItemEntity) {
-        return null;
+    public BotUtterEvent generateNoSolution() {
+
+        Optional<BotUtterEntity> optionalBotUtterEntity = botUtterRepository.findById("utter.general.misunderstood");
+        assert optionalBotUtterEntity.isPresent();
+
+        BotUtterEntity botUtterEntity = optionalBotUtterEntity.get();
+        BotUtterEvent botUtterEvent = new BotUtterEvent();
+
+        String text = this.getRandomTextFromCollection(botUtterEntity.getTextSet());
+        botUtterEvent.setText(text);
+        botUtterEvent.setId(botUtterEntity.getId());
+
+        return botUtterEvent;
+    }
+
+    @Override
+    public BotUtterEvent generateResponseForMenuItem(MenuItemEntity menuItemEntity) {
+
+        String text = "Your order is: " + menuItemEntity.getDescription() + ", is that correct?";
+
+        BotUtterEvent botUtterEvent = new BotUtterEvent();
+        botUtterEvent.setText(text);
+        botUtterEvent.addOption(new Option("yes", "Yes"));
+        botUtterEvent.addOption(new Option("no", "No"));
+
+        return botUtterEvent;
     }
 
     @Override
@@ -78,16 +96,29 @@ public class ResponseGeneratorImpl implements ResponseGenerator{
         BotUtterEvent botUtterEvent = new BotUtterEvent();
 
         String text = optionalBotUtterEntity.get().getTextSet().iterator().next();
-        if (slotEntity.getValues().size() > 0 ) {
+        if (slotEntity.getValues().size() > 0) {
             text = text + " These are the options:";
         }
 
         botUtterEvent.setText(text);
 
         for (String value : slotEntity.getValues()) {
-            botUtterEvent.addOption(new Option(value,value));
+            botUtterEvent.addOption(new Option(value, value));
         }
 
         return botUtterEvent;
+    }
+
+
+    private String getRandomTextFromCollection(Set<String> textSet) {
+
+        if (textSet.size() == 0)
+            return null;
+
+        List<String> stringList = new ArrayList<>(textSet);
+        Random rand = new Random();
+        int r = rand.nextInt(stringList.size());
+        return stringList.get(r);
+
     }
 }

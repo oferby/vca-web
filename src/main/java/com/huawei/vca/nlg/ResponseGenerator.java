@@ -8,7 +8,9 @@ public interface ResponseGenerator {
 
     BotUtterEvent generateResponse(String actionId);
 
-    BotUtterEvent generateResponse(MenuItemEntity menuItemEntity);
+    BotUtterEvent generateNoSolution();
+
+    BotUtterEvent generateResponseForMenuItem(MenuItemEntity menuItemEntity);
 
     BotUtterEvent generateQueryResponseForSlot(SlotEntity slotEntity);
 

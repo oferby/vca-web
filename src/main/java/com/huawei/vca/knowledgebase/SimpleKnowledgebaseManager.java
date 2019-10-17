@@ -40,7 +40,7 @@ public class SimpleKnowledgebaseManager implements SkillController {
     @Autowired
     private ResponseGenerator responseGenerator;
 
-//    @Value("${skill.confidence.kb}")
+    //    @Value("${skill.confidence.kb}")
 //    @Value("#{Integer.valueOf('${skill.confidence.kb}')}")
     private float confidence = (float) 0.8;
 
@@ -54,16 +54,33 @@ public class SimpleKnowledgebaseManager implements SkillController {
 
         GoalPrediction userGoal = findUserGoal(dialogue);
         this.findBestAction(userGoal);
-
-        if (userGoal.getBestNextQuestion() != null) {
-            this.addBotUtterEvent(predictedAction, userGoal);
-        }
+        this.addBotUtterEvent(predictedAction, userGoal);
 
         logger.debug("Prediction from KB: " + predictedAction);
         return predictedAction;
     }
 
     private void addBotUtterEvent(PredictedAction predictedAction, GoalPrediction goalPrediction) {
+
+        if (goalPrediction.getPossibleGoals().size() == 0) {
+            BotUtterEvent botUtterEvent = responseGenerator.generateNoSolution();
+            predictedAction.setBotEvent(botUtterEvent);
+            predictedAction.setConfidence((float) 0.1);
+            return;
+        }
+
+        if (goalPrediction.getPossibleGoals().size() == 1) {
+
+            BotUtterEvent botUtterEvent = responseGenerator.generateResponseForMenuItem(goalPrediction.getPossibleGoals().get(0));
+            predictedAction.setConfidence(confidence);
+            predictedAction.setBotEvent(botUtterEvent);
+            return;
+        }
+
+        if (goalPrediction.getBestNextQuestion() == null) {
+            logger.debug("**** should not be here ******");
+            return;
+        }
 
         SlotEntity slotEntity = goalPrediction.getBestNextQuestion();
 
@@ -76,7 +93,7 @@ public class SimpleKnowledgebaseManager implements SkillController {
 
     private void findBestAction(GoalPrediction goalPrediction) {
 
-        if (goalPrediction.getPossibleGoals() == null || goalPrediction.getPossibleGoals().size() == 0)
+        if (goalPrediction.getPossibleGoals() == null || goalPrediction.getPossibleGoals().size() < 2)
             return;
 
         Map<String, Map<String, Integer>> slotMap = new HashMap<>();
@@ -121,7 +138,7 @@ public class SimpleKnowledgebaseManager implements SkillController {
             int possibleGoals = goalPrediction.getPossibleGoals().size();
             boolean maxFound = false;
             for (Integer value : slotMap.get(searchValue).values()) {
-                if (value == possibleGoals){
+                if (value == possibleGoals) {
                     maxFound = true;
                     break;
                 }
