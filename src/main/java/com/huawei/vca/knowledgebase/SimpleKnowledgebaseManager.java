@@ -12,6 +12,7 @@ import org.apache.commons.lang3.EnumUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.VariableOperators;
 import org.springframework.stereotype.Controller;
@@ -39,7 +40,10 @@ public class SimpleKnowledgebaseManager implements SkillController {
     @Autowired
     private ResponseGenerator responseGenerator;
 
-//    private String goalPrediction = "goal_prediction";
+//    @Value("${skill.confidence.kb}")
+//    @Value("#{Integer.valueOf('${skill.confidence.kb}')}")
+    private float confidence = (float) 0.8;
+
 
     private List<String> slotValues = new ArrayList<>();
 
@@ -55,7 +59,7 @@ public class SimpleKnowledgebaseManager implements SkillController {
             this.addBotUtterEvent(predictedAction, userGoal);
         }
 
-        logger.debug("got prediction from KB: " + predictedAction);
+        logger.debug("Prediction from KB: " + predictedAction);
         return predictedAction;
     }
 
@@ -66,7 +70,7 @@ public class SimpleKnowledgebaseManager implements SkillController {
         BotUtterEvent botUtterEvent = responseGenerator.generateQueryResponseForSlot(slotEntity);
 
         predictedAction.setBotEvent(botUtterEvent);
-        predictedAction.setConfidence((float) 0.95);
+        predictedAction.setConfidence(confidence);
 
     }
 

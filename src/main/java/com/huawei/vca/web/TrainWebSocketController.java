@@ -40,7 +40,7 @@ public class TrainWebSocketController {
     @MessageMapping("/train/parseDialogue")
     public void getIntentRequest(Dialogue dialogue, @Header("simpSessionId") String sessionId) {
 
-        logger.debug("got new training input: " + dialogue.getText() + " on session id: " + dialogue.getSessionId());
+        logger.debug("**** got new training input: " + dialogue.getText() + "**** on session id: " + dialogue.getSessionId());
 
         executorService.execute(()-> {
 

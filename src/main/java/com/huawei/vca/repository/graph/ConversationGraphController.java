@@ -8,6 +8,7 @@ import com.huawei.vca.repository.entity.BotUtterEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
 import java.util.*;
@@ -23,6 +24,9 @@ public class ConversationGraphController implements SkillController {
     @Autowired
     private ResponseGenerator responseGenerator;
 
+//    @Value("${skill.confidence.graph}")
+    private float confidence = (float) 0.9;
+
     private static String graphLocation = "graph_location";
     private static String observationLocation = "observation_location";
 
@@ -34,15 +38,16 @@ public class ConversationGraphController implements SkillController {
         ActionNode actionNode = this.getGraphLocation(dialogue);
         if (actionNode == null) {
             predictedAction.addProperty(graphLocation, "-1");
+            logger.debug("Prediction from Graph: " + predictedAction);
             return predictedAction;
         }
 
         BotUtterEvent botUtterEvent = responseGenerator.generateResponse(actionNode.getStringId());
         predictedAction.setBotEvent(botUtterEvent);
-        predictedAction.setConfidence((float) 0.9);
+        predictedAction.setConfidence(confidence);
         predictedAction.addProperty(graphLocation, actionNode.getId().toString());
 
-        logger.debug("got prediction: " + predictedAction);
+        logger.debug("Prediction from Graph: " + predictedAction);
 
         return predictedAction;
     }

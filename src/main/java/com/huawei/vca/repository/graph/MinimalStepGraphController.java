@@ -6,6 +6,7 @@ import com.huawei.vca.nlg.ResponseGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
@@ -23,6 +24,8 @@ public class MinimalStepGraphController implements SkillController {
     @Autowired
     private ResponseGenerator responseGenerator;
 
+//    @Value("${skill.confidence.minimal}")
+    private float confidence = (float) 0.91;
 
     @Override
     public PredictedAction getPredictedAction(Dialogue dialogue) {
@@ -32,12 +35,15 @@ public class MinimalStepGraphController implements SkillController {
         RootNode rootNode = conversationGraphRepository.getRootNode();
         List<ObservationNode> observationNodes = rootNode.getObservationNodes();
 
-        if (observationNodes == null)
+        if (observationNodes == null) {
+            logger.debug("Prediction from Q&A: " + predictedAction);
             return predictedAction;
+        }
 
         ObservationNode observationNode = this.checkObservation(dialogue.getLastNluEvent(), observationNodes);
 
         if (observationNode == null) {
+            logger.debug("Prediction from Q&A: " + predictedAction);
             return predictedAction;
         }
 
@@ -51,12 +57,11 @@ public class MinimalStepGraphController implements SkillController {
         if (actionNode.getObservationNodes() != null)
             return predictedAction;
 
-        predictedAction.setConfidence((float) 0.95);
+        predictedAction.setConfidence(confidence);
         BotUtterEvent botUtterEvent = responseGenerator.generateResponse(actionNode.getStringId());
         predictedAction.setBotEvent(botUtterEvent);
 
-        logger.debug("got prediction: " + predictedAction);
-
+        logger.debug("Prediction from Q&A: " + predictedAction);
         return predictedAction;
     }
 
