@@ -2,7 +2,7 @@ var intents_dict = {};
 var textset_dict = {};
 var index = 0;
 var app;
-var dataUrl = backendServer + '/data/intents/';
+var dataUrl = '/data/intents/';
 
 function trimEmptyTextNodes (el) {
   for (let node of el.childNodes) {

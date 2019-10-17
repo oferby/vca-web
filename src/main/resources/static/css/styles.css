@@ -84,7 +84,7 @@ box-shadow: 0 -2px 10px 2px #ccc inset;
 }
 
 #smartbotBody {
-  height: 60%;
+  height: 82%;
   overflow-y: auto;
   background-color: white;
   padding-left: 8px;
@@ -93,9 +93,13 @@ box-shadow: 0 -2px 10px 2px #ccc inset;
   margin-bottom: 3px;
 }
 
+.message-button {
+  float: right;
+  margin: 3px;
+}
 
 .messageBox {
-  max-width: 75%;
+  max-width: 90%;
   min-width: 50px;
   clear: both;
   margin-bottom: 8px;
@@ -104,7 +108,6 @@ box-shadow: 0 -2px 10px 2px #ccc inset;
 
 .messageText {
   margin: 6px 8px 6px 8px;
-
 }
 
 .messageTime {
@@ -163,4 +166,15 @@ box-shadow: 0 -2px 10px 2px #ccc inset;
 
 .intent {
     background-color: #DDDBC9
+}
+
+.wrapword {
+    white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    white-space: pre-wrap;       /* css-3 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    white-space: -webkit-pre-wrap; /* Newer versions of Chrome/Safari*/
+    word-break: break-all;
+    white-space: normal;
 }

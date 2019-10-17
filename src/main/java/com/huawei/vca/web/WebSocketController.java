@@ -1,6 +1,6 @@
 package com.huawei.vca.web;
 
-import com.huawei.vca.conversation.ConversationManager;
+import com.huawei.vca.conversation.ConversationStateTracker;
 import com.huawei.vca.message.Confidence;
 import com.huawei.vca.message.Dialogue;
 import com.huawei.vca.conversation.SessionController;
@@ -12,6 +12,8 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+
+import java.util.concurrent.ExecutorService;
 
 /*
  * This class is a starting point for user input that comes from web socket.
@@ -31,14 +33,17 @@ public class WebSocketController {
     private SimpMessagingTemplate template;
 
     @Autowired
-    private ConversationManager conversationManager;
+    private ConversationStateTracker conversationStateTracker;
+
+    @Autowired
+    private ExecutorService executorService;
 
     @MessageMapping("/parseDialogue")
     public void getIntentRequest(Dialogue dialogue, @Header("simpSessionId") String sessionId) {
 
         logger.debug("got new user input: " + dialogue.getText() + " on session id: " + dialogue.getSessionId());
 
-        dialogue = conversationManager.handleDialogue(dialogue);
+        dialogue = conversationStateTracker.handleDialogue(dialogue);
         sessionController.addOrUpdateDialogue(sessionId, dialogue);
 
         this.sendResponseToAll(dialogue);

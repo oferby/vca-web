@@ -1,6 +1,6 @@
 package com.huawei.vca.web;
 
-import com.huawei.vca.repository.BotUtterEntity;
+import com.huawei.vca.repository.entity.BotUtterEntity;
 import com.huawei.vca.repository.controller.BotUtterRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

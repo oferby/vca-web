@@ -1,5 +1,7 @@
 package com.huawei.vca.message;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Objects;
 
 public class Slot {
@@ -7,14 +9,29 @@ public class Slot {
     private String key;
     private String value;
     private float confidence;
+    private Integer start;
+    private Integer end;
 
     public Slot() {
+    }
+
+    public Slot(String key, String value) {
+        this.key = key;
+        this.value = value;
     }
 
     public Slot(String key, String value, float confidence) {
         this.key = key;
         this.value = value;
         this.confidence = confidence;
+    }
+
+    public Slot(String key, String value, float confidence, Integer start, Integer end) {
+        this.key = key;
+        this.value = value;
+        this.confidence = confidence;
+        this.start = start;
+        this.end = end;
     }
 
     public String getKey() {
@@ -41,6 +58,22 @@ public class Slot {
         this.confidence = confidence;
     }
 
+    public Integer getStart() {
+        return start;
+    }
+
+    public void setStart(Integer start) {
+        this.start = start;
+    }
+
+    public Integer getEnd() {
+        return end;
+    }
+
+    public void setEnd(Integer end) {
+        this.end = end;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -48,11 +81,32 @@ public class Slot {
         Slot slot = (Slot) o;
         return Float.compare(slot.getConfidence(), getConfidence()) == 0 &&
                 Objects.equals(getKey(), slot.getKey()) &&
-                Objects.equals(getValue(), slot.getValue());
+                Objects.equals(getValue(), slot.getValue()) &&
+                Objects.equals(getStart(), slot.getStart()) &&
+                Objects.equals(getEnd(), slot.getEnd());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getKey(), getValue(), getConfidence());
+        return Objects.hash(getKey(), getValue(), getConfidence(), getStart(), getEnd());
+    }
+
+    @Override
+    public String toString() {
+        return "Slot{" +
+                "key='" + key + '\'' +
+                ", value='" + value + '\'' +
+                ", confidence=" + confidence +
+                ", start=" + start +
+                ", end=" + end +
+                '}';
+    }
+
+    @JsonIgnore
+    public Slot getSmallCopy() {
+        Slot newCopy = new Slot();
+        newCopy.setKey(this.key);
+        newCopy.setValue(this.value);
+        return newCopy;
     }
 }

@@ -1,7 +1,7 @@
 package com.huawei.vca.repository;
 
 import com.huawei.vca.repository.controller.IntentRepository;
-import org.junit.Test;
+import com.huawei.vca.repository.entity.IntentEntity;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,7 +9,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @RunWith(SpringRunner.class)
@@ -19,7 +18,7 @@ public class TestIntentRepository {
     @Autowired
     private IntentRepository intentRepository;
 
-    @Test
+//    @Test
     public void testCRUD(){
 
         IntentEntity intentEntity = this.getIntentEntity();
@@ -74,7 +73,7 @@ public class TestIntentRepository {
 
     }
 
-    @Test
+//    @Test
     public void addTestIntents() {
 
         intentRepository.deleteAll();
@@ -87,7 +86,7 @@ public class TestIntentRepository {
 
     }
 
-    @Test
+//    @Test
     public void testFind(){
 
         List<IntentEntity> all = intentRepository.findAll();

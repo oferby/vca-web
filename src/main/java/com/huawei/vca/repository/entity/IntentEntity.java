@@ -1,9 +1,8 @@
-package com.huawei.vca.repository;
+package com.huawei.vca.repository.entity;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;

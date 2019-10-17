@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.huawei.vca.nlu.intent.example";
+option java_outer_classname = "IntentExampleProto";
+
+package rasa_nlu;
+
+service RasaNluService {
+    rpc saveToRasaNlu (RasaNluRequest) returns (RasaNluResponse) {
+
+    }
+}
+
+message Entity {
+    string entity = 1;
+    string value = 2;
+    int32 start = 3;
+    int32 end = 4;
+}
+
+message CommonExample {
+    string intent = 1;
+    string text = 2;
+    repeated Entity entities = 3;
+}
+
+message RasaData {
+    repeated CommonExample common_examples = 1;
+}
+
+message RasaNluRequest {
+    RasaData rasa_nlu_data = 1;
+}
+
+message RasaNluResponse {
+    string done = 1;
+}

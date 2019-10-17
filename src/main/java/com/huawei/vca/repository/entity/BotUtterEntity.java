@@ -1,6 +1,5 @@
-package com.huawei.vca.repository;
+package com.huawei.vca.repository.entity;
 
-import com.huawei.vca.message.Event;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 

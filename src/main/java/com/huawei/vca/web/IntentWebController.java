@@ -1,6 +1,6 @@
 package com.huawei.vca.web;
 
-import com.huawei.vca.repository.IntentEntity;
+import com.huawei.vca.repository.entity.IntentEntity;
 import com.huawei.vca.repository.controller.IntentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

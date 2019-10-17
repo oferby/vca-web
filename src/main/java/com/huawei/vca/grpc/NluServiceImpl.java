@@ -24,7 +24,7 @@ public class NluServiceImpl implements NluService{
     @Override
     public NluResponse getNluResponse(String text) {
 
-        NluRequest nluRequest = NluRequest.newBuilder().setText(text).build();
+        NluRequest nluRequest = NluRequest.newBuilder().setText(text.toLowerCase()).build();
 
         return serviceBlockingStub.getNluResponse(nluRequest);
     }

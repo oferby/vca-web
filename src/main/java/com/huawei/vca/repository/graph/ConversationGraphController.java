@@ -1,18 +1,51 @@
 package com.huawei.vca.repository.graph;
 
+import com.huawei.vca.conversation.skill.SkillController;
 import com.huawei.vca.message.*;
+import com.huawei.vca.nlg.ResponseGenerator;
+import com.huawei.vca.repository.controller.BotUtterRepository;
+import com.huawei.vca.repository.entity.BotUtterEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.util.*;
 
 @Controller
-public class ConversationGraphController {
+public class ConversationGraphController implements SkillController {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private ConversationGraphRepository conversationGraphRepository;
 
+    @Autowired
+    private ResponseGenerator responseGenerator;
+
     private static String graphLocation = "graph_location";
+    private static String observationLocation = "observation_location";
+
+    @Override
+    public PredictedAction getPredictedAction(Dialogue dialogue) {
+
+        PredictedAction predictedAction = new PredictedAction();
+
+        ActionNode actionNode = this.getGraphLocation(dialogue);
+        if (actionNode == null) {
+            predictedAction.addProperty(graphLocation, "-1");
+            return predictedAction;
+        }
+
+        BotUtterEvent botUtterEvent = responseGenerator.generateResponse(actionNode.getStringId());
+        predictedAction.setBotEvent(botUtterEvent);
+        predictedAction.setConfidence((float) 0.9);
+        predictedAction.addProperty(graphLocation, actionNode.getId().toString());
+
+        logger.debug("got prediction: " + predictedAction);
+
+        return predictedAction;
+    }
 
     public void saveDialogueToGraph(Dialogue dialogue) {
 
@@ -28,7 +61,6 @@ public class ConversationGraphController {
         }
 
         rootNode.increaseVisited();
-        toSave.add(rootNode);
 
         ActionNode nextActionNode = null;
         ObservationNode nextObservationNode = null;
@@ -37,10 +69,15 @@ public class ConversationGraphController {
 
         for (Event event : history) {
 
+            if (event instanceof BotDefaultUtterEvent) {
+                continue;
+            }
+
             if (event instanceof BotUtterEvent) {
 
                 BotUtterEvent botUtterEvent = (BotUtterEvent) event;
 
+                assert nextObservationNode != null;
                 if (nextObservationNode.getActionNode() == null) {
                     nextActionNode = new ActionNode();
                     nextActionNode.setStringId(botUtterEvent.getId());
@@ -55,6 +92,7 @@ public class ConversationGraphController {
 
                 }
 
+                assert nextActionNode != null;
                 if (!nextActionNode.getStringId().equals(botUtterEvent.getId())) {
                     throw new RuntimeException("multiple actions to single observation");
                 }
@@ -142,64 +180,99 @@ public class ConversationGraphController {
 
         }
 
+        Set<ObservationNode> observationNodes = new HashSet<>();
+        Set<ActionNode> actionNodes = new HashSet<>();
+        Set<StateNode> nodeSet = new HashSet<>();
 
-        SortedSet<StateNode> nodeSet = new TreeSet<>(toSave);
+        nodeSet.add(rootNode);
+
+        for (StateNode stateNode : toSave) {
+            if (stateNode instanceof ActionNode) {
+                actionNodes.add((ActionNode) stateNode);
+            } else {
+                observationNodes.add((ObservationNode) stateNode);
+            }
+        }
+
+        nodeSet.addAll(actionNodes);
+        nodeSet.addAll(observationNodes);
+
         conversationGraphRepository.saveAll(nodeSet);
 
     }
 
-    public boolean addGraphLocation(Dialogue dialogue) {
+
+    private ActionNode getGraphLocation(Dialogue dialogue) {
 
         if (dialogue.getProperty(graphLocation) == null) {
 
             RootNode rootNode = conversationGraphRepository.getRootNode();
             List<ObservationNode> observationNodes = rootNode.getObservationNodes();
-            return this.addActionToDialogue(dialogue, observationNodes);
+            return this.findActionId(dialogue.getLastNluEvent(), observationNodes);
 
-        } else {
-
-            if (dialogue.getProperty(graphLocation).equals("-1")) {
-                return false;
-            }
-
-            Long graphId = Long.valueOf(dialogue.getProperty(graphLocation));
-            ActionNode actionNode = conversationGraphRepository.findActionById(graphId);
-            if (actionNode == null || actionNode.getObservationNodes() == null) {
-                dialogue.addProperty(graphLocation, "-1");
-                dialogue.addProperty("best_action", "no action in graph");
-                return false;
-
-            }
-
-            return this.addActionToDialogue(dialogue, actionNode.getObservationNodes());
         }
+
+        if (dialogue.getProperty(graphLocation).equals("-1")) {
+            return null;
+        }
+
+        Long graphId = Long.valueOf(dialogue.getProperty(graphLocation));
+        ActionNode actionNode = conversationGraphRepository.findActionById(graphId);
+        if (actionNode == null || actionNode.getObservationNodes() == null) {
+            return null;
+
+        }
+
+        return findActionId(dialogue.getLastNluEvent(), actionNode.getObservationNodes());
 
     }
 
-    private boolean addActionToDialogue(Dialogue dialogue, List<ObservationNode> observationNodes) {
+    private ActionNode findActionId(NluEvent nluEvent, List<ObservationNode> observationNodes) {
 
         if (observationNodes == null)
-            return false;
+            return null;
+
+        boolean found;
 
         for (ObservationNode observationNode : observationNodes) {
-            if (observationNode.getStringId().equals(dialogue.getLastNluEvent().getBestIntent().getIntent())) {
-                ObservationNode node = conversationGraphRepository.findObservationNodeById(observationNode.getId());
-                if (node.getActionNode() != null) {
-                    if (dialogue.getProperties() != null)
-                        dialogue.getProperties().remove("best_action");
+            if (observationNode.getStringId().equals(nluEvent.getBestIntent().getIntent())) {
 
-                    dialogue.setText(node.getActionNode().getStringId());
-                    dialogue.addProperty(graphLocation, node.getActionNode().getId().toString());
-                    return true;
+                found = true;
+
+                Map<String, String> properties = observationNode.getProperties();
+                Set<Slot> slots = nluEvent.getSlots();
+
+                if (slots != null || properties.size() != 0) {
+
+                    if (slots != null && properties.keySet().size() == slots.size()) {
+                        //                            same number of slots
+
+                        for (Slot slot : slots) {
+                            if (!properties.containsKey(slot.getKey()) || !properties.get(slot.getKey()).equals(slot.getValue())) {
+                                found = false;
+                                break;
+                            }
+                        }
+
+                    } else {
+                        found = false;
+                    }
                 }
 
+                if (found) {
+
+                    ObservationNode node = conversationGraphRepository.findObservationNodeById(observationNode.getId());
+                    if (node.getActionNode() != null) {
+                        return node.getActionNode();
+                    }
+
+                }
             }
+
         }
 
-        dialogue.addProperty(graphLocation, "-1");
-        dialogue.addProperty("best_action", "no action in graph");
-        return false;
-    }
+        return null;
 
+    }
 
 }

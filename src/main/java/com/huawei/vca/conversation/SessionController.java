@@ -3,7 +3,7 @@ package com.huawei.vca.conversation;
 import com.huawei.vca.message.Confidence;
 import com.huawei.vca.message.Dialogue;
 import com.huawei.vca.message.DialogueSummary;
-import com.huawei.vca.repository.DialogueEntity;
+import com.huawei.vca.repository.entity.DialogueEntity;
 import com.huawei.vca.repository.controller.DialogueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

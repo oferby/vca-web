@@ -155,7 +155,7 @@ function handleEvent(event) {
 
         }
 
-    } else if (event.type === "BotUtterEvent") {
+    } else if (event.type === "BotUtterEvent" || event.type === "BotDefaultUtterEvent") {
         addBotText(event.text, event.localDateTime);
     }
 

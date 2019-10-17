@@ -2,6 +2,7 @@ package com.huawei.vca.repository;
 
 import com.huawei.vca.message.*;
 import com.huawei.vca.repository.controller.IntentRepository;
+import com.huawei.vca.repository.entity.IntentEntity;
 import com.huawei.vca.repository.graph.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -183,7 +184,7 @@ public class TestGraphDb {
 
 
 
-//    @Test
+    @Test
     public void deleteAll(){
 
         reset();

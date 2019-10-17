@@ -1,6 +1,7 @@
-package com.huawei.vca.repository;
+package com.huawei.vca.repository.entity;
 
-import com.huawei.vca.repository.controller.Turn;
+import com.huawei.vca.repository.ConversationTurn;
+import com.huawei.vca.repository.Turn;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
