@@ -66,7 +66,7 @@ function addUserInput(text) {
 
 function addIntentInput(text) {
 
-    $('#smartbotBody').append('<div class="messageBox outgoing intent"><div class="messageText">'+text+'</div></div>');
+    $('#smartbotBody').append('<div class="messageBox outgoing intent wrapword"><div class="messageText">'+text+'</div></div>');
 
 }
 
@@ -86,38 +86,44 @@ function addBotText(text) {
 
 }
 
+function addMessageButton(option) {
+    $('#smartbotBody').append('<input type="button" class="message-button" onclick="sendIntent(this.value)" value=' + option.id + '>');
+}
+
 function addBotResponse(dialogue){
+    if (dialogue.lastNluEvent != null) {
 
-    async function displayWait() {
+            let nluInfo = dialogue.lastNluEvent;
+            if (nluInfo != null) {
+                intent = nluInfo.bestIntent.intent + " " + nluInfo.bestIntent.confidence;
+                addIntentInput(intent);
 
-        $('#smartbotBody').append('<div id="waiting-div" class="messageBox incoming"><div class="messageText"><div class="waiting"><img src="/images/waiting.gif" alt="Enter"></div></div></div>');
+                slots = nluInfo.slots;
+                if (slots != null) {
+                    slots.forEach(function (slot) {
+                        text = slot.key + ":" + slot.value + "(" + slot.confidence + ")";
+                        addIntentInput(text)
+                    })
+                }
+
+            }
+
+
+        }
+
+        if (dialogue.text != null) {
+            addBotText(dialogue.text);
+        }
+
+        let options = dialogue.history[dialogue.history.length - 1].options;
+        if (options != null) {
+            $('#smartbotBody').append('<div class="messageBox incoming">');
+            options.forEach(function (option) {
+                addMessageButton(option);
+            });
+            $('#smartbotBody').append('</div>');
+        }
         scroll_window();
-        await sleep(1000);
-        $('#waiting-div').remove();
-
-//        var nluInfo = dialogue.lastNluEvent;
-//        if (nluInfo != null) {
-//            intent = nluInfo.bestIntent.intent + " " + nluInfo.bestIntent.confidence;
-//            addIntentInput(intent);
-//
-//            slots = nluInfo.slots
-//            if (slots != null) {
-//                slots.forEach(function(slot){
-//                                text = slot.key + ":" + slot.value + "(" + slot.confidence + ")"
-//                                addIntentInput(text)
-//                            })
-//            }
-//
-//
-//        }
-
-        addBotText(dialogue.text);
-        scroll_window();
-
-    }
-
-    displayWait()
-
 }
 
 
