@@ -80,7 +80,7 @@ public class ResponseGeneratorImpl implements ResponseGenerator {
         botUtterEvent.setText(text);
 
         if (menuItemEntity.getImageUrl() != null)
-            botUtterEvent.addImage(new ImageInfo(menuItemEntity.getImageUrl()));
+            botUtterEvent.addImage(new ImageInfo("/images/food/" + menuItemEntity.getImageUrl()));
 
         botUtterEvent.addOption(new Option("yes", "Yes"));
         botUtterEvent.addOption(new Option("no", "No"));

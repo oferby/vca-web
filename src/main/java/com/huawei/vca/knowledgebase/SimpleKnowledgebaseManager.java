@@ -63,7 +63,7 @@ public class SimpleKnowledgebaseManager implements SkillController {
 
     private void addBotUtterEvent(PredictedAction predictedAction, GoalPrediction goalPrediction) {
 
-        if (goalPrediction.getPossibleGoals() == null) {
+        if (goalPrediction.getPossibleGoals() == null || goalPrediction.getPossibleGoals().size() == 0) {
             BotUtterEvent botUtterEvent = responseGenerator.generateNoSolution();
             predictedAction.setBotEvent(botUtterEvent);
             predictedAction.setConfidence((float) 0.1);
