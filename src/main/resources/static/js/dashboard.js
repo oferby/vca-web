@@ -52,9 +52,9 @@ Vue.component('dialogue-item', {
     template: '<div class="dialogue-item"><span class="status" v-bind:class="dialogue.confidenceString"></span><span onclick="show_dialogue(this)">{{dialogue.id}}</span></div>'
 });
 
-Vue.component('action-item', {
+Vue.component('action-tag', {
     props: ['action'],
-    template: "<tr><td class='action-item' onclick='addAction(this)'>{{action.id}}</td><td class='action-item-text'>{{action.textSet[0]}}</td></tr>"
+    template: '<span class="badge badge-pill badge-danger"><i class="fas fa-grip-horizontal" onclick="addAction({{index}})"></i> {{action}}</span>'
 });
 
 function subscribe_to_dialogue(sessionId) {
@@ -96,20 +96,26 @@ function after_get_lines(data) {
             }
 
             if (data.properties['graph_location'] === '-1') {
+                app.saveableState=true;
+                notifyUser("Detached from graph")
+                /*
                 $('#add-action-button').prop('disabled', false);
                 $('#graph-status').text("Detached from graph!");
+                */
             } else {
-                $('#add-action-button').prop('disabled', true);
-                $('#graph-status').text("");
+                app.saveableState=false;
+//                $('#add-action-button').prop('disabled', true);
+//                $('#graph-status').text("");
             }
         }
     }
 
-    if (activeDialogue.training) {
-        show_actions();
-    } else {
-        app.action_list.splice(0, app.action_list.length)
-    }
+    show_actions();
+//    if (activeDialogue.training) {
+//        show_actions();
+//    } else {
+//        app.action_list.splice(0, app.action_list.length)
+//    }
 
     scroll_window();
 }
@@ -123,6 +129,11 @@ function show_actions() {
 function afterGetActions(data) {
     console.log('got action list');
     app.action_list = [...data.sort()];
+    app.action_list.forEach(action => {
+        action.textSet.forEach(ts => {
+            app.flat_action_list.push(ts);
+        })
+    });
 }
 
 function saveDialogueToGraph() {
@@ -132,12 +143,12 @@ function saveDialogueToGraph() {
 
 function addAction(value) {
     console.log('Sending bot action to server');
-    actionId = value.innerText;
+    actionId = app.flat_action_list[value] //value.innerText;
     activeDialogue.text = actionId;
     stompClient.send("/app/train/addAction", {}, JSON.stringify(activeDialogue));
 }
 
-function handleEvent(event) {
+function handleEvent(event,id) {
 
     if (event.type === 'UserUtter') {
         addUserInput(event.text, event.localDateTime);
@@ -195,9 +206,52 @@ function success(data) {
         el: '#app',
         data: {
             dialogue_list: dialogue_list,
-            action_list: []
+            action_list: [],
+            flat_action_list: [],
+            searchFilter: "",
+            userNotification: "",
+            filterChanged: false,
+            saveableState: false
+        },
+        methods: {
+              onSearchFilterChange: function() {
+                console.log("onFilterChange");
+                this.filterChanged = true;
+                this.flat_action_list=[];
+                filterActions(this.searchFilter, this.action_list, this.flat_action_list);
+              },
+			  onSearchFilterClear: function() {
+				this.intentFilter="";
+                this.filterChanged = true
+                toggleFilterClearButton()
+                return true
+			  }
         }
     })
+}
+
+function filterActions(filterInput, dictInput, tagsOutput) {
+    if (filterInput.length>0) {
+
+		var cleanFilterVec = filterInput.replace(/["']/g, "").replace(/[,.]/g, " ").toLowerCase().split(" ");
+		dictInput.forEach(action => {
+			action.textSet.forEach(ts => {
+                // clear all special characters from textset word
+                cts = ts.replace(/["'.,]/g,"").toLowerCase();
+                allFound=true;
+                for (i=0 ; i < cleanFilterVec.length ; i++) {
+                    f = cleanFilterVec[i];
+                    if (cts.indexOf(f)<0) {
+                        allFound=false;
+                        break;
+                    }
+                }
+                if (allFound) {
+                    tagsOutput.push(ts);
+                }
+            })
+        })
+    }
 }
 
 function getData(url, callback) {
@@ -215,3 +269,22 @@ $(document).ready(function () {
     getData(dataUrl, success);
     connect();
 });
+
+function toggleFilterClearButton() {
+  $('.has-clear input[type="text"]').on('input propertychange', function() {
+    var $this = $(this);
+    var visible = Boolean($this.val());
+    $this.siblings('.form-control-clear').toggleClass('hidden', !visible);
+  }).trigger('propertychange');
+
+  $('.form-control-clear').click(function() {
+    $(this).siblings('input[type="text"]').val('')
+      .trigger('propertychange').focus();
+  });
+}
+
+function notifyUser(msg) {
+	app.userNotification = msg;
+	$('.user-notif').fadeIn();
+	setTimeout(function() { $('.user-notif').fadeOut('slow')}, 3000);
+}
