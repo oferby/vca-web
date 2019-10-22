@@ -26,7 +26,6 @@ public class TestMealUserGoalEntity {
     private MenuItemRepository menuItemRepository;
 
 
-
     @Test
     public void testFindAll() {
         List<MealUserGoalEntity> all = mealUserGoalRepository.findAll();
