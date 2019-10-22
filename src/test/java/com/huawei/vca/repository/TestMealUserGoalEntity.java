@@ -29,16 +29,17 @@ public class TestMealUserGoalEntity {
 
     @Test
     public void testFindAll() {
-        String description = "menu_item";
         List<MealUserGoalEntity> all = mealUserGoalRepository.findAll();
-        int i = 0;
         for (MealUserGoalEntity meal : all) {
             MenuItemEntity menuItemEntity = new MenuItemEntity();
             Map props = meal.getProperties();
             props.forEach((k, v) -> {
                 if ((v == null || v == "")) {
                     return; }
-
+                if (k.toString().contains("description")) {
+                    menuItemEntity.setDescription(v.toString());
+                    return;
+                }
                 if (v.toString().contains(",")) {
                     String[] values = v.toString().split(",");
                     for (String val : values) {
@@ -51,7 +52,6 @@ public class TestMealUserGoalEntity {
                     menuItemEntity.addSlot(slot);
                 }
             });
-            menuItemEntity.setDescription("menu_item_" + i++);
             menuItemRepository.save(menuItemEntity);
         }
     }
