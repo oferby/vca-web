@@ -79,7 +79,7 @@ public class SimpleKnowledgebaseManager implements SkillController {
         }
 
         if (goalPrediction.getBestNextQuestion() == null) {
-            logger.debug("**** should not be here ******");
+            logger.debug("**** should not be here *******");
             logger.debug(goalPrediction.toString());
             return;
         }
