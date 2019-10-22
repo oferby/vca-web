@@ -79,6 +79,7 @@ public class SimpleKnowledgebaseManager implements SkillController {
 
         if (goalPrediction.getBestNextQuestion() == null) {
             logger.debug("**** should not be here ******");
+            logger.debug(goalPrediction.toString());
             return;
         }
 
@@ -128,43 +129,88 @@ public class SimpleKnowledgebaseManager implements SkillController {
                 return;
         }
 
+//        check for slot only in 1 of the possible goals
+        for (String slotValue : slotValues) {
+            boolean found = this.searchLeftSlots(slotMap, goalPrediction, slotValue);
+            if (found)
+                return;
+        }
+
     }
 
+    private boolean searchLeftSlots(Map<String, Map<String, Integer>> slotMap, GoalPrediction goalPrediction, String searchValue) {
+
+        int possibleGoals = goalPrediction.getPossibleGoals().size();
+        boolean maxFound = this.checkMax(slotMap, possibleGoals, searchValue);
+        if (maxFound)
+            return false;
+
+        for (Integer value : slotMap.get(searchValue).values()) {
+            if (value > 0 && value < possibleGoals) {
+                SlotEntity slotEntity = this.getSlotEntityForSearchValue(slotMap, searchValue);
+                goalPrediction.setBestNextQuestion(slotEntity);
+                return true;
+            }
+
+        }
+
+        return false;
+
+    }
 
     private boolean searchSlots(Map<String, Map<String, Integer>> slotMap, GoalPrediction goalPrediction, String searchValue) {
 
         if (slotMap.containsKey(searchValue) && slotMap.get(searchValue).keySet().size() > 1) {
 
             int possibleGoals = goalPrediction.getPossibleGoals().size();
-            boolean maxFound = false;
-            for (Integer value : slotMap.get(searchValue).values()) {
-                if (value == possibleGoals) {
-                    maxFound = true;
-                    break;
-                }
-            }
-
+            boolean maxFound = this.checkMax(slotMap, possibleGoals, searchValue);
             if (maxFound)
                 return false;
 
-            Optional<SlotEntity> optionalSlotEntity = slotRepository.findById(searchValue);
-            assert optionalSlotEntity.isPresent();
-
-            SlotEntity slotEntity = optionalSlotEntity.get();
-            Set<String> tempValues = new HashSet<>(slotEntity.getValues());
-            Set<String> values = slotMap.get(searchValue).keySet();
-            for (String value : slotEntity.getValues()) {
-                if (!values.contains(value)) {
-                    tempValues.remove(value);
-                }
-            }
-            slotEntity.setValues(tempValues);
+            SlotEntity slotEntity = this.getSlotEntityForSearchValue(slotMap, searchValue);
             goalPrediction.setBestNextQuestion(slotEntity);
             return true;
         }
 
         return false;
 
+    }
+
+    private boolean checkMax(Map<String, Map<String, Integer>> slotMap, int possibleGoals, String searchValue) {
+
+        boolean maxFound = false;
+
+        if (!slotMap.containsKey(searchValue))
+            return true;
+
+        for (Integer value : slotMap.get(searchValue).values()) {
+            if (value == possibleGoals) {
+                maxFound = true;
+                break;
+            }
+        }
+
+        return maxFound;
+
+    }
+
+
+    private SlotEntity getSlotEntityForSearchValue(Map<String, Map<String, Integer>> slotMap, String searchValue) {
+
+        Optional<SlotEntity> optionalSlotEntity = slotRepository.findById(searchValue);
+        assert optionalSlotEntity.isPresent();
+
+        SlotEntity slotEntity = optionalSlotEntity.get();
+        Set<String> tempValues = new HashSet<>(slotEntity.getValues());
+        Set<String> values = slotMap.get(searchValue).keySet();
+        for (String value : slotEntity.getValues()) {
+            if (!values.contains(value)) {
+                tempValues.remove(value);
+            }
+        }
+        slotEntity.setValues(tempValues);
+
+        return slotEntity;
     }
 
 

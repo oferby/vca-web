@@ -10,6 +10,10 @@ public class ImageInfo {
         return title;
     }
 
+    public ImageInfo(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }

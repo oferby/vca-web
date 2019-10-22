@@ -51,6 +51,12 @@ public class BotUtterEvent extends BotEvent{
         return imageInfoList;
     }
 
+    public void addImage(ImageInfo imageInfo){
+        if (imageInfoList == null)
+            imageInfoList = new ArrayList<>();
+        imageInfoList.add(imageInfo);
+    }
+
     public void setImageInfoList(List<ImageInfo> imageInfoList) {
         this.imageInfoList = imageInfoList;
     }

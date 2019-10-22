@@ -57,7 +57,9 @@ public class GoalPrediction {
     @Override
     public String toString() {
         return "GoalPrediction{" +
-                "possibleGoals=" + possibleGoals +
+                "informSlots=" + informSlots +
+                ", denySlots=" + denySlots +
+                ", possibleGoals=" + possibleGoals +
                 ", bestNextQuestion=" + bestNextQuestion +
                 '}';
     }

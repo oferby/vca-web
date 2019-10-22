@@ -1,6 +1,7 @@
 package com.huawei.vca.nlg;
 
 import com.huawei.vca.message.BotUtterEvent;
+import com.huawei.vca.message.ImageInfo;
 import com.huawei.vca.message.Option;
 import com.huawei.vca.repository.controller.BotUtterRepository;
 import com.huawei.vca.repository.controller.SlotRepository;
@@ -72,10 +73,15 @@ public class ResponseGeneratorImpl implements ResponseGenerator {
     @Override
     public BotUtterEvent generateResponseForMenuItem(MenuItemEntity menuItemEntity) {
 
-        String text = "Your order is: " + menuItemEntity.getDescription() + ", is that correct?";
+        String text = "Your order is: " + menuItemEntity.getDescription() + ", would you like to confirm and proceed with the order?";
 
         BotUtterEvent botUtterEvent = new BotUtterEvent();
+        botUtterEvent.setId("utter.ask.menu.item." + menuItemEntity.getId());
         botUtterEvent.setText(text);
+
+        if (menuItemEntity.getImageUrl() != null)
+            botUtterEvent.addImage(new ImageInfo(menuItemEntity.getImageUrl()));
+
         botUtterEvent.addOption(new Option("yes", "Yes"));
         botUtterEvent.addOption(new Option("no", "No"));
 
