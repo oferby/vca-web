@@ -12,7 +12,22 @@ import java.util.Objects;
 
 @NodeEntity
 public class ActionNode extends HasObservationsNode implements Comparable<StateNode> {
+    @Relationship(type = "OPTIONS")
+    private List<OptionNode>optionNodeList;
 
+    public List<OptionNode> getOptionNodeList() {
+        return optionNodeList;
+    }
+
+    public void setOptionNodeList(List<OptionNode> optionNodeList) {
+        this.optionNodeList = optionNodeList;
+    }
+
+    public void addOption(OptionNode optionNode) {
+        if (optionNodeList == null)
+            optionNodeList = new ArrayList<>();
+        optionNodeList.add(optionNode);
+    }
 
     @Override
     public int compareTo(StateNode stateNode) {

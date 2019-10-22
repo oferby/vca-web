@@ -42,7 +42,7 @@ public class ConversationGraphController implements SkillController {
             return predictedAction;
         }
 
-        BotUtterEvent botUtterEvent = responseGenerator.generateResponse(actionNode.getStringId());
+        BotUtterEvent botUtterEvent = responseGenerator.generateResponse(actionNode.getStringId(), actionNode.getOptionNodeList());
         predictedAction.setBotEvent(botUtterEvent);
         predictedAction.setConfidence(confidence);
         predictedAction.addProperty(graphLocation, actionNode.getId().toString());
@@ -86,6 +86,16 @@ public class ConversationGraphController implements SkillController {
                 if (nextObservationNode.getActionNode() == null) {
                     nextActionNode = new ActionNode();
                     nextActionNode.setStringId(botUtterEvent.getId());
+
+                    if (botUtterEvent.getOptions() !=null) {
+                        for (Option option : botUtterEvent.getOptions()) {
+                            OptionNode optionNode = new OptionNode(option.getId(), option.getText());
+                            nextActionNode.addOption(optionNode);
+                            toSave.add(optionNode);
+                        }
+
+                    }
+
                     nextObservationNode.setActionNode(nextActionNode);
                     nodes = new ArrayList<>();
                     nextActionNode.setObservationNodes(nodes);
@@ -194,8 +204,10 @@ public class ConversationGraphController implements SkillController {
         for (StateNode stateNode : toSave) {
             if (stateNode instanceof ActionNode) {
                 actionNodes.add((ActionNode) stateNode);
-            } else {
+            } else if (stateNode instanceof ObservationNode){
                 observationNodes.add((ObservationNode) stateNode);
+            } else {
+                nodeSet.add(stateNode);
             }
         }
 

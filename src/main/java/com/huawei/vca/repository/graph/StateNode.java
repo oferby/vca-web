@@ -14,12 +14,11 @@ public class StateNode {
     private
     Long id;
 
-    private String stringId;
+    String stringId;
 
-    private String name;
+    String name;
 
     private Integer stateId;
-
 
 
     public StateNode() {

@@ -1,7 +1,9 @@
 package com.huawei.vca.repository;
 
 import com.huawei.vca.message.*;
+import com.huawei.vca.repository.controller.DialogueRepository;
 import com.huawei.vca.repository.controller.IntentRepository;
+import com.huawei.vca.repository.entity.DialogueEntity;
 import com.huawei.vca.repository.entity.IntentEntity;
 import com.huawei.vca.repository.graph.*;
 import org.junit.Test;
@@ -24,6 +26,9 @@ public class TestGraphDb {
 
     @Autowired
     private IntentRepository intentRepository;
+
+    @Autowired
+    private DialogueRepository dialogueRepository;
 
 //    @Test
     public void testReset(){
@@ -237,5 +242,17 @@ public class TestGraphDb {
 
         conversationGraphRepository.save(rootNode);
     }
+
+    @Test
+    public void testSaveToGraphWithOptions() {
+
+        Optional<DialogueEntity> optionalDialogueEntity = dialogueRepository.findById("dqqtbzxe");
+
+        assert optionalDialogueEntity.isPresent();
+
+        conversationGraphController.saveDialogueToGraph(optionalDialogueEntity.get().getDialogue());
+
+    }
+
 
 }
