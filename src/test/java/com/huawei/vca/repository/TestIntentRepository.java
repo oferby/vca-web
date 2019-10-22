@@ -91,7 +91,7 @@ public class TestIntentRepository {
 
         List<IntentEntity> all = intentRepository.findAll();
 
-        assert all.size() == 2;
+        assert all.size() == 97;
 
     }
 

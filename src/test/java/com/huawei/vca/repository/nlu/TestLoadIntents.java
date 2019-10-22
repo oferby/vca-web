@@ -33,7 +33,7 @@ public class TestLoadIntents {
 
         // read json and write to db
 
-        String filename = "/dev/nlu_data.json";
+        String filename = "/home/avivg-ubuntu/PycharmProjects/rasanlu-v3/data/data(full edit8).json";
 
         ObjectMapper mapper = new ObjectMapper();
 

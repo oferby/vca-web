@@ -56,7 +56,6 @@ public class IntentEntity implements Comparable<IntentEntity>{
         return Objects.hash(getIntent(), getTextSet());
     }
 
-
     @Override
     public int compareTo(IntentEntity entity) {
         String intent = entity.getIntent();

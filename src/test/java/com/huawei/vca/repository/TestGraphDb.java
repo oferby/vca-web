@@ -36,7 +36,7 @@ public class TestGraphDb {
     }
 
 
-//    @Test
+    @Test
     public void testFindConnected() {
 
         reset();

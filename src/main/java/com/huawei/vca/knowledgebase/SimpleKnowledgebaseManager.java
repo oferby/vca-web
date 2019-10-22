@@ -23,6 +23,7 @@ import java.util.*;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
+
 @Controller
 public class SimpleKnowledgebaseManager implements SkillController {
 
@@ -62,7 +63,7 @@ public class SimpleKnowledgebaseManager implements SkillController {
 
     private void addBotUtterEvent(PredictedAction predictedAction, GoalPrediction goalPrediction) {
 
-        if (goalPrediction.getPossibleGoals().size() == 0) {
+        if (goalPrediction.getPossibleGoals() == null) {
             BotUtterEvent botUtterEvent = responseGenerator.generateNoSolution();
             predictedAction.setBotEvent(botUtterEvent);
             predictedAction.setConfidence((float) 0.1);
