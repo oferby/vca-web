@@ -1,13 +1,15 @@
 package com.huawei.vca.message;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class BotUtterEvent extends BotEvent{
 
     private String id;
     private String text;
-    private List<Option> options;
+    private Set<Option> options;
     private List<ImageInfo> imageInfoList;
 
     public BotUtterEvent() {
@@ -33,17 +35,17 @@ public class BotUtterEvent extends BotEvent{
         this.text = text;
     }
 
-    public void setOptions(List<Option> options) {
+    public void setOptions(Set<Option> options) {
         this.options = options;
     }
 
     public void addOption(Option option) {
         if (this.options == null)
-            this.options = new ArrayList<>();
+            this.options = new HashSet<>();
         options.add(option);
     }
 
-    public List<Option> getOptions() {
+    public Set<Option> getOptions() {
         return options;
     }
 

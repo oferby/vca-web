@@ -4,6 +4,7 @@ import com.huawei.vca.message.BotUtterEvent;
 import com.huawei.vca.message.ImageInfo;
 import com.huawei.vca.message.Option;
 import com.huawei.vca.repository.controller.BotUtterRepository;
+import com.huawei.vca.repository.controller.MenuItemRepository;
 import com.huawei.vca.repository.controller.SlotRepository;
 import com.huawei.vca.repository.entity.BotUtterEntity;
 import com.huawei.vca.repository.entity.MenuItemEntity;
@@ -26,6 +27,9 @@ public class ResponseGeneratorImpl implements ResponseGenerator {
 
     @Autowired
     private SlotRepository slotRepository;
+
+    @Autowired
+    private MenuItemRepository menuItemRepository;
 
     @Override
     public BotUtterEvent generateResponse(String actionId, Class skill) {
@@ -59,10 +63,21 @@ public class ResponseGeneratorImpl implements ResponseGenerator {
     }
 
     private BotUtterEvent  getUtterWithOptions(String actionId, Class skill) {
+
+        String askMenuItem = "utter.ask.menu.item.";
+        if (actionId.startsWith(askMenuItem)){
+            String menuItemId = actionId.substring(askMenuItem.length());
+            Optional<MenuItemEntity> optionalMenuItemEntity = menuItemRepository.findById(menuItemId);
+            if (!optionalMenuItemEntity.isPresent())
+                throw new RuntimeException("invalid action id: " + actionId);
+
+            return this.generateResponseForMenuItem(optionalMenuItemEntity.get(), skill);
+        }
+
         Optional<BotUtterEntity> actionById = botUtterRepository.findById(actionId);
 
         if (!actionById.isPresent()) {
-            throw new RuntimeException("invalid action id");
+            throw new RuntimeException("invalid action id: " + actionId);
         }
 
         BotUtterEntity botUtterEntity = actionById.get();
