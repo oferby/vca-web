@@ -9,6 +9,7 @@
     <script src="js/vue-tags-input.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/intents.css">
+    <link rel="stylesheet" href="/css/searchbar.css">
     <link rel="stylesheet" href="/css/input-tags.css">
 </head>
 <body>
@@ -48,7 +49,7 @@
       </div>
     </div>
     <div class="col-md-8 split right datapane overflow-auto no-border">
-	  <span id="user-notif" class="label label-warning">{{userNotification}}</span>
+	  <span class="label label-warning user-notif">{{userNotification}}</span>
       <div >
         <vue-tags-input
               v-model="tag"
@@ -65,7 +66,7 @@
 
             />
       </div>
-	  <span id="user-notif" class="label label-warning">{{userNotification}}</span>
+	  <span class="label label-warning user-notif">{{userNotification}}</span>
     </div>
   </div>
 </div>

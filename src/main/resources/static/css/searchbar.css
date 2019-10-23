@@ -1,0 +1,17 @@
+.searchbar {
+  border-radius: 10px;
+  border: 1px solid #73AD21;
+  padding: 8px;
+  width: 270px;
+  -webkit-transition: width 0.2s ease-in-out;
+  transition: width 0.2s ease-in-out;
+}
+
+/* When the input field gets focus, change its width to 100% */
+.searchbar:focus {
+  border-radius: 10px;
+  border: 2px solid #73AD21;
+  padding: 8px;
+  width: 100%;
+  outline: none;
+}

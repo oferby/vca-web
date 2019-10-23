@@ -143,8 +143,8 @@ function onUpdateDataSuccessful(updatedIntent, fnNextCallback) {
 	
 function notifyUser(msg) {
 	app.userNotification = msg;
-	$('#user-notif').fadeIn();
-	setTimeout(function() { $('#user-notif').fadeOut('slow')}, 3000);
+	$('.user-notif').fadeIn();
+	setTimeout(function() { $('.user-notif').fadeOut('slow')}, 3000);
 }
 
 
