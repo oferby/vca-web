@@ -67,7 +67,7 @@ public class ResponseGeneratorImpl implements ResponseGenerator {
 
         BotUtterEntity botUtterEntity = actionById.get();
         BotUtterEvent botUtterEvent = new BotUtterEvent();
-        botUtterEvent.setSkillId(skill.getName());
+        botUtterEvent.setSkillId(skill.getSimpleName());
         String text = this.getRandomTextFromCollection(botUtterEntity.getTextSet());
         botUtterEvent.setText(text);
         botUtterEvent.setId(botUtterEntity.getId());
@@ -82,7 +82,7 @@ public class ResponseGeneratorImpl implements ResponseGenerator {
 
         BotUtterEntity botUtterEntity = optionalBotUtterEntity.get();
         BotUtterEvent botUtterEvent = new BotUtterEvent();
-        botUtterEvent.setSkillId(skill.getName());
+        botUtterEvent.setSkillId(skill.getSimpleName());
 
         String text = this.getRandomTextFromCollection(botUtterEntity.getTextSet());
         botUtterEvent.setText(text);
@@ -97,7 +97,7 @@ public class ResponseGeneratorImpl implements ResponseGenerator {
         String text = "Your order is: " + menuItemEntity.getDescription() + ", would you like to proceed with the order?";
 
         BotUtterEvent botUtterEvent = new BotUtterEvent();
-        botUtterEvent.setSkillId(skill.getName());
+        botUtterEvent.setSkillId(skill.getSimpleName());
         botUtterEvent.setId("utter.ask.menu.item." + menuItemEntity.getId());
         botUtterEvent.setText(text);
 
@@ -122,7 +122,7 @@ public class ResponseGeneratorImpl implements ResponseGenerator {
             throw new RuntimeException("did not find utter for slot: " + slotName);
 
         BotUtterEvent botUtterEvent = new BotUtterEvent();
-        botUtterEvent.setSkillId(skill.getName());
+        botUtterEvent.setSkillId(skill.getSimpleName());
         botUtterEvent.setId(utterId);
 
         String text = optionalBotUtterEntity.get().getTextSet().iterator().next();

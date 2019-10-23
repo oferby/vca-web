@@ -66,7 +66,6 @@ public class SimpleKnowledgebaseManager implements SkillController {
 
         if (goalPrediction.getPossibleGoals() == null || goalPrediction.getPossibleGoals().size() == 0) {
             BotUtterEvent botUtterEvent = responseGenerator.generateNoSolution(this.getClass());
-            botUtterEvent.setSkillId("KnowledgeBaseSkill");
             predictedAction.setBotEvent(botUtterEvent);
             predictedAction.setConfidence((float) 0.1);
             return;
@@ -74,8 +73,7 @@ public class SimpleKnowledgebaseManager implements SkillController {
 
         if (goalPrediction.getPossibleGoals().size() == 1) {
 
-            BotUtterEvent botUtterEvent = responseGenerator.generateResponseForMenuItem(goalPrediction.getPossibleGoals().get(0),this.getClass());
-            botUtterEvent.setSkillId("KnowledgeBaseSkill");
+            BotUtterEvent botUtterEvent = responseGenerator.generateResponseForMenuItem(goalPrediction.getPossibleGoals().get(0), this.getClass());
             predictedAction.setConfidence(confidence);
             predictedAction.setBotEvent(botUtterEvent);
             return;
@@ -89,8 +87,7 @@ public class SimpleKnowledgebaseManager implements SkillController {
 
         SlotEntity slotEntity = goalPrediction.getBestNextQuestion();
 
-        BotUtterEvent botUtterEvent = responseGenerator.generateQueryResponseForSlot(slotEntity,this.getClass());
-        botUtterEvent.setSkillId("KnowledgeBaseSkill");
+        BotUtterEvent botUtterEvent = responseGenerator.generateQueryResponseForSlot(slotEntity, this.getClass());
 
         predictedAction.setBotEvent(botUtterEvent);
         predictedAction.setConfidence(confidence);
