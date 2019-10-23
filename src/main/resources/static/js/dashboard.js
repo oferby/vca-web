@@ -1,6 +1,7 @@
 var app;
 var dialogue_list;
 var action_list;
+var action_removal_list = [];
 
 var dataUrl = '/data/dialogues/';
 var actionDataUrl = '/data/actions/';
@@ -54,7 +55,7 @@ Vue.component('dialogue-item', {
 
 Vue.component('action-tag', {
     props: ['action'],
-    template: '<span class="badge badge-pill badge-danger"><i class="fas fa-grip-horizontal" onclick="addAction({{index}})"></i> {{action}}</span>'
+    template: '<span class="badge badge-pill badge-danger"><i class="fas fa-grip-horizontal" onclick="addAction("{{ index }}" )></i> {{action}}</span>'
 });
 
 function subscribe_to_dialogue(sessionId) {
@@ -120,7 +121,6 @@ function after_get_lines(data) {
     scroll_window();
 }
 
-
 function show_actions() {
     console.log('show action list for training.');
     getData(actionDataUrl, afterGetActions);
@@ -129,21 +129,25 @@ function show_actions() {
 function afterGetActions(data) {
     console.log('got action list');
     app.action_list = [...data.sort()];
+    app.onSearchFilterChange();
+    /*
     app.action_list.forEach(action => {
         action.textSet.forEach(ts => {
             app.flat_action_list.push(ts);
         })
     });
+    */
 }
 
 function saveDialogueToGraph() {
     console.log('saving dialogue to graph');
+    action_removal_list.sort().reverse().forEach(f => { activeDialogue.history.splice(f,1)});
     stompClient.send("/app/train/saveDialogue", {}, JSON.stringify(activeDialogue));
 }
 
 function addAction(value) {
     console.log('Sending bot action to server');
-    actionId = app.flat_action_list[value] //value.innerText;
+    actionId = app.flat_action_codes[value];
     activeDialogue.text = actionId;
     stompClient.send("/app/train/addAction", {}, JSON.stringify(activeDialogue));
 }
@@ -151,44 +155,90 @@ function addAction(value) {
 function handleEvent(event,id) {
 
     if (event.type === 'UserUtter') {
-        addUserInput(event.text, event.localDateTime);
-
-        if (event.nluEvent != null) {
-            addIntentInput(event.nluEvent.bestIntent.intent + ": " + event.nluEvent.bestIntent.confidence);
-
-            slots = event.nluEvent.slots;
-            if (slots != null) {
-                slots.forEach(function (slot) {
-                    text = slot.key + ":" + slot.value + "(" + slot.confidence + ")";
-                    addIntentInput(text)
-                })
-            }
-
-        }
+        addUserInput(event,id);
+//        if (event.nluEvent != null) {
+//            addIntentInput(event.nluEvent.bestIntent.intent + ": " + event.nluEvent.bestIntent.confidence);
+//
+//            slots = event.nluEvent.slots;
+//            if (slots != null) {
+//                slots.forEach(function (slot) {
+//                    text = slot.key + ":" + slot.value + "(" + slot.confidence + ")";
+//                    addIntentInput(text)
+//                })
+//            }
+//
+//        }
 
     } else if (event.type === "BotUtterEvent" || event.type === "BotDefaultUtterEvent") {
-        addBotText(event.text, event.localDateTime);
+        addBotText(event, id);
     }
 
-
 }
 
-function addUserInput(text, time) {
+function addUserInput(event,id) {
+    eventBody = `<div class='messageBox outgoing' id='msgbox_${id}'>`
 
-    $('#smartbotBody').append('<div class="messageBox outgoing"><div class="messageText">' + text + '</div><div class="messageTime">' + time + '</div></div>');
-
+    eventBody += `<div class="btn-toolbar rounded float-right mt-2"><button class="btn btn-light btn-circular btn-sm mr-1" onclick="removeActionToggle('${id}',this)"><i class="fas fa-trash"></i></button></div>`;
+    eventBody += `<div class="messageText">${event.text}</div>`;
+    slots = null
+    if (event.nluEvent != null) {
+        eventBody += `<div class="badge badge-pill badge-danger mb-2">${event.nluEvent.bestIntent.intent} <div class="badge badge-pill badge-light mb-2">${event.nluEvent.bestIntent.confidence.toFixed(3)}%</div></div><br>`;
+        slots = event.nluEvent.slots;
+    }
+    if (slots != null) {
+        slots.forEach(slot => {
+            eventBody += `<div class="badge badge-pill badge-secondary">${slot.key}<br>${slot.value} <div class="badge badge-pill badge-light mb-2">${slot.confidence.toFixed(3)}%</div></div><br>`;
+        })
+    }
+    eventBody += `<div class="messageTime">${event.localDateTime}</div></div>`;
+    $('#smartbotBody').append(eventBody);
 }
 
-function addIntentInput(text) {
 
-    $('#smartbotBody').append('<div class="messageBox outgoing intent"><div class="messageText">' + text + '</div></div>');
+/*
+<div class="messageBox incoming" id='5'>
+    <div class="btn-toolbar rounded float-right mt-2">
+        <button class="btn btn-light btn-circular btn-sm mr-1"><i class="fas fa-pen"></i></button>
+        <button class="btn btn-light btn-circular btn-sm mr-1"><i class="fas fa-check"></i></button>
+    </div>
+    <div class="messageText">some boring text</div>
+    <div class="messageTime">12/12/12 43:43</div>
+</div>
+*/
 
+//addBotText({ "event" : { "text" : "bla bla", "localDateTime" : "27364876234"} },5)
+
+function removeActionToggle(id,caller) {
+    if (action_removal_list.includes(id)) {
+        action_removal_list.splice(action_removal_list.indexOf(id),1);
+        caller.firstElementChild.classList = "fas fa-trash";
+    } else {
+        action_removal_list.push(id);
+        caller.firstElementChild.classList = "fas fa-undo";
+    }
+
+    $(`#msgbox_${id}`).toggleClass("messagebox-removing");
 }
 
-function addBotText(text, time) {
+function addBotText(event,id) {
+    eventBody = `<div class="messageBox incoming" id='msgbox_${id}'>`
+    eventBody += `<div class="btn-toolbar rounded float-right mt-2"><button class="btn btn-light btn-circular btn-sm mr-1" onclick="removeActionToggle('${id}',this)"><i class="fas fa-trash"></i></button></div>`;
+    eventBody += `<div class="messageText">${event.text}<br>`;
+    if (event.options != null) {
+        event.options.forEach(o => {
+            eventBody += `<div class="badge badge-pill badge-light mr-2">${o.text}</div>`;
+        })
+    }
+    if (event.skillId != null) {
+        eventBody += `<br><div class="badge badge-pill badge-secondary mr-2">${event.skillId}</div>`;
+    }
+    eventBody += `</div><div class="messageTime">${event.localDateTime}</div></div>`;
+    $('#smartbotBody').append(eventBody);
+}
 
-    $('#smartbotBody').append('<div class="messageBox incoming"><div class="messageText">' + text + '</div><div class="messageTime">' + time + '</div></div>');
-
+function editAction(caller) {
+    $(`#${caller}`).toggleClass("messagebox-editing");
+    notifyUser("Select action to replace the current one");
 }
 
 function addBestActionText(text) {
@@ -208,6 +258,7 @@ function success(data) {
             dialogue_list: dialogue_list,
             action_list: [],
             flat_action_list: [],
+            flat_action_codes: [],
             searchFilter: "",
             userNotification: "",
             filterChanged: false,
@@ -218,7 +269,8 @@ function success(data) {
                 console.log("onFilterChange");
                 this.filterChanged = true;
                 this.flat_action_list=[];
-                filterActions(this.searchFilter, this.action_list, this.flat_action_list);
+                this.flat_action_codes=[];
+                filterActions(this.searchFilter, this.action_list, this.flat_action_list, this.flat_action_codes);
               },
 			  onSearchFilterClear: function() {
 				this.intentFilter="";
@@ -230,7 +282,7 @@ function success(data) {
     })
 }
 
-function filterActions(filterInput, dictInput, tagsOutput) {
+function filterActions(filterInput, dictInput, tagsOutput, tagCodes) {
     if (filterInput.length>0) {
 
 		var cleanFilterVec = filterInput.replace(/["']/g, "").replace(/[,.]/g, " ").toLowerCase().split(" ");
@@ -248,6 +300,7 @@ function filterActions(filterInput, dictInput, tagsOutput) {
                 }
                 if (allFound) {
                     tagsOutput.push(ts);
+                    tagCodes.push(action.id);
                 }
             })
         })

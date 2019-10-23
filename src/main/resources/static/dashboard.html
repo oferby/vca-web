@@ -20,14 +20,13 @@
 </head>
 <body>
 
-<div id="app" class="container-fluid">
+    <div id="app" class="container-fluid">
     <div class="row sticky-top">
         <div class="col-md-8"><h1>Monitored Dialogue</h1>
         </div>
     </div>
     <div class="row">
         <div class="col-md-8">
-            <h2>Active Dialogues</h2>
             <section>
                 <article>
                     <dialogue-item
@@ -63,8 +62,8 @@
     </div>
     <div class="row overflow-auto">
         <div class="col-md-8">
-            <div v-if='searchFilter != ""' class="col-md-8">
-                <span v-for='(action,index) in flat_action_list' class="badge badge-pill badge-danger"><i class="fas fa-grip-horizontal mr-2" onclick="addAction( {{ index }} )"></i>{{ action }}</span>
+            <div class="col-md-8">
+                <span v-if="searchFilter != ''" v-for="action ,index in flat_action_list"><div class="badge badge-pill badge-danger" v-on:click='addAction( index )'><i class="fas fa-grip-horizontal mr-2"></i>{{ action }}</div></span>
             </div>
         </div>
     </div>
