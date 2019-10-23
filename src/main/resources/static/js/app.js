@@ -64,12 +64,6 @@ function addUserInput(text) {
 
 }
 
-function addIntentInput(text) {
-
-    $('#smartbotBody').append('<div class="messageBox outgoing intent wrapword"><div class="messageText">'+text+'</div></div>');
-
-}
-
 function scroll_window(){
     var element = document.getElementById("smartbotBody");
     element.scrollTop = element.scrollHeight - element.clientHeight;
@@ -96,16 +90,13 @@ function addBotResponse(dialogue){
             let nluInfo = dialogue.lastNluEvent;
             if (nluInfo != null) {
                 intent = nluInfo.bestIntent.intent + " " + nluInfo.bestIntent.confidence;
-                addIntentInput(intent);
 
                 slots = nluInfo.slots;
                 if (slots != null) {
                     slots.forEach(function (slot) {
                         text = slot.key + ":" + slot.value + "(" + slot.confidence + ")";
-                        addIntentInput(text)
                     })
                 }
-
             }
 
 
