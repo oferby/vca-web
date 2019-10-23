@@ -203,6 +203,20 @@ function addBotText(event,id) {
     eventBody = `<div class="messageBox incoming" id='msgbox_${id}'>`
     eventBody += `<div class="btn-toolbar rounded float-right mt-2"><button class="btn btn-light btn-circular btn-sm mr-1" onclick="removeActionToggle('${id}',this)"><i class="fas fa-trash"></i></button></div>`;
     eventBody += `<div class="messageText">${event.text}<br>`;
+    if (event.imageInfoList != null) {
+        eventBody += '<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel"><ol class="carousel-indicators">'
+        for (i=0; i<event.imageInfoList.length; i++) {
+            eventBody += `<li data-target="#carouselExampleIndicators" data-slide-to="${i}" class="${i==0?'active':''}"></li>`
+        }
+
+        eventBody += '</ol><div class="carousel-inner">'
+        event.imageInfoList.forEach(function(img,idx) {
+            eventBody += `<div class="carousel-item ${idx==0?'active':''}">`
+            eventBody += `<img class="d-block w-25" src="${img.imageUrl}" alt="${img.title!=null?img.title:''}"></div>`
+        })
+
+        eventBody += '</div><a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev"><span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="sr-only">Previous</span></a><a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next"><span class="carousel-control-next-icon" aria-hidden="true"></span><span class="sr-only">Next</span></a></div>'
+    }
     if (event.options != null) {
         event.options.forEach(o => {
             eventBody += `<div class="badge badge-pill badge-light mr-2">${o.text}</div>`;
