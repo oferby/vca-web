@@ -41,6 +41,7 @@
     </div>
     <div class="row sticky-top">
         <div class="col-md-8 py-3">
+            <section>
             <div class="btn-toolbar" role="toolbar" >
                 <div class="btn-group mr-2" role="group">
                     <button class="btn btn-danger" onclick='saveDialogueToGraph()' v-bind:disabled="saveableState"><i class="fas fa-check-circle"></i> Save</button>
@@ -58,13 +59,14 @@
                 </div>
                 <input class="form-control shadow-none border-0" type="search" id="searchFilter" v-model="searchFilter" @input="onSearchFilterChange" placeholder="Start typing text to find corresponding actions"/>
             </div>
-        </div>
-    </div>
-    <div class="row overflow-auto">
-        <div class="col-md-8">
-            <div class="col-md-8">
-                <span v-if="searchFilter != ''" v-for="action ,index in flat_action_list"><div class="badge badge-pill badge-danger" v-on:click='addAction( index )'><i class="fas fa-grip-horizontal mr-2"></i>{{ action }}</div></span>
-            </div>
+                <div class="row overflow-auto">
+                    <div class="col-md-8">
+                        <div class="col-md-8">
+                            <span v-if="searchFilter != ''" v-for="action ,index in flat_action_list"><div class="badge badge-pill badge-danger" v-on:click='addAction( index )'><i class="fas fa-grip-horizontal mr-2"></i>{{ action }}</div></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
 </div>
