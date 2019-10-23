@@ -6,12 +6,15 @@ public class ImageInfo {
     private String imageUrl;
     private String hint;
 
-    public String getTitle() {
-        return title;
+    public ImageInfo() {
     }
 
     public ImageInfo(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     public void setTitle(String title) {
