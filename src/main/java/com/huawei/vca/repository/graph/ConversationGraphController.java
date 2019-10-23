@@ -24,7 +24,7 @@ public class ConversationGraphController implements SkillController {
     @Autowired
     private ResponseGenerator responseGenerator;
 
-//    @Value("${skill.confidence.graph}")
+    //    @Value("${skill.confidence.graph}")
     private float confidence = (float) 0.9;
 
     private static String graphLocation = "graph_location";
@@ -42,7 +42,7 @@ public class ConversationGraphController implements SkillController {
             return predictedAction;
         }
 
-        BotUtterEvent botUtterEvent = responseGenerator.generateResponse(actionNode.getStringId(), actionNode.getOptionNodeList());
+        BotUtterEvent botUtterEvent = responseGenerator.generateResponse(actionNode.getStringId(), actionNode.getOptionNodeList(), this.getClass());
         predictedAction.setBotEvent(botUtterEvent);
         predictedAction.setConfidence(confidence);
         predictedAction.addProperty(graphLocation, actionNode.getId().toString());
@@ -87,7 +87,7 @@ public class ConversationGraphController implements SkillController {
                     nextActionNode = new ActionNode();
                     nextActionNode.setStringId(botUtterEvent.getId());
 
-                    if (botUtterEvent.getOptions() !=null) {
+                    if (botUtterEvent.getOptions() != null) {
                         for (Option option : botUtterEvent.getOptions()) {
                             OptionNode optionNode = new OptionNode(option.getId(), option.getText());
                             nextActionNode.addOption(optionNode);
@@ -204,7 +204,7 @@ public class ConversationGraphController implements SkillController {
         for (StateNode stateNode : toSave) {
             if (stateNode instanceof ActionNode) {
                 actionNodes.add((ActionNode) stateNode);
-            } else if (stateNode instanceof ObservationNode){
+            } else if (stateNode instanceof ObservationNode) {
                 observationNodes.add((ObservationNode) stateNode);
             } else {
                 nodeSet.add(stateNode);
@@ -280,7 +280,9 @@ public class ConversationGraphController implements SkillController {
 
                     ObservationNode node = conversationGraphRepository.findObservationNodeById(observationNode.getId());
                     if (node.getActionNode() != null) {
-                        return node.getActionNode();
+                        Long actionId = node.getActionNode().getId();
+                        ActionNode actionNode = conversationGraphRepository.findActionById(actionId);
+                        return actionNode;
                     }
 
                 }

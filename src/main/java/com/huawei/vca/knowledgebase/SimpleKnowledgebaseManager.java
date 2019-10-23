@@ -53,6 +53,7 @@ public class SimpleKnowledgebaseManager implements SkillController {
 
         PredictedAction predictedAction = new PredictedAction();
 
+
         GoalPrediction userGoal = findUserGoal(dialogue);
         this.findBestAction(userGoal);
         this.addBotUtterEvent(predictedAction, userGoal);
@@ -64,7 +65,8 @@ public class SimpleKnowledgebaseManager implements SkillController {
     private void addBotUtterEvent(PredictedAction predictedAction, GoalPrediction goalPrediction) {
 
         if (goalPrediction.getPossibleGoals() == null || goalPrediction.getPossibleGoals().size() == 0) {
-            BotUtterEvent botUtterEvent = responseGenerator.generateNoSolution();
+            BotUtterEvent botUtterEvent = responseGenerator.generateNoSolution(this.getClass());
+            botUtterEvent.setSkillId("KnowledgeBaseSkill");
             predictedAction.setBotEvent(botUtterEvent);
             predictedAction.setConfidence((float) 0.1);
             return;
@@ -72,7 +74,8 @@ public class SimpleKnowledgebaseManager implements SkillController {
 
         if (goalPrediction.getPossibleGoals().size() == 1) {
 
-            BotUtterEvent botUtterEvent = responseGenerator.generateResponseForMenuItem(goalPrediction.getPossibleGoals().get(0));
+            BotUtterEvent botUtterEvent = responseGenerator.generateResponseForMenuItem(goalPrediction.getPossibleGoals().get(0),this.getClass());
+            botUtterEvent.setSkillId("KnowledgeBaseSkill");
             predictedAction.setConfidence(confidence);
             predictedAction.setBotEvent(botUtterEvent);
             return;
@@ -86,7 +89,8 @@ public class SimpleKnowledgebaseManager implements SkillController {
 
         SlotEntity slotEntity = goalPrediction.getBestNextQuestion();
 
-        BotUtterEvent botUtterEvent = responseGenerator.generateQueryResponseForSlot(slotEntity);
+        BotUtterEvent botUtterEvent = responseGenerator.generateQueryResponseForSlot(slotEntity,this.getClass());
+        botUtterEvent.setSkillId("KnowledgeBaseSkill");
 
         predictedAction.setBotEvent(botUtterEvent);
         predictedAction.setConfidence(confidence);

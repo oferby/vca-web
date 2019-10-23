@@ -17,11 +17,11 @@ public class DialogueControllerImpl implements DialogueController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
-    public void addActionToDialogue(Dialogue dialogue) {
+    public void addActionToDialogue(Dialogue dialogue, Class skill) {
 
         logger.debug("set new action: " + dialogue.getText() + " on session id: " + dialogue.getSessionId());
 
-        BotUtterEvent botUtterEvent = this.responseGenerator.generateResponse(dialogue.getText());
+        BotUtterEvent botUtterEvent = this.responseGenerator.generateResponse(dialogue.getText(), skill);
         dialogue.addToHistory(botUtterEvent);
         dialogue.setText(botUtterEvent.getText());
 

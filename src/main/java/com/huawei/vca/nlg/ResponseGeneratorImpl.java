@@ -28,24 +28,24 @@ public class ResponseGeneratorImpl implements ResponseGenerator {
     private SlotRepository slotRepository;
 
     @Override
-    public BotUtterEvent generateResponse(String actionId) {
+    public BotUtterEvent generateResponse(String actionId, Class skill) {
 
         if (actionId.startsWith("utter.ask.slot.")) {
             String[] split = actionId.split("\\.");
             String slotName = split[split.length - 1];
             Optional<SlotEntity> optionalSlotEntity = slotRepository.findById(slotName);
             assert optionalSlotEntity.isPresent();
-            return this.generateQueryResponseForSlot(optionalSlotEntity.get());
+            return this.generateQueryResponseForSlot(optionalSlotEntity.get(), skill);
         }
 
-        return getUtterWithOptions(actionId);
+        return getUtterWithOptions(actionId, skill);
 
     }
 
     @Override
-    public BotUtterEvent generateResponse(String actionId, List<OptionNode> options) {
+    public BotUtterEvent generateResponse(String actionId, List<OptionNode> options, Class skill) {
 
-        BotUtterEvent botUtterEvent = getUtterWithOptions(actionId);
+        BotUtterEvent botUtterEvent = getUtterWithOptions(actionId, skill);
 
         if (options != null && options.size() > 0) {
             for (OptionNode option : options) {
@@ -58,7 +58,7 @@ public class ResponseGeneratorImpl implements ResponseGenerator {
 
     }
 
-    private BotUtterEvent  getUtterWithOptions(String actionId) {
+    private BotUtterEvent  getUtterWithOptions(String actionId, Class skill) {
         Optional<BotUtterEntity> actionById = botUtterRepository.findById(actionId);
 
         if (!actionById.isPresent()) {
@@ -67,7 +67,7 @@ public class ResponseGeneratorImpl implements ResponseGenerator {
 
         BotUtterEntity botUtterEntity = actionById.get();
         BotUtterEvent botUtterEvent = new BotUtterEvent();
-
+        botUtterEvent.setSkillId(skill.getName());
         String text = this.getRandomTextFromCollection(botUtterEntity.getTextSet());
         botUtterEvent.setText(text);
         botUtterEvent.setId(botUtterEntity.getId());
@@ -75,13 +75,14 @@ public class ResponseGeneratorImpl implements ResponseGenerator {
     }
 
     @Override
-    public BotUtterEvent generateNoSolution() {
+    public BotUtterEvent generateNoSolution(Class skill) {
 
         Optional<BotUtterEntity> optionalBotUtterEntity = botUtterRepository.findById("utter.general.misunderstood");
         assert optionalBotUtterEntity.isPresent();
 
         BotUtterEntity botUtterEntity = optionalBotUtterEntity.get();
         BotUtterEvent botUtterEvent = new BotUtterEvent();
+        botUtterEvent.setSkillId(skill.getName());
 
         String text = this.getRandomTextFromCollection(botUtterEntity.getTextSet());
         botUtterEvent.setText(text);
@@ -91,11 +92,12 @@ public class ResponseGeneratorImpl implements ResponseGenerator {
     }
 
     @Override
-    public BotUtterEvent generateResponseForMenuItem(MenuItemEntity menuItemEntity) {
+    public BotUtterEvent generateResponseForMenuItem(MenuItemEntity menuItemEntity, Class skill) {
 
         String text = "Your order is: " + menuItemEntity.getDescription() + ", would you like to proceed with the order?";
 
         BotUtterEvent botUtterEvent = new BotUtterEvent();
+        botUtterEvent.setSkillId(skill.getName());
         botUtterEvent.setId("utter.ask.menu.item." + menuItemEntity.getId());
         botUtterEvent.setText(text);
 
@@ -109,7 +111,7 @@ public class ResponseGeneratorImpl implements ResponseGenerator {
     }
 
     @Override
-    public BotUtterEvent generateQueryResponseForSlot(SlotEntity slotEntity) {
+    public BotUtterEvent generateQueryResponseForSlot(SlotEntity slotEntity, Class skill) {
 
         String slotName = slotEntity.getName();
         String utterId = "utter.ask.slot." + slotName;
@@ -120,6 +122,7 @@ public class ResponseGeneratorImpl implements ResponseGenerator {
             throw new RuntimeException("did not find utter for slot: " + slotName);
 
         BotUtterEvent botUtterEvent = new BotUtterEvent();
+        botUtterEvent.setSkillId(skill.getName());
         botUtterEvent.setId(utterId);
 
         String text = optionalBotUtterEntity.get().getTextSet().iterator().next();

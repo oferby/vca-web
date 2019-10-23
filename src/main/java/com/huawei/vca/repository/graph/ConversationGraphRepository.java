@@ -20,7 +20,7 @@ public interface ConversationGraphRepository extends Neo4jRepository<StateNode, 
     @Query("MATCH (n:ObservationNode) RETURN n")
     List<ObservationNode>findAllObservationNodes();
 
-    @Query("MATCH (f:ActionNode) WHERE id(f)={0} OPTIONAL MATCH (f)-[l:LEADS]->(to) RETURN f, collect(l), collect(to)")
+    @Query("MATCH (f:ActionNode) WHERE id(f)={0} OPTIONAL MATCH (f)-[l:LEADS]->(to) OPTIONAL MATCH (f)-[o:OPTIONS]->(op) RETURN f, collect(l), collect(to), collect(o),collect(op)")
     ActionNode findActionById(Long id);
 
     @Query("MATCH (f:StateNode) WHERE id(f)={0} OPTIONAL MATCH (f)-[l:LEADS]->(to) RETURN f, collect(l), collect(to)")

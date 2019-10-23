@@ -145,12 +145,12 @@ public class TestBotUtterRepository {
 
         assert optionalSlotEntity.isPresent();
 
-        BotUtterEvent botUtterEvent = responseGenerator.generateQueryResponseForSlot(optionalSlotEntity.get());
+        BotUtterEvent botUtterEvent = responseGenerator.generateQueryResponseForSlot(optionalSlotEntity.get(), this.getClass());
 
         assert botUtterEvent != null;
 
         String utterId = "utter.ask.slot." + slotId;
-        botUtterEvent = responseGenerator.generateResponse(utterId);
+        botUtterEvent = responseGenerator.generateResponse(utterId, this.getClass());
 
         assert botUtterEvent != null;
 

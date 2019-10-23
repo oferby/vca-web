@@ -42,7 +42,7 @@ public class TrainWebSocketController {
 
         logger.debug("**** got new training input: " + dialogue.getText() + "**** on session id: " + dialogue.getSessionId());
 
-        executorService.execute(()-> {
+        executorService.execute(() -> {
 
             dialogue.setTraining(true);
 
@@ -82,7 +82,7 @@ public class TrainWebSocketController {
         logger.debug("got new action to add: " + dialogue.getText());
 
         executorService.execute(() -> {
-            dialogueController.addActionToDialogue(dialogue);
+            dialogueController.addActionToDialogue(dialogue, this.getClass());
             sessionController.addOrUpdateDialogue(dialogue.getSessionId(), dialogue);
             this.webSocketController.sendResponseToAll(dialogue);
         });

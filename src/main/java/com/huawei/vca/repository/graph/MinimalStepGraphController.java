@@ -58,7 +58,7 @@ public class MinimalStepGraphController implements SkillController {
             return predictedAction;
 
         predictedAction.setConfidence(confidence);
-        BotUtterEvent botUtterEvent = responseGenerator.generateResponse(actionNode.getStringId());
+        BotUtterEvent botUtterEvent = responseGenerator.generateResponse(actionNode.getStringId(), this.getClass());
         predictedAction.setBotEvent(botUtterEvent);
 
         logger.debug("Prediction from Q&A: " + predictedAction);

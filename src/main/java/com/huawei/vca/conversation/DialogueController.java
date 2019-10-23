@@ -4,6 +4,6 @@ import com.huawei.vca.message.Dialogue;
 
 public interface DialogueController {
 
-    void addActionToDialogue(Dialogue dialogue);
+    void addActionToDialogue(Dialogue dialogue, Class skill);
 
 }

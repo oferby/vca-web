@@ -10,14 +10,14 @@ import java.util.List;
 
 public interface ResponseGenerator {
 
-    BotUtterEvent generateResponse(String actionId);
+    BotUtterEvent generateResponse(String actionId, Class skill);
 
-    BotUtterEvent generateResponse(String actionId, List<OptionNode> options);
+    BotUtterEvent generateResponse(String actionId, List<OptionNode> options, Class skill);
 
-    BotUtterEvent generateNoSolution();
+    BotUtterEvent generateNoSolution(Class skill);
 
-    BotUtterEvent generateResponseForMenuItem(MenuItemEntity menuItemEntity);
+    BotUtterEvent generateResponseForMenuItem(MenuItemEntity menuItemEntity, Class skill);
 
-    BotUtterEvent generateQueryResponseForSlot(SlotEntity slotEntity);
+    BotUtterEvent generateQueryResponseForSlot(SlotEntity slotEntity, Class skill);
 
 }
