@@ -130,13 +130,6 @@ function afterGetActions(data) {
     console.log('got action list');
     app.action_list = [...data.sort()];
     app.onSearchFilterChange();
-    /*
-    app.action_list.forEach(action => {
-        action.textSet.forEach(ts => {
-            app.flat_action_list.push(ts);
-        })
-    });
-    */
 }
 
 function saveDialogueToGraph() {
@@ -156,23 +149,9 @@ function handleEvent(event,id) {
 
     if (event.type === 'UserUtter') {
         addUserInput(event,id);
-//        if (event.nluEvent != null) {
-//            addIntentInput(event.nluEvent.bestIntent.intent + ": " + event.nluEvent.bestIntent.confidence);
-//
-//            slots = event.nluEvent.slots;
-//            if (slots != null) {
-//                slots.forEach(function (slot) {
-//                    text = slot.key + ":" + slot.value + "(" + slot.confidence + ")";
-//                    addIntentInput(text)
-//                })
-//            }
-//
-//        }
-
     } else if (event.type === "BotUtterEvent" || event.type === "BotDefaultUtterEvent") {
         addBotText(event, id);
     }
-
 }
 
 function addUserInput(event,id) {
