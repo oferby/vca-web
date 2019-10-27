@@ -157,11 +157,11 @@ function handleEvent(event,id) {
 function addUserInput(event,id) {
     eventBody = `<div class='messageBox outgoing' id='msgbox_${id}'>`
 
-    eventBody += `<div class="btn-toolbar rounded float-right mt-2"><button class="btn btn-light btn-circular btn-sm mr-1" onclick="removeActionToggle('${id}',this)"><i class="fas fa-trash"></i></button></div>`;
+    eventBody += `<div class="btn-toolbar float-right" style="margin-right:-21px;"><button class="btn btn-light btn-circular btn-sm" style="border: 1px solid #ccc" onclick="removeActionToggle('${id}',this)"><i class="fas fa-trash"></i></button></div>`;
     eventBody += `<div class="messageText">${event.text}</div>`;
     slots = null
     if (event.nluEvent != null) {
-        eventBody += `<div class="badge badge-pill badge-danger mb-2">${event.nluEvent.bestIntent.intent} <div class="badge badge-pill badge-light mb-2">${event.nluEvent.bestIntent.confidence.toFixed(3)}%</div></div><br>`;
+        eventBody += `<div class="msgInfo">${event.nluEvent.bestIntent.intent} <div style="float: right">${event.nluEvent.bestIntent.confidence.toFixed(3)}%</div></div><br>`;
         slots = event.nluEvent.slots;
     }
     if (slots != null) {
@@ -201,7 +201,7 @@ function removeActionToggle(id,caller) {
 
 function addBotText(event,id) {
     eventBody = `<div class="messageBox incoming" id='msgbox_${id}'>`
-    eventBody += `<div class="btn-toolbar rounded float-right mt-2"><button class="btn btn-light btn-circular btn-sm mr-1" onclick="removeActionToggle('${id}',this)"><i class="fas fa-trash"></i></button></div>`;
+    eventBody += `<div class="btn-toolbar rounded float-right" style="margin-right:-21px;"><button class="btn btn-light btn-circular btn-sm" style="border: 1px solid #ccc" onclick="removeActionToggle('${id}',this)"><i class="fas fa-trash"></i></button></div>`;
     eventBody += `<div class="messageText">${event.text}<br>`;
     if (event.imageInfoList != null) {
         eventBody += '<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel"><ol class="carousel-indicators">'
@@ -223,7 +223,7 @@ function addBotText(event,id) {
         })
     }
     if (event.skillId != null) {
-        eventBody += `<br><div class="badge badge-pill badge-secondary mr-2">${event.skillId}</div>`;
+        eventBody += `<br><div class="msgInfo">${event.skillId}</div>`;
     }
     eventBody += `</div><div class="messageTime">${event.localDateTime}</div></div>`;
     $('#smartbotBody').append(eventBody);

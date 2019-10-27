@@ -18,6 +18,7 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 
 @RestController
+@CrossOrigin(origins = {"http://localhost:9527", "http://http://10.100.100.61:9527"})
 @RequestMapping("data/dialogues")
 public class DialogueWebController {
 

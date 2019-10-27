@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("data/actions")
+@CrossOrigin(origins = {"http://localhost:9527", "http://http://10.100.100.61:9527"})
 public class ActionWebController {
 
     private static final Logger logger = LoggerFactory.getLogger(ActionWebController.class);
