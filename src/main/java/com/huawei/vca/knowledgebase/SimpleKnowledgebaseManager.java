@@ -297,6 +297,7 @@ public class SimpleKnowledgebaseManager implements SkillController {
         slotValues.add("food:ingredient:meat");
         slotValues.add("food:main_dish:burger:cook_level");
         slotValues.add("food:condiment:sauce:burger_sauce");
+        slotValues.add("food:bread");
 
         slotValues.add("food:main_dish:pasta");
         slotValues.add("food:condiment:sauce:pasta_sauce");
