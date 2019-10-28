@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 
 @Controller
@@ -52,12 +53,25 @@ public class ConversationGraphController implements SkillController {
         return predictedAction;
     }
 
+    private ActionNode newActionNodeFromBotUtterEvent (BotUtterEvent botUtterEvent, List<StateNode> toSave) {
+        ActionNode nextActionNode = new ActionNode();
+        nextActionNode.setStringId(botUtterEvent.getId());
+
+        if (botUtterEvent.getOptions() != null) {
+            for (Option option : botUtterEvent.getOptions()) {
+                OptionNode optionNode = new OptionNode(option.getId(), option.getText());
+                nextActionNode.addOption(optionNode);
+                toSave.add(optionNode);
+            }
+        }
+        return nextActionNode;
+    }
+
     public void saveDialogueToGraph(Dialogue dialogue) {
 
         List<StateNode> toSave = new ArrayList<>();
 
         RootNode rootNode = conversationGraphRepository.getRootNode();
-
         List<ObservationNode> nodes = rootNode.getObservationNodes();
         if (nodes == null) {
             nodes = new ArrayList<>();
@@ -84,32 +98,26 @@ public class ConversationGraphController implements SkillController {
 
                 assert nextObservationNode != null;
                 if (nextObservationNode.getActionNode() == null) {
-                    nextActionNode = new ActionNode();
-                    nextActionNode.setStringId(botUtterEvent.getId());
-
-                    if (botUtterEvent.getOptions() != null) {
-                        for (Option option : botUtterEvent.getOptions()) {
-                            OptionNode optionNode = new OptionNode(option.getId(), option.getText());
-                            nextActionNode.addOption(optionNode);
-                            toSave.add(optionNode);
-                        }
-
-                    }
-
+                    nextActionNode = newActionNodeFromBotUtterEvent(botUtterEvent, toSave);
                     nextObservationNode.setActionNode(nextActionNode);
                     nodes = new ArrayList<>();
                     nextActionNode.setObservationNodes(nodes);
-
                     toSave.add(nextObservationNode);
                     toSave.add(nextActionNode);
-
                     continue;
-
                 }
 
                 assert nextActionNode != null;
                 if (!nextActionNode.getStringId().equals(botUtterEvent.getId())) {
-                    throw new RuntimeException("multiple actions to single observation");
+                    // remove action node from graph that's being replaced
+                    conversationGraphRepository.deletePathStartingWithId(nextActionNode.getId());
+                    // replace with new node
+                    nextActionNode = newActionNodeFromBotUtterEvent(botUtterEvent, toSave);
+                    nextObservationNode.setActionNode(nextActionNode);
+                    nodes = new ArrayList<>();
+                    nextActionNode.setObservationNodes(nodes);
+                    toSave.add(nextObservationNode);
+                    toSave.add(nextActionNode);
                 }
 
                 nodes = nextActionNode.getObservationNodes();
@@ -291,6 +299,21 @@ public class ConversationGraphController implements SkillController {
         }
 
         return null;
+
+    }
+
+    @PostConstruct
+    private void setup() {
+        RootNode rootNode = conversationGraphRepository.getRootNode();
+        if (rootNode == null) {
+            conversationGraphRepository.deleteAll();
+
+            RootNode newRootNode = new RootNode();
+            newRootNode.setName("root");
+            newRootNode.setStringId("root");
+            conversationGraphRepository.save(newRootNode);
+        }
+
 
     }
 

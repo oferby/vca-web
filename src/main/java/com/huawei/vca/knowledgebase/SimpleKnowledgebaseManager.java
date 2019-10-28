@@ -41,8 +41,6 @@ public class SimpleKnowledgebaseManager implements SkillController {
     @Autowired
     private ResponseGenerator responseGenerator;
 
-    //    @Value("${skill.confidence.kb}")
-//    @Value("#{Integer.valueOf('${skill.confidence.kb}')}")
     private float confidence = (float) 0.8;
 
 
@@ -52,7 +50,6 @@ public class SimpleKnowledgebaseManager implements SkillController {
     public PredictedAction getPredictedAction(Dialogue dialogue) {
 
         PredictedAction predictedAction = new PredictedAction();
-
 
         GoalPrediction userGoal = findUserGoal(dialogue);
         this.findBestAction(userGoal);
@@ -97,10 +94,11 @@ public class SimpleKnowledgebaseManager implements SkillController {
     private void findBestAction(GoalPrediction goalPrediction) {
 
         if (goalPrediction.getPossibleGoals() == null || goalPrediction.getPossibleGoals().size() < 2)
-            return;
+            return;     // no goals or we already have the only choice
 
         Map<String, Map<String, Integer>> slotMap = new HashMap<>();
 
+        // count up all slot-value pairs in the meals
         for (MenuItemEntity possibleGoal : goalPrediction.getPossibleGoals()) {
             for (Slot slot : possibleGoal.getSlots()) {
                 if (!slotMap.containsKey(slot.getKey())) {
@@ -117,12 +115,8 @@ public class SimpleKnowledgebaseManager implements SkillController {
                     } else {
                         vMap.put(slot.getValue(), 1);
                     }
-
-
                 }
-
             }
-
         }
 
         for (String slotValue : slotValues) {
