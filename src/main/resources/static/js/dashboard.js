@@ -161,31 +161,18 @@ function addUserInput(event,id) {
     eventBody += `<div class="messageText">${event.text}</div>`;
     slots = null
     if (event.nluEvent != null) {
-        eventBody += `<div class="msgInfo">${event.nluEvent.bestIntent.intent} <div style="float: right">${event.nluEvent.bestIntent.confidence.toFixed(3)}%</div></div><br>`;
+        eventBody += `<div class="msgInfo">${event.nluEvent.bestIntent.intent} <div style="float: right">${event.nluEvent.bestIntent.confidence.toFixed(3) * 100}%</div></div><br>`;
         slots = event.nluEvent.slots;
     }
     if (slots != null) {
         slots.forEach(slot => {
-            eventBody += `<div class="badge badge-pill badge-secondary">${slot.key}<br>${slot.value} <div class="badge badge-pill badge-light mb-2">${slot.confidence.toFixed(3)}%</div></div><br>`;
+            eventBody += `<div class="badge badge-pill badge-secondary">${slot.key}<br>${slot.value} <div class="badge badge-pill badge-light mb-2">${slot.confidence.toFixed(3) * 100}%</div></div><br>`;
         })
     }
     eventBody += `<div class="messageTime">${event.localDateTime}</div></div>`;
     $('#smartbotBody').append(eventBody);
 }
 
-
-/*
-<div class="messageBox incoming" id='5'>
-    <div class="btn-toolbar rounded float-right mt-2">
-        <button class="btn btn-light btn-circular btn-sm mr-1"><i class="fas fa-pen"></i></button>
-        <button class="btn btn-light btn-circular btn-sm mr-1"><i class="fas fa-check"></i></button>
-    </div>
-    <div class="messageText">some boring text</div>
-    <div class="messageTime">12/12/12 43:43</div>
-</div>
-*/
-
-//addBotText({ "event" : { "text" : "bla bla", "localDateTime" : "27364876234"} },5)
 
 function removeActionToggle(id,caller) {
     if (action_removal_list.includes(id)) {
