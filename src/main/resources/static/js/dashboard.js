@@ -161,12 +161,12 @@ function addUserInput(event,id) {
     eventBody += `<div class="messageText">${event.text}</div>`;
     slots = null
     if (event.nluEvent != null) {
-        eventBody += `<div class="msgInfo">${event.nluEvent.bestIntent.intent} <div style="float: right">${event.nluEvent.bestIntent.confidence.toFixed(3) * 100}%</div></div><br>`;
+        eventBody += `<div class="msgInfo">${event.nluEvent.bestIntent.intent} <div style="float: right">${Number.parseFloat(event.nluEvent.bestIntent.confidence * 100).toFixed(2)}%</div></div><br>`;
         slots = event.nluEvent.slots;
     }
     if (slots != null) {
         slots.forEach(slot => {
-            eventBody += `<div class="badge badge-pill badge-secondary">${slot.key}<br>${slot.value} <div class="badge badge-pill badge-light mb-2">${slot.confidence.toFixed(3) * 100}%</div></div><br>`;
+            eventBody += `<div class="badge badge-pill badge-secondary">${slot.key}<br>${slot.value} <div class="badge badge-pill badge-light mb-2">${Number.parseFloat(slot.confidence * 100).toFixed(2)}%</div></div><br>`;
         })
     }
     eventBody += `<div class="messageTime">${event.localDateTime}</div></div>`;

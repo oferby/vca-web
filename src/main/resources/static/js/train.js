@@ -31,7 +31,8 @@ function connect() {
 
         stompClient.subscribe('/topic/dialogue/' + sessionId, function (hint) {
             dialogue = JSON.parse(hint.body);
-            addBotResponse(dialogue);
+            event = dialogue.history[dialogue.history.length - 1]
+            addBotResponse(event);
 
         });
 
@@ -63,6 +64,32 @@ function addUserInput(text) {
 
 }
 
+function addBotEvent(event) {
+
+    eventBody = '<div class="messageBox incoming"><div class="messageText">' + event.text + '<br>'
+
+        if (event.imageInfoList != null) {
+            eventBody += '<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel"><ol class="carousel-indicators">'
+            for (i=0; i<event.imageInfoList.length; i++) {
+                eventBody += `<li data-target="#carouselExampleIndicators" data-slide-to="${i}" class="${i==0?'active':''}"></li>`
+            }
+
+            eventBody += '</ol><div class="carousel-inner">'
+            event.imageInfoList.forEach(function(img,idx) {
+                eventBody += `<div class="carousel-item ${idx==0?'active':''}">`
+                eventBody += `<img class="d-block w-25" src="${img.imageUrl}" alt="${img.title!=null?img.title:''}"></div>`
+            })
+
+            eventBody += '</div></div><a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev"><span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="sr-only">Previous</span></a><a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next"><span class="carousel-control-next-icon" aria-hidden="true"></span><span class="sr-only">Next</span></a></div>'
+        }
+
+
+    eventBody+= '<div class="messageTime">' + getTime() + '</div></div>'
+
+    $('#smartbotBody').append(eventBody);
+
+}
+
 function addBotText(text) {
 
     $('#smartbotBody').append('<div class="messageBox incoming"><div class="messageText">' + text + '</div><div class="messageTime">' + getTime() + '</div></div>');
@@ -79,31 +106,13 @@ function scroll_window() {
 
 }
 
-function addBotResponse(dialogue) {
+function addBotResponse(event) {
 
-    if (dialogue.lastNluEvent != null) {
-
-        let nluInfo = dialogue.lastNluEvent;
-        if (nluInfo != null) {
-            intent = nluInfo.bestIntent.intent + " " + nluInfo.bestIntent.confidence;
-
-            slots = nluInfo.slots;
-            if (slots != null) {
-                slots.forEach(function (slot) {
-                    text = slot.key + ":" + slot.value + "(" + slot.confidence + ")";
-                })
-            }
-
-        }
-
-
+    if (event.text != null) {
+        addBotEvent(event);
     }
 
-    if (dialogue.text != null) {
-        addBotText(dialogue.text);
-    }
-
-    let options = dialogue.history[dialogue.history.length - 1].options;
+    let options = event.options;
     if (options != null) {
         $('#smartbotBody').append('<div class="messageBox incoming">');
         options.forEach(function (option) {
