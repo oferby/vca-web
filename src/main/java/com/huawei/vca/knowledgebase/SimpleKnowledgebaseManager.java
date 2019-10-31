@@ -260,7 +260,7 @@ public class SimpleKnowledgebaseManager implements SkillController {
     }
 
 
-    private GoalPrediction getGoalPrediction(List<Slot> informSlots, List<Slot> denySlots) {
+    public GoalPrediction getGoalPrediction(List<Slot> informSlots, List<Slot> denySlots) {
 
         GoalPrediction goalPrediction = new GoalPrediction();
         goalPrediction.setInformSlots(informSlots);
@@ -272,7 +272,7 @@ public class SimpleKnowledgebaseManager implements SkillController {
 
             if (denySlots.size() > 0) {
 
-                List<MenuItemEntity> notResult = mongoTemplate.find(query(where("slots").not().all(denySlots)), MenuItemEntity.class);
+                List<MenuItemEntity> notResult = mongoTemplate.find(query(where("slots").nin(denySlots)), MenuItemEntity.class);
                 List<MenuItemEntity> intersection = MenuItemEntity.intersection(result, notResult);
                 goalPrediction.setPossibleGoals(intersection);
 
