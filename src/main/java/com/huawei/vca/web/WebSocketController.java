@@ -80,5 +80,11 @@ public class WebSocketController {
         template.convertAndSend("/topic/dialogue/monitor/data/" + dialogue.getSessionId(), dialogue);
     }
 
+    public void sendControlMessage(String message) {
+
+        template.convertAndSend("/topic/dialogue/monitor/control", message);
+
+    }
+
 
 }

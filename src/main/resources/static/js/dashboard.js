@@ -45,6 +45,15 @@ function connect() {
 
         });
 
+        stompClient.subscribe('/topic/dialogue/monitor/control', function (msg) {
+                    controlMsg = msg.body;
+
+                    if (controlMsg == "savedToGraph") {
+                        notifyUser("saved to graph!");
+                    }
+
+                });
+
     });
 }
 

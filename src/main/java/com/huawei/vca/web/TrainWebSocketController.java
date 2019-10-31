@@ -72,7 +72,11 @@ public class TrainWebSocketController {
     @MessageMapping("/train/saveDialogue")
     public void saveDialogue(Dialogue dialogue) {
 
-        dialogueWebController.saveDialogue(dialogue);
+        executorService.execute(() -> {
+            dialogueWebController.saveDialogue(dialogue);
+            webSocketController.sendControlMessage("savedToGraph");
+        });
+
 
     }
 
