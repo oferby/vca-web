@@ -153,11 +153,8 @@ public class SimpleKnowledgebaseManager implements SkillController {
                 goalPrediction.setBestNextQuestion(slotEntity);
                 return true;
             }
-
         }
-
         return false;
-
     }
 
     private boolean searchSlots(Map<String, Map<String, Integer>> slotMap, GoalPrediction goalPrediction, String searchValue) {
@@ -173,9 +170,7 @@ public class SimpleKnowledgebaseManager implements SkillController {
             goalPrediction.setBestNextQuestion(slotEntity);
             return true;
         }
-
         return false;
-
     }
 
     private boolean checkMax(Map<String, Map<String, Integer>> slotMap, int possibleGoals, String searchValue) {
@@ -237,7 +232,18 @@ public class SimpleKnowledgebaseManager implements SkillController {
                         if (slot.getKey().startsWith("food"))
                             foodSlots.add(slot.getSmallCopy());
                     }
-                    informSlots.addAll(foodSlots);
+                    // add new inform slots from dialogue. check all existing informs: if key already exists, overwrite
+                    for (Slot slot : foodSlots) {
+                        List<Slot> slotsToRemove = new ArrayList<>();
+                        for (final Iterator<Slot> iter = informSlots.iterator(); iter.hasNext();) {
+                            Slot inform_slot = iter.next();
+                            if (slot.getKey().equals(inform_slot.getKey())) {
+                                slotsToRemove.add(inform_slot);
+                            }
+                        }
+                        informSlots.removeAll(slotsToRemove);
+                        informSlots.add(slot);
+                    }
 
                 } else if (intent.equals("deny")) {
                     Set<Slot> foodSlots = new HashSet<>();
