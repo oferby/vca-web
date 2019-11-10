@@ -97,7 +97,7 @@ function addBotText(text) {
 }
 
 function addMessageButton(option) {
-    $('#smartbotBody').append('<input type="button" class="message-button" onclick="sendIntent(this.value)" value=' + option.id + '>');
+    $('#smartbotBody').append('<input type="button" class="message-button" onclick="sendIntent(this.value)" value="' + option.id + '">');
 }
 
 function scroll_window() {
