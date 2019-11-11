@@ -136,6 +136,15 @@ function getData(dataUrl, callback) {
 
 }
 
+function sendMessageFromInputField(){
+        var userInput = $('#user-input').val();
+        $('#user-input').val('');
+        addUserInput(userInput);
+        scroll_window();
+        sendIntent(userInput);
+        console.log('user entered: ' + userInput);
+}
+
 $(document).ready(function () {
 
     connect();
