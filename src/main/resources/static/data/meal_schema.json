@@ -1,0 +1,87 @@
+{
+  "response": {
+    "api": {
+      "status": 200,
+      "api_version": "2.1",
+      "format": "json",
+      "api_key": "[your_key]"
+    },
+    "result": {
+      "restaurants": [
+        {
+          "mobile": "",
+          "restaurant_name": "",
+          "brief_description": "",
+          "address_1": "",
+          "address_2": "",
+          "city_town": "",
+          "state_province": "",
+          "postal_code": "",
+          "country": "",
+          "longitude": "",
+          "latitude": "",
+          "cuisine_type_primary": "",
+          "website_url": "",
+          "social": {
+            "facebook": "",
+            "twitter": ""
+          },
+          "totals": {
+            "deals": ""
+          },
+          "id": ""
+        }
+      ],
+      "items": [
+        {
+          "menu_item_name": "",
+          "menu_item_description": "",
+          "menu_item_price": null,
+          "special": null,
+          "vegan": null,
+          "vegetarian": null,
+          "halal": null,
+          "kosher": null,
+          "gluten_free": null,
+          "menu_item_heat_index": null,
+          "image_url": null,
+          "restaurant_name": "",
+          "address_1": "",
+          "address_2": "",
+          "city_town": "",
+          "state_province": "",
+          "country": "",
+          "longitude": "",
+          "latitude": "",
+          "cuisine_type_primary": "",
+          "sizes": [ ],
+          "options": [ ],
+          "totals": {
+            "deals": null
+          },
+          "id": ""
+        }
+      ],
+      "menus": [
+        {
+          "restaurant_name": "",
+          "items": [
+            {
+              "menu_item_name": "",
+              "menu_item_description": "",
+              "menu_item_price": null,
+              "special": null,
+              "vegan": null,
+              "vegetarian": null,
+              "halal": null,
+              "kosher": null,
+              "gluten_free": null,
+              "menu_item_heat_index": null
+            }
+          ],
+          "id": ""
+        }
+      ]
+    }
+  }
+}
