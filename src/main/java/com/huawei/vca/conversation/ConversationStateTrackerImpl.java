@@ -1,5 +1,6 @@
 package com.huawei.vca.conversation;
 
+import com.huawei.vca.conversation.skill.PreprocessorSkill;
 import com.huawei.vca.conversation.skill.SkillController;
 import com.huawei.vca.grpc.NluService;
 import com.huawei.vca.intent.Entity;
@@ -27,6 +28,9 @@ public class ConversationStateTrackerImpl implements ConversationStateTracker{
     private List<SkillController> skillControllers;
 
     @Autowired
+    private List<PreprocessorSkill>preprocessorSkills;
+
+    @Autowired
     private ResponseGenerator responseGenerator;
 
     private static String graphLocation = "graph_location";
@@ -35,6 +39,8 @@ public class ConversationStateTrackerImpl implements ConversationStateTracker{
     public Dialogue handleDialogue(Dialogue dialogue) {
 
         this.handleNlu(dialogue);
+
+        preprocessorSkills.forEach(p -> p.process(dialogue));
 
         List<PredictedAction>predictedActions = new ArrayList<>();
 

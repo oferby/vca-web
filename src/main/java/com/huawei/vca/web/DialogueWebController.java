@@ -163,7 +163,7 @@ public class DialogueWebController {
         for (UserUtterEvent userUtterEvent : userUtterEvents) {
             IntentExample example = new IntentExample();
             example.setText(userUtterEvent.getText());
-            example.setIntent(userUtterEvent.getNluEvent().getBestIntent().getIntent());
+            example.setIntent(userUtterEvent.getNluEvent().getBestIntent().getAct().getValue());
 
             Set<Slot> slots = userUtterEvent.getNluEvent().getSlots();
             if (slots !=null) {

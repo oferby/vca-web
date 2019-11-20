@@ -108,25 +108,13 @@ function after_get_lines(data) {
             if (data.properties['graph_location'] === '-1') {
                 app.saveableState=true;
                 notifyUser("Detached from graph")
-                /*
-                $('#add-action-button').prop('disabled', false);
-                $('#graph-status').text("Detached from graph!");
-                */
             } else {
                 app.saveableState=false;
-//                $('#add-action-button').prop('disabled', true);
-//                $('#graph-status').text("");
             }
         }
     }
 
     show_actions();
-//    if (activeDialogue.training) {
-//        show_actions();
-//    } else {
-//        app.action_list.splice(0, app.action_list.length)
-//    }
-
     scroll_window();
 }
 
@@ -170,7 +158,7 @@ function addUserInput(event,id) {
     eventBody += `<div class="messageText">${event.text}</div>`;
     slots = null
     if (event.nluEvent != null) {
-        eventBody += `<div class="msgInfo">${event.nluEvent.bestIntent.intent} <div style="float: right">${Number.parseFloat(event.nluEvent.bestIntent.confidence * 100).toFixed(2)}%</div></div><br>`;
+        eventBody += `<div class="msgInfo">${event.nluEvent.bestIntent.act} <div style="float: right">${Number.parseFloat(event.nluEvent.bestIntent.confidence * 100).toFixed(2)}%</div></div><br>`;
         slots = event.nluEvent.slots;
     }
     if (slots != null) {

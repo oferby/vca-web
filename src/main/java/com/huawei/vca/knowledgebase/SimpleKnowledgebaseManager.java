@@ -5,16 +5,12 @@ import com.huawei.vca.message.*;
 import com.huawei.vca.nlg.ResponseGenerator;
 import com.huawei.vca.repository.controller.MenuItemRepository;
 import com.huawei.vca.repository.controller.SlotRepository;
-import com.huawei.vca.repository.entity.BotUtterEntity;
 import com.huawei.vca.repository.entity.MenuItemEntity;
 import com.huawei.vca.repository.entity.SlotEntity;
-import org.apache.commons.lang3.EnumUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.VariableOperators;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.PostConstruct;
@@ -228,9 +224,9 @@ public class SimpleKnowledgebaseManager implements SkillController {
                 if (slots == null)
                     continue;
 
-                String intent = nluEvent.getBestIntent().getIntent();
+                Act act = nluEvent.getBestIntent().getAct();
 
-                if (intent.equals("inform")) {
+                if (act == Act.INFORM) {
                     Set<Slot> foodSlots = new HashSet<>();
 
                     for (Slot slot : slots) {
@@ -239,7 +235,7 @@ public class SimpleKnowledgebaseManager implements SkillController {
                     }
                     informSlots.addAll(foodSlots);
 
-                } else if (intent.equals("deny")) {
+                } else if (act == Act.DENY) {
                     Set<Slot> foodSlots = new HashSet<>();
                     for (Slot slot : slots) {
                         if (slot.getKey().startsWith("food"))
@@ -249,7 +245,7 @@ public class SimpleKnowledgebaseManager implements SkillController {
                     denySlots.addAll(foodSlots);
 
                 } else {
-                    logger.error("got user utter with invalid intent: " + intent);
+                    logger.error("got user utter with invalid act: " + act);
                 }
 
             }

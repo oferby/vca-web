@@ -11,6 +11,7 @@ public class Dialogue {
     private boolean isTraining;
     private Map<String,String> properties;
     private boolean needOperator;
+    private Map<String,String> dialogueState;
 
     public Dialogue() {
     }
@@ -104,5 +105,13 @@ public class Dialogue {
 
     public void setNeedOperator(boolean needOperator) {
         this.needOperator = needOperator;
+    }
+
+    public Map<String, String> getDialogueState() {
+        return dialogueState;
+    }
+
+    public void setDialogueState(Map<String, String> dialogueState) {
+        this.dialogueState = dialogueState;
     }
 }

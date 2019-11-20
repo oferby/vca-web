@@ -2,23 +2,23 @@ package com.huawei.vca.message;
 
 public class Intent {
 
-    private String intent;
+    private Act act;
     private float confidence;
 
     public Intent() {
     }
 
-    public Intent(String intent, float confidence) {
-        this.intent = intent;
+    public Intent(String act, float confidence) {
+        this.act = Act.getByValue(act);
         this.confidence = confidence;
     }
 
-    public String getIntent() {
-        return intent;
+    public Act getAct() {
+        return act;
     }
 
-    public void setIntent(String intent) {
-        this.intent = intent;
+    public void setAct(String act) {
+        this.act = Act.valueOf(act);
     }
 
     public float getConfidence() {

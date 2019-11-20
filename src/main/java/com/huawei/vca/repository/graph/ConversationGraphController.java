@@ -3,12 +3,9 @@ package com.huawei.vca.repository.graph;
 import com.huawei.vca.conversation.skill.SkillController;
 import com.huawei.vca.message.*;
 import com.huawei.vca.nlg.ResponseGenerator;
-import com.huawei.vca.repository.controller.BotUtterRepository;
-import com.huawei.vca.repository.entity.BotUtterEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
 import java.util.*;
@@ -126,7 +123,7 @@ public class ConversationGraphController implements SkillController {
                 } else {
 
                     for (ObservationNode node : nodes) {
-                        if (node.getStringId().equals(userUtterEvent.getNluEvent().getBestIntent().getIntent())) {
+                        if (node.getStringId().equals(userUtterEvent.getNluEvent().getBestIntent().getAct())) {
 
                             found = true;
 
@@ -171,7 +168,7 @@ public class ConversationGraphController implements SkillController {
                 if (!found) {
                     ObservationNode observationNode = new ObservationNode();
 
-                    observationNode.setStringId(userUtterEvent.getNluEvent().getBestIntent().getIntent());
+                    observationNode.setStringId(userUtterEvent.getNluEvent().getBestIntent().getAct().getValue());
 
                     if (userUtterEvent.getNluEvent().getSlots() != null) {
                         for (Slot slot : userUtterEvent.getNluEvent().getSlots()) {
@@ -252,7 +249,7 @@ public class ConversationGraphController implements SkillController {
         boolean found;
 
         for (ObservationNode observationNode : observationNodes) {
-            if (observationNode.getStringId().equals(nluEvent.getBestIntent().getIntent())) {
+            if (observationNode.getStringId().equals(nluEvent.getBestIntent().getAct())) {
 
                 found = true;
 
