@@ -318,10 +318,13 @@ public class SimpleKnowledgebaseManager implements SkillController, KnowledgeBas
             if (!key.contains("food"))
                 continue;
 
-            if (key.startsWith("want")) {
-                informSlots.add(this.extractSlot(key.substring(5)));
-            } else if (key.startsWith("dontwant")) {
-                denySlots.add(extractSlot(key.substring(8)));
+            String want = "want";
+            String dontwant = "dontwant";
+
+            if (key.startsWith(want)) {
+                informSlots.add(this.extractSlot(key.substring(want.length()+1)));
+            } else if (key.startsWith(dontwant)) {
+                denySlots.add(extractSlot(key.substring(dontwant.length()+1)));
             }
 
         }
