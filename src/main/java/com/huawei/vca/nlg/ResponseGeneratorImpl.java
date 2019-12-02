@@ -1,8 +1,6 @@
 package com.huawei.vca.nlg;
 
-import com.huawei.vca.message.BotUtterEvent;
-import com.huawei.vca.message.ImageInfo;
-import com.huawei.vca.message.Option;
+import com.huawei.vca.message.*;
 import com.huawei.vca.repository.controller.BotUtterRepository;
 import com.huawei.vca.repository.controller.MenuItemRepository;
 import com.huawei.vca.repository.controller.SlotRepository;
@@ -164,6 +162,21 @@ public class ResponseGeneratorImpl implements ResponseGenerator {
         Random rand = new Random();
         int r = rand.nextInt(stringList.size());
         return stringList.get(r);
+
+    }
+
+    public void addDefaultUtterEvent(Dialogue dialogue) {
+        BotDefaultUtterEvent botUtterEvent = new BotDefaultUtterEvent("I'm sorry but I did not understand what you've said. Let me route your call to human.");
+        dialogue.addToHistory(botUtterEvent);
+        dialogue.setText(botUtterEvent.getText());
+        dialogue.setNeedOperator(true);
+    }
+
+    @Override
+    public void generateUtterForPredictedAction(Dialogue dialogue, PredictedAction bestPredictedAction) {
+
+        dialogue.setText(((BotUtterEvent)bestPredictedAction.getBotEvent()).getText());
+        dialogue.addToHistory(bestPredictedAction.getBotEvent());
 
     }
 }

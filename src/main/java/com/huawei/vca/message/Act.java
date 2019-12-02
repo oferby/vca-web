@@ -10,7 +10,8 @@ public enum Act {
     NEGATE("negate"),
     AFFIRM("affirm"),
     DENY("deny"),
-    QUERY("query") ;
+    QUERY("query"),
+    CHOOSE("choose");
 
     private final String value;
     static private Map<String,Act> stringActMap = new HashMap<>();

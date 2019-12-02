@@ -21,7 +21,7 @@ import static org.springframework.data.mongodb.core.query.Query.query;
 
 
 @Controller
-public class SimpleKnowledgebaseManager implements SkillController {
+public class SimpleKnowledgebaseManager implements SkillController, KnowledgeBaseController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -305,4 +305,42 @@ public class SimpleKnowledgebaseManager implements SkillController {
 
     }
 
+    @Override
+    public PredictedAction getPredictedAct(Map<String, Float> state) {
+
+        PredictedAction predictedAction = new PredictedAction();
+
+        List<Slot> informSlots = new ArrayList<>();
+        List<Slot> denySlots = new ArrayList<>();
+
+        for (String key : state.keySet()) {
+
+            if (!key.contains("food"))
+                continue;
+
+            if (key.startsWith("want")) {
+                informSlots.add(this.extractSlot(key.substring(5)));
+            } else if (key.startsWith("dontwant")) {
+                denySlots.add(extractSlot(key.substring(8)));
+            }
+
+        }
+
+        GoalPrediction userGoal = this.getGoalPrediction(informSlots, denySlots);
+        this.findBestAction(userGoal);
+        this.addBotUtterEvent(predictedAction, userGoal);
+
+        logger.debug("Prediction from KB: " + predictedAction);
+        return predictedAction;
+    }
+
+    private Slot extractSlot(String key) {
+
+        Slot slot = new Slot();
+        int index = key.lastIndexOf(":");
+        slot.setKey(key.substring(0,index));
+        slot.setValue(key.substring(index+1));
+
+        return slot;
+    }
 }

@@ -226,11 +226,7 @@ public class ConversationGraphController implements SkillController {
 
         }
 
-        if (dialogue.getState(graphLocation).equals("-1")) {
-            return null;
-        }
-
-        Long graphId = Long.valueOf(dialogue.getState(graphLocation));
+        Long graphId = Long.valueOf(String.valueOf(dialogue.getState(graphLocation)));
         ActionNode actionNode = conversationGraphRepository.findActionById(graphId);
         if (actionNode == null || actionNode.getObservationNodes() == null) {
             return null;
