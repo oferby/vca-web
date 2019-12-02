@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class DialogueControllerImpl implements DialogueController {
+public class DialogueActionControllerImpl implements DialogueActionController {
 
     @Autowired
     private ResponseGenerator responseGenerator;

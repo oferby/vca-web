@@ -1,7 +1,7 @@
 package com.huawei.vca.web;
 
 import com.huawei.vca.conversation.ConversationStateTracker;
-import com.huawei.vca.conversation.DialogueController;
+import com.huawei.vca.conversation.DialogueActionController;
 import com.huawei.vca.conversation.SessionController;
 import com.huawei.vca.message.*;
 import org.slf4j.Logger;
@@ -35,7 +35,7 @@ public class TrainWebSocketController {
     private ExecutorService executorService;
 
     @Autowired
-    private DialogueController dialogueController;
+    private DialogueActionController dialogueController;
 
     @MessageMapping("/train/parseDialogue")
     public void getIntentRequest(Dialogue dialogue, @Header("simpSessionId") String sessionId) {
