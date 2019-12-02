@@ -68,7 +68,7 @@ public class MinimalStepGraphController implements SkillController {
         boolean found = false;
 
         for (ObservationNode observationNode : observationNodes) {
-            if (observationNode.getStringId().equals(nluEvent.getBestIntent().getAct())) {
+            if (observationNode.getStringId().equals(nluEvent.getBestIntent().getAct().getValue())) {
 
                 found = true;
 

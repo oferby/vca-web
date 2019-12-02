@@ -9,9 +9,8 @@ public class Dialogue {
     private List<Event> history;
     private NluEvent lastNluEvent;
     private boolean isTraining;
-    private Map<String,String> properties;
+    private Map<String,String> state;
     private boolean needOperator;
-    private Map<String,String> dialogueState;
 
     public Dialogue() {
     }
@@ -74,29 +73,25 @@ public class Dialogue {
         isTraining = training;
     }
 
-    public void addProperty(String key, String value){
+    public void addState(String key, String value){
 
-        if (this.properties == null) {
-            this.properties = new HashMap<>();
+        if (this.state == null) {
+            this.state = new HashMap<>();
         }
 
-        this.properties.put(key,value);
+        this.state.put(key,value);
     }
 
-    public String getProperty(String key){
+    public String getState(String key){
 
-        if (this.properties == null)
+        if (this.state == null)
             return null;
 
-        return this.properties.get(key);
+        return this.state.get(key);
     }
 
-    public Map<String, String> getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
+    public Map<String, String> getStates() {
+        return state;
     }
 
     public boolean isNeedOperator() {
@@ -107,11 +102,4 @@ public class Dialogue {
         this.needOperator = needOperator;
     }
 
-    public Map<String, String> getDialogueState() {
-        return dialogueState;
-    }
-
-    public void setDialogueState(Map<String, String> dialogueState) {
-        this.dialogueState = dialogueState;
-    }
 }

@@ -7,8 +7,6 @@ import com.huawei.vca.intent.Entity;
 import com.huawei.vca.intent.NluResponse;
 import com.huawei.vca.message.*;
 import com.huawei.vca.nlg.ResponseGenerator;
-import com.huawei.vca.repository.controller.BotUtterRepository;
-import com.huawei.vca.repository.entity.BotUtterEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +52,7 @@ public class ConversationStateTrackerImpl implements ConversationStateTracker{
 
         if (bestPredictedAction.getConfidence() == 0) {
 
-            dialogue.addProperty(graphLocation, "-1");
+            dialogue.addState(graphLocation, "-1");
 
             if (!dialogue.isTraining())
                 this.addDefaultUtterEvent(dialogue);
@@ -69,7 +67,7 @@ public class ConversationStateTrackerImpl implements ConversationStateTracker{
             if (properties != null) {
                 Set<String> keys = properties.keySet();
                 for (String key : keys) {
-                    dialogue.addProperty(key, properties.get(key));
+                    dialogue.addState(key, properties.get(key));
                 }
 
             }

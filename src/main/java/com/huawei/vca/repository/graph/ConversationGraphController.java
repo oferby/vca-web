@@ -123,7 +123,7 @@ public class ConversationGraphController implements SkillController {
                 } else {
 
                     for (ObservationNode node : nodes) {
-                        if (node.getStringId().equals(userUtterEvent.getNluEvent().getBestIntent().getAct())) {
+                        if (node.getStringId().equals(userUtterEvent.getNluEvent().getBestIntent().getAct().getValue())) {
 
                             found = true;
 
@@ -218,7 +218,7 @@ public class ConversationGraphController implements SkillController {
 
     private ActionNode getGraphLocation(Dialogue dialogue) {
 
-        if (dialogue.getProperty(graphLocation) == null) {
+        if (dialogue.getState(graphLocation) == null) {
 
             RootNode rootNode = conversationGraphRepository.getRootNode();
             List<ObservationNode> observationNodes = rootNode.getObservationNodes();
@@ -226,11 +226,11 @@ public class ConversationGraphController implements SkillController {
 
         }
 
-        if (dialogue.getProperty(graphLocation).equals("-1")) {
+        if (dialogue.getState(graphLocation).equals("-1")) {
             return null;
         }
 
-        Long graphId = Long.valueOf(dialogue.getProperty(graphLocation));
+        Long graphId = Long.valueOf(dialogue.getState(graphLocation));
         ActionNode actionNode = conversationGraphRepository.findActionById(graphId);
         if (actionNode == null || actionNode.getObservationNodes() == null) {
             return null;
@@ -249,7 +249,7 @@ public class ConversationGraphController implements SkillController {
         boolean found;
 
         for (ObservationNode observationNode : observationNodes) {
-            if (observationNode.getStringId().equals(nluEvent.getBestIntent().getAct())) {
+            if (observationNode.getStringId().equals(nluEvent.getBestIntent().getAct().getValue())) {
 
                 found = true;
 
