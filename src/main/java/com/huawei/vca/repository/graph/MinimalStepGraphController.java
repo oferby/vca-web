@@ -27,7 +27,6 @@ public class MinimalStepGraphController implements SkillController {
     private float confidence = (float) 0.91;
 
 
-
     @Override
     public PredictedAction getPredictedAction(Map<String, Float> state, Map<String, Float> observations) {
 

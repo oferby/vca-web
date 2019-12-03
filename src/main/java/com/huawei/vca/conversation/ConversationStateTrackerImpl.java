@@ -2,8 +2,8 @@ package com.huawei.vca.conversation;
 
 import com.huawei.vca.conversation.policy.PolicyController;
 import com.huawei.vca.conversation.skill.ObservationCreatorController;
+import com.huawei.vca.conversation.skill.PostProcessorSkill;
 import com.huawei.vca.conversation.skill.PreprocessorSkill;
-import com.huawei.vca.conversation.skill.SkillController;
 import com.huawei.vca.knowledgebase.KnowledgeBaseController;
 import com.huawei.vca.message.*;
 import com.huawei.vca.nlg.ResponseGenerator;
@@ -35,6 +35,9 @@ public class ConversationStateTrackerImpl implements ConversationStateTracker{
 
     @Autowired
     private List<PreprocessorSkill>preprocessorSkills;
+
+    @Autowired
+    private List<PostProcessorSkill>postProcessorSkills;
 
     @Autowired
     private KnowledgeBaseController knowledgeBaseController;
@@ -72,11 +75,15 @@ public class ConversationStateTrackerImpl implements ConversationStateTracker{
 
             this.transition(state,observations);
 
-            this.transition(state, botAct);
+
 
             if (botAct == BotAct.DEFAULT){
 
                 goToDefault(dialogue,state);
+                break;
+
+            } else if (botAct == BotAct.INFORM_USER) {
+                this.transition(state, botAct);
                 break;
 
             } else if (botAct == BotAct.DB_SEARCH) {
@@ -84,27 +91,22 @@ public class ConversationStateTrackerImpl implements ConversationStateTracker{
                 PredictedAction predictedAct = knowledgeBaseController.getPredictedAct(state);
 
                 if (predictedAct.getConfidence() > 0.5) {
-                    BotEvent botEvent = predictedAct.getBotEvent();
-                    dialogue.setText(((BotUtterEvent) botEvent).getText());
-                    dialogue.addToHistory(botEvent);
+                    postProcess(dialogue, predictedAct.getBotEvent());
 
-                    transition(state,BotAct.QUERY_USER);
+                    state.put("temp.answer.found", (float) 1.0);
 
                 } else {
 
-                    goToDefault(dialogue,state);
+                    state.put("temp.answer.found", (float) 0);
 
                 }
-
-                break;
 
             } else if (botAct == BotAct.SEARCH_ANSWER) {
 
                 PredictedAction predictedAct = minimalStepGraphController.getPredictedAction(state, observations);
                 if (predictedAct.getConfidence() > 0.5) {
-                    BotEvent botEvent = predictedAct.getBotEvent();
-                    dialogue.setText(((BotUtterEvent) botEvent).getText());
-                    dialogue.addToHistory(botEvent);
+
+                    postProcess(dialogue, predictedAct.getBotEvent());
 
                     state.put("temp.answer.found", (float) 1.0);
 
@@ -112,12 +114,9 @@ public class ConversationStateTrackerImpl implements ConversationStateTracker{
                     state.put("temp.answer.found", (float) 0);
                 }
 
-            } else if (botAct == BotAct.INFORM_USER) {
-
-                transition(state, BotAct.INFORM_USER);
-                break;
             }
 
+            this.transition(state, botAct);
 
         } while (true);
 
@@ -153,7 +152,6 @@ public class ConversationStateTrackerImpl implements ConversationStateTracker{
     }
 
 
-
     private void transition(Map<String, Float> state, BotAct botAct){
 
         removeBotAct(state);
@@ -170,7 +168,13 @@ public class ConversationStateTrackerImpl implements ConversationStateTracker{
         logger.debug("state after observation transition: " + state);
     }
 
+    private void postProcess(Dialogue dialogue, BotEvent botEvent){
 
+        for (PostProcessorSkill postProcessorSkill : postProcessorSkills) {
+            postProcessorSkill.process(dialogue,botEvent);
+        }
+
+    }
 
     @Override
     public Dialogue handleNluOnly(Dialogue dialogue) {

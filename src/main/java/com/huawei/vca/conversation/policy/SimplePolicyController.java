@@ -16,7 +16,7 @@ public class SimplePolicyController implements PolicyController{
     @Override
     public BotAct getBotAct(Map<String, Float> userAction, Map<String, Float> state) {
 
-
+        logger.debug("state: " + state +" userAction: " + userAction);
 
         if (userAction.containsKey("userAct:DENY") || userAction.containsKey("userAct:INFORM")) {
 
@@ -26,13 +26,26 @@ public class SimplePolicyController implements PolicyController{
             if (state.containsKey("botAct:QUERY_USER"))
                 return BotAct.DB_SEARCH;
 
+            if (state.containsKey("botAct:DB_SEARCH")){
+
+                if (state.get("temp.answer.found") == 1.0) {
+
+                    return BotAct.INFORM_USER;
+
+                } else {
+
+                    return BotAct.DEFAULT;
+                }
+
+            }
+
             return BotAct.DB_SEARCH;
 
         }
 
         if (userAction.containsKey("userAct:QUERY")) {
 
-            if (!searchKey(state.keySet(), "temp.answer.found",false)){
+            if (!state.containsKey("temp.answer.found")){
                 return BotAct.SEARCH_ANSWER;
             }
 
@@ -41,6 +54,9 @@ public class SimplePolicyController implements PolicyController{
             }
 
         }
+
+
+
 
         return BotAct.DEFAULT;
 
