@@ -11,8 +11,8 @@ public class ObservationNode extends StateNode implements Comparable<StateNode>{
     @Relationship(type = "LEADS")
     private ActionNode actionNode;
 
-    @Properties
-    private Map<String,String>properties;
+    @Relationship(type = "HAS_PROPERTY")
+    private List<PropertyNode>properties;
 
     private Integer visited;
 
@@ -31,22 +31,18 @@ public class ObservationNode extends StateNode implements Comparable<StateNode>{
         this.actionNode = actionNode;
     }
 
-    public Map<String, String> getProperties() {
+    public List<PropertyNode> getProperties() {
         return properties;
     }
 
-    public void setProperties(Map<String, String> properties) {
+    public void setProperties(List<PropertyNode> properties) {
         this.properties = properties;
     }
 
-    public void addProperty(String key, String value) {
-        if (properties == null) {
-            properties = new HashMap<>();
-
-        }
-
-        properties.put(key, value);
-
+    public void addProperty(PropertyNode propertyNode){
+        if (properties==null)
+            properties = new ArrayList<>();
+        properties.add(propertyNode);
     }
 
     public int getVisited() {

@@ -21,17 +21,24 @@ public class ObservationCreatorController {
             return;
         }
 
+        searchKey(observations.keySet(), "userAct", true);
+
         String prefix;
         if (act == Act.DENY) {
-            prefix = "dontwant";
+            prefix = "dontwant:";
+            observations.put("userAct:DENY", (float) 1.0);
         } else if (act == Act.AFFIRM || act == Act.INFORM) {
-            prefix = "want";
+            prefix = "want:";
+            observations.put("userAct:INFORM", (float) 1.0);
+        } else if (act == Act.QUERY){
+            observations.put("userAct:QUERY", (float) 1.0);
+            prefix ="query:";
         } else {
             throw new RuntimeException("wrong user act");
         }
 
         for (Slot slot : slots) {
-            observations.put(prefix + ":" + slot.getKey() + ":" + slot.getValue(), slot.getConfidence());
+            observations.put(prefix + slot.getKey() + ":" + slot.getValue(), slot.getConfidence());
         }
 
     }
@@ -48,6 +55,20 @@ public class ObservationCreatorController {
 
     }
 
+    private boolean searchKey(Set<String> keys, String keyToSearch, boolean withRemove){
+
+        for (String key : keys) {
+            if (key.startsWith(keyToSearch)){
+                if (withRemove)
+                    keys.remove(key);
+
+                return true;
+            }
+        }
+
+        return false;
+
+    }
 
 
 }

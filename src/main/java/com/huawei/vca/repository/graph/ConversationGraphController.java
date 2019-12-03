@@ -11,7 +11,7 @@ import org.springframework.stereotype.Controller;
 import java.util.*;
 
 @Controller
-public class ConversationGraphController implements SkillController {
+public class ConversationGraphController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -27,7 +27,6 @@ public class ConversationGraphController implements SkillController {
     private static String graphLocation = "graph_location";
     private static String observationLocation = "observation_location";
 
-    @Override
     public PredictedAction getPredictedAction(Dialogue dialogue) {
 
         PredictedAction predictedAction = new PredictedAction();
@@ -122,47 +121,47 @@ public class ConversationGraphController implements SkillController {
                     nextActionNode.setObservationNodes(nodes);
                 } else {
 
-                    for (ObservationNode node : nodes) {
-                        if (node.getStringId().equals(userUtterEvent.getNluEvent().getBestIntent().getAct().getValue())) {
-
-                            found = true;
-
-                            Map<String, String> properties = node.getProperties();
-                            Set<Slot> slots = userUtterEvent.getNluEvent().getSlots();
-
-                            if (slots != null || properties.size() != 0) {
-
-                                if (slots != null && properties.keySet().size() == slots.size()) {
-                                    //                            same number of slots
-
-                                    for (Slot slot : slots) {
-                                        if (!properties.containsKey(slot.getKey()) || !properties.get(slot.getKey()).equals(slot.getValue())) {
-                                            found = false;
-                                            break;
-                                        }
-                                    }
-
-                                } else {
-                                    found = false;
-                                }
-                            }
-
-                            if (found) {
-
-                                nextObservationNode = conversationGraphRepository.findObservationNodeById(node.getId());
-                                nextObservationNode.increaseVisited();
-                                toSave.add(nextObservationNode);
-                                nextActionNode = nextObservationNode.getActionNode();
-                                if (nextActionNode != null) {
-                                    nextActionNode = conversationGraphRepository.findActionById(nextActionNode.getId());
-                                }
-
-                                break;
-
-                            }
-                        }
-
-                    }
+//                    for (ObservationNode node : nodes) {
+//                        if (node.getStringId().equals(userUtterEvent.getNluEvent().getBestIntent().getAct().getValue())) {
+//
+//                            found = true;
+//
+//                            Map<String, String> properties = node.getProperties();
+//                            Set<Slot> slots = userUtterEvent.getNluEvent().getSlots();
+//
+//                            if (slots != null || properties.size() != 0) {
+//
+//                                if (slots != null && properties.keySet().size() == slots.size()) {
+//                                    //                            same number of slots
+//
+//                                    for (Slot slot : slots) {
+//                                        if (!properties.containsKey(slot.getKey()) || !properties.get(slot.getKey()).equals(slot.getValue())) {
+//                                            found = false;
+//                                            break;
+//                                        }
+//                                    }
+//
+//                                } else {
+//                                    found = false;
+//                                }
+//                            }
+//
+//                            if (found) {
+//
+//                                nextObservationNode = conversationGraphRepository.findObservationNodeById(node.getId());
+//                                nextObservationNode.increaseVisited();
+//                                toSave.add(nextObservationNode);
+//                                nextActionNode = nextObservationNode.getActionNode();
+//                                if (nextActionNode != null) {
+//                                    nextActionNode = conversationGraphRepository.findActionById(nextActionNode.getId());
+//                                }
+//
+//                                break;
+//
+//                            }
+//                        }
+//
+//                    }
                 }
 
                 if (!found) {
@@ -172,7 +171,9 @@ public class ConversationGraphController implements SkillController {
 
                     if (userUtterEvent.getNluEvent().getSlots() != null) {
                         for (Slot slot : userUtterEvent.getNluEvent().getSlots()) {
-                            observationNode.addProperty(slot.getKey(), slot.getValue());
+                            PropertyNode propertyNode = new PropertyNode();
+                            propertyNode.setStringId(slot.getKey() + ":" + slot.getValue());
+                            observationNode.addProperty(propertyNode);
                         }
 
                     }
@@ -239,52 +240,53 @@ public class ConversationGraphController implements SkillController {
 
     private ActionNode findActionId(NluEvent nluEvent, List<ObservationNode> observationNodes) {
 
-        if (observationNodes == null)
-            return null;
-
-        boolean found;
-
-        for (ObservationNode observationNode : observationNodes) {
-            if (observationNode.getStringId().equals(nluEvent.getBestIntent().getAct().getValue())) {
-
-                found = true;
-
-                Map<String, String> properties = observationNode.getProperties();
-                Set<Slot> slots = nluEvent.getSlots();
-
-                if (slots != null || properties.size() != 0) {
-
-                    if (slots != null && properties.keySet().size() == slots.size()) {
-                        //                            same number of slots
-
-                        for (Slot slot : slots) {
-                            if (!properties.containsKey(slot.getKey()) || !properties.get(slot.getKey()).equals(slot.getValue())) {
-                                found = false;
-                                break;
-                            }
-                        }
-
-                    } else {
-                        found = false;
-                    }
-                }
-
-                if (found) {
-
-                    ObservationNode node = conversationGraphRepository.findObservationNodeById(observationNode.getId());
-                    if (node.getActionNode() != null) {
-                        Long actionId = node.getActionNode().getId();
-                        ActionNode actionNode = conversationGraphRepository.findActionById(actionId);
-                        return actionNode;
-                    }
-
-                }
-            }
-
-        }
+//        if (observationNodes == null)
+//            return null;
+//
+//        boolean found;
+//
+//        for (ObservationNode observationNode : observationNodes) {
+//            if (observationNode.getStringId().equals(nluEvent.getBestIntent().getAct().getValue())) {
+//
+//                found = true;
+//
+//                Map<String, String> properties = observationNode.getProperties();
+//                Set<Slot> slots = nluEvent.getSlots();
+//
+//                if (slots != null || properties.size() != 0) {
+//
+//                    if (slots != null && properties.keySet().size() == slots.size()) {
+//                        //                            same number of slots
+//
+//                        for (Slot slot : slots) {
+//                            if (!properties.containsKey(slot.getKey()) || !properties.get(slot.getKey()).equals(slot.getValue())) {
+//                                found = false;
+//                                break;
+//                            }
+//                        }
+//
+//                    } else {
+//                        found = false;
+//                    }
+//                }
+//
+//                if (found) {
+//
+//                    ObservationNode node = conversationGraphRepository.findObservationNodeById(observationNode.getId());
+//                    if (node.getActionNode() != null) {
+//                        Long actionId = node.getActionNode().getId();
+//                        ActionNode actionNode = conversationGraphRepository.findActionById(actionId);
+//                        return actionNode;
+//                    }
+//
+//                }
+//            }
+//
+//        }
 
         return null;
 
     }
+
 
 }

@@ -30,10 +30,10 @@ public class TestGraphDb {
     @Autowired
     private DialogueRepository dialogueRepository;
 
-//    @Test
+    @Test
     public void testReset(){
 
-        reset();
+//        reset();
         RootNode rootNode = conversationGraphRepository.getRootNode();
 
         assert rootNode !=null;
@@ -184,9 +184,6 @@ public class TestGraphDb {
         assert observationNodeById != null;
 
     }
-
-
-
 
 
     @Test

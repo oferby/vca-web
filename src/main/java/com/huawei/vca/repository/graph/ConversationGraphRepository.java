@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface ConversationGraphRepository extends Neo4jRepository<StateNode, Long> {
 
-    @Query("MATCH (f:StateNode{name:'root'}) OPTIONAL MATCH (f)-[l:LEADS]->(to) RETURN f, collect(l), collect(to)")
+    @Query("MATCH (f:StateNode{name:'root'}) OPTIONAL MATCH (f)-[l:LEADS]->(to) OPTIONAL MATCH (to)-[hp:HAS_PROPERTY]->(prop) RETURN f, collect(l), collect(to), collect(hp), collect(prop)")
     RootNode getRootNode();
 
     @Query("MATCH (f:ObservationNode) WHERE id(f)={0} OPTIONAL MATCH (f)-[l:LEADS]->(to) RETURN f, collect(l), collect(to)")

@@ -26,8 +26,10 @@ public class MinimalStepGraphController implements SkillController {
 //    @Value("${skill.confidence.minimal}")
     private float confidence = (float) 0.91;
 
+
+
     @Override
-    public PredictedAction getPredictedAction(Dialogue dialogue) {
+    public PredictedAction getPredictedAction(Map<String, Float> state, Map<String, Float> observations) {
 
         PredictedAction predictedAction = new PredictedAction();
 
@@ -39,7 +41,20 @@ public class MinimalStepGraphController implements SkillController {
             return predictedAction;
         }
 
-        ObservationNode observationNode = this.checkObservation(dialogue.getLastNluEvent(), observationNodes);
+        String query = "query:";
+        String searchString = null;
+        for (String key : observations.keySet()) {
+            if (key.startsWith(query)){
+                searchString = key.substring(query.length());
+                break;
+            }
+        }
+
+        if (searchString==null){
+            return predictedAction;
+        }
+
+        ObservationNode observationNode = this.checkObservation(observationNodes, searchString);
 
         if (observationNode == null) {
             logger.debug("Prediction from Q&A: " + predictedAction);
@@ -62,35 +77,23 @@ public class MinimalStepGraphController implements SkillController {
 
         logger.debug("Prediction from Q&A: " + predictedAction);
         return predictedAction;
+
     }
 
-    private ObservationNode checkObservation(NluEvent nluEvent, List<ObservationNode> observationNodes) {
+    private ObservationNode checkObservation(List<ObservationNode> observationNodes, String searchString) {
         boolean found = false;
 
         for (ObservationNode observationNode : observationNodes) {
-            if (observationNode.getStringId().equals(nluEvent.getBestIntent().getAct().getValue())) {
+            if (observationNode.getStringId().equals("query")) {
 
-                found = true;
-
-                Map<String, String> properties = observationNode.getProperties();
-                Set<Slot> slots = nluEvent.getSlots();
-
-                if (slots != null || properties.size() != 0) {
-
-                    if (slots != null && properties.keySet().size() == slots.size()) {
-                        //                            same number of slots
-
-                        for (Slot slot : slots) {
-                            if (!properties.containsKey(slot.getKey()) || !properties.get(slot.getKey()).equals(slot.getValue())) {
-                                found = false;
-                                break;
-                            }
-                        }
-
-                    } else {
-                        found = false;
+                List<PropertyNode> properties = observationNode.getProperties();
+                for (PropertyNode property : properties) {
+                    if (property.getStringId().equals(searchString)){
+                        found=true;
+                        break;
                     }
                 }
+
 
             }
 
@@ -100,4 +103,5 @@ public class MinimalStepGraphController implements SkillController {
 
         return null;
     }
+
 }

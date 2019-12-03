@@ -1,6 +1,5 @@
 package com.huawei.vca.knowledgebase;
 
-import com.huawei.vca.conversation.skill.SkillController;
 import com.huawei.vca.message.*;
 import com.huawei.vca.nlg.ResponseGenerator;
 import com.huawei.vca.repository.controller.MenuItemRepository;
@@ -21,7 +20,7 @@ import static org.springframework.data.mongodb.core.query.Query.query;
 
 
 @Controller
-public class SimpleKnowledgebaseManager implements SkillController, KnowledgeBaseController {
+public class SimpleKnowledgebaseManager implements KnowledgeBaseController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -43,20 +42,6 @@ public class SimpleKnowledgebaseManager implements SkillController, KnowledgeBas
 
 
     private List<String> slotValues = new ArrayList<>();
-
-    @Override
-    public PredictedAction getPredictedAction(Dialogue dialogue) {
-
-        PredictedAction predictedAction = new PredictedAction();
-
-
-        GoalPrediction userGoal = findUserGoal(dialogue);
-        this.findBestAction(userGoal);
-        this.addBotUtterEvent(predictedAction, userGoal);
-
-        logger.debug("Prediction from KB: " + predictedAction);
-        return predictedAction;
-    }
 
     private void addBotUtterEvent(PredictedAction predictedAction, GoalPrediction goalPrediction) {
 
@@ -211,52 +196,7 @@ public class SimpleKnowledgebaseManager implements SkillController, KnowledgeBas
         return slotEntity;
     }
 
-
-    private GoalPrediction findUserGoal(Dialogue dialogue) {
-
-        List<Slot> informSlots = new ArrayList<>();
-        List<Slot> denySlots = new ArrayList<>();
-
-        for (Event event : dialogue.getHistory()) {
-            if (event instanceof UserUtterEvent) {
-                NluEvent nluEvent = ((UserUtterEvent) event).getNluEvent();
-                Set<Slot> slots = nluEvent.getSlots();
-                if (slots == null)
-                    continue;
-
-                Act act = nluEvent.getBestIntent().getAct();
-
-                if (act == Act.INFORM) {
-                    Set<Slot> foodSlots = new HashSet<>();
-
-                    for (Slot slot : slots) {
-                        if (slot.getKey().startsWith("food"))
-                            foodSlots.add(slot.getSmallCopy());
-                    }
-                    informSlots.addAll(foodSlots);
-
-                } else if (act == Act.DENY) {
-                    Set<Slot> foodSlots = new HashSet<>();
-                    for (Slot slot : slots) {
-                        if (slot.getKey().startsWith("food"))
-                            foodSlots.add(slot.getSmallCopy());
-                    }
-
-                    denySlots.addAll(foodSlots);
-
-                } else {
-                    logger.error("got user utter with invalid act: " + act);
-                }
-
-            }
-        }
-
-        return this.getGoalPrediction(informSlots, denySlots);
-
-    }
-
-
-    public GoalPrediction getGoalPrediction(List<Slot> informSlots, List<Slot> denySlots) {
+    GoalPrediction getGoalPrediction(List<Slot> informSlots, List<Slot> denySlots) {
 
         GoalPrediction goalPrediction = new GoalPrediction();
         goalPrediction.setInformSlots(informSlots);

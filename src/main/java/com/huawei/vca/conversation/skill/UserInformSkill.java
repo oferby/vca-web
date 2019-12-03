@@ -24,7 +24,6 @@ public class UserInformSkill implements PreprocessorSkill{
 
         if (act!=Act.INFORM)
             return;
-        dialogue.addObservation("act"+":"+act.getValue(), dialogue.getLastNluEvent().getBestIntent().getConfidence());
         Set<Slot> slots = dialogue.getLastNluEvent().getSlots();
         observationCreatorController.createObservations(dialogue.getObservations(), slots, dialogue.getLastNluEvent().getBestIntent().getAct());
 
