@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,13 +33,6 @@ public class MinimalStepGraphController implements SkillController {
 
         PredictedAction predictedAction = new PredictedAction();
 
-        RootNode rootNode = conversationGraphRepository.getRootNode();
-        List<ObservationNode> observationNodes = rootNode.getObservationNodes();
-
-        if (observationNodes == null) {
-            logger.debug("Prediction from Q&A: " + predictedAction);
-            return predictedAction;
-        }
 
         String query = "query:";
         String searchString = null;
@@ -53,7 +47,10 @@ public class MinimalStepGraphController implements SkillController {
             return predictedAction;
         }
 
-        ObservationNode observationNode = this.checkObservation(observationNodes, searchString);
+        ArrayList<String> propStringIdList = new ArrayList<>();
+        propStringIdList.add(searchString);
+
+        ObservationNode observationNode = conversationGraphRepository.findByProperties(propStringIdList, propStringIdList.size());
 
         if (observationNode == null) {
             logger.debug("Prediction from Q&A: " + predictedAction);
@@ -77,30 +74,6 @@ public class MinimalStepGraphController implements SkillController {
         logger.debug("Prediction from Q&A: " + predictedAction);
         return predictedAction;
 
-    }
-
-    private ObservationNode checkObservation(List<ObservationNode> observationNodes, String searchString) {
-        boolean found = false;
-
-        for (ObservationNode observationNode : observationNodes) {
-            if (observationNode.getStringId().equals("query")) {
-
-                List<PropertyNode> properties = observationNode.getProperties();
-                for (PropertyNode property : properties) {
-                    if (property.getStringId().equals(searchString)){
-                        found=true;
-                        break;
-                    }
-                }
-
-
-            }
-
-            if (found)
-                return observationNode;
-        }
-
-        return null;
     }
 
 }

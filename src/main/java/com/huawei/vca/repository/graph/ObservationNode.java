@@ -1,7 +1,6 @@
 package com.huawei.vca.repository.graph;
 
 import org.neo4j.ogm.annotation.*;
-import org.neo4j.ogm.annotation.Properties;
 
 import java.util.*;
 

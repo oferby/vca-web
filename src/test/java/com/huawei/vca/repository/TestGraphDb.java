@@ -251,5 +251,27 @@ public class TestGraphDb {
 
     }
 
+    @Test
+    public void testMultipleProperties2(){
+
+        ArrayList<String> propStringIdList = new ArrayList<String>() {
+            {
+//                add("query");
+                add("food:main_dish:burger");
+                add("food:drink:hard:wine");
+            }
+        };
+
+
+        ObservationNode observationNode = conversationGraphRepository.findByProperties(propStringIdList, propStringIdList.size());
+
+        assert observationNode!=null;
+
+
+    }
+
+
+
+
 
 }
