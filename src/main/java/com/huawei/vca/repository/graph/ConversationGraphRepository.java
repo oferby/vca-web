@@ -57,11 +57,12 @@ public interface ConversationGraphRepository extends Neo4jRepository<GenericNode
             "MATCH (s2:StateNode)-[r1:HAS_OBSERVATION]->(o2:ObservationNode) " +
             "MATCH (o2)-[r2:OBSERVE]->(p2:PropertyNode) " +
             "MATCH (s2)-[r3:LEADS]->(a2:ActionNode) " +
-            "MATCH (a2)-[r4:OPTIONS]->(op:OptionNode) " +
             "WHERE " +
             "p2.stringId in {propertyStringIdSet} " +
             "and not o2 in group1 " +
-            "RETURN s2, r1, o2, collect(p2), collect(r2), r3, a2, collect(r4), collect(op)")
+            "with s2, r1,o2,p2,r2,r3,a2 " +
+            "OPTIONAL MATCH (a2)-[r4:OPTIONS]->(op:OptionNode) " +
+            "RETURN s2, collect(r1), collect(o2), collect(p2), collect(r2), collect(r3), collect(a2), collect(r4), collect(op)")
     StateNode findStateByObservation(Set<String>propertyStringIdSet);
 
 
@@ -75,14 +76,15 @@ public interface ConversationGraphRepository extends Neo4jRepository<GenericNode
             "MATCH (s2:StateNode)-[r1:HAS_OBSERVATION]->(o2:ObservationNode) " +
             "MATCH (o2)-[r2:OBSERVE]->(p2:PropertyNode) " +
             "MATCH (s2)-[r3:LEADS]->(a2:ActionNode) " +
-            "MATCH (a2)-[r4:OPTIONS]->(op:OptionNode) " +
             "MATCH(s2)-[r5:OBSERVE]->(p3:PropertyNode) " +
             "WHERE " +
             "p2.stringId in {observationPropertyStringIdSet} " +
             "and p3.stringId in {statePropertyStringIdSet} " +
             "and not o2 in group1 " +
             "and not s2 in group2 " +
-            "RETURN s2, r1, o2, collect(p2), collect(r2), r3, a2, collect(r4), collect(p3), collect(r5)")
+            "with s2, r1, o2, p2, r2, r3, a2, p3, r5 " +
+            "OPTIONAL MATCH (a2)-[r4:OPTIONS]->(op:OptionNode) " +
+            "RETURN s2, r1, o2, collect(p2), collect(r2), r3, a2, collect(r4), collect(p3), collect(r5), collect(op)")
     StateNode findStateByStateAndObservation(Set<String>observationPropertyStringIdSet, Set<String>statePropertyStringIdSet);
 
     @Query("MATCH (f:GenericNode) WHERE id(f)={0} OPTIONAL MATCH (f)-[l*]->(to) detach delete f,to")

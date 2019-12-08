@@ -203,7 +203,7 @@ function addBotText(event,id) {
     }
     if (event.options != null) {
         event.options.forEach(o => {
-            eventBody += `<div class="badge badge-pill badge-light mr-2">${o.text}</div>`;
+            eventBody += `<div class="badge badge-pill badge-light mr-2">${o.id}</div>`;
         })
     }
     if (event.skillId != null) {
