@@ -18,7 +18,7 @@ public class SimplePolicyController implements PolicyController{
 
         logger.debug("state: " + state +" userAction: " + userAction);
 
-        if (userAction.containsKey("userAct:DENY") || userAction.containsKey("userAct:INFORM")) {
+        if (userAction.containsKey("userAct:DENY") || userAction.containsKey("userAct:INFORM") ) {
 
             if (state.containsKey("botAct:DEFAULT"))
                 return BotAct.DEFAULT;
@@ -39,14 +39,24 @@ public class SimplePolicyController implements PolicyController{
 
             }
 
-            return BotAct.DB_SEARCH;
+            if (state.containsKey("botAct:SEARCH_HISTORY")) {
+
+                if (state.get("temp.history.found") == 1.0) {
+                    return BotAct.INFORM_USER;
+                }
+
+                return BotAct.DB_SEARCH;
+
+            }
+
+            return BotAct.SEARCH_HISTORY;
 
         }
 
         if (userAction.containsKey("userAct:QUERY")) {
 
             if (!state.containsKey("temp.answer.found")){
-                return BotAct.SEARCH_ANSWER;
+                return BotAct.SEARCH_QUERY;
             }
 
             if (state.get("temp.answer.found") == 1.0) {
@@ -55,27 +65,8 @@ public class SimplePolicyController implements PolicyController{
 
         }
 
-
-
-
         return BotAct.DEFAULT;
 
     }
-
-    private boolean searchKey(Set<String> keys, String keyToSearch, boolean withRemove){
-
-        for (String key : keys) {
-            if (key.startsWith(keyToSearch)){
-                if (withRemove)
-                    keys.remove(key);
-
-                return true;
-            }
-        }
-
-        return false;
-
-    }
-
 
 }

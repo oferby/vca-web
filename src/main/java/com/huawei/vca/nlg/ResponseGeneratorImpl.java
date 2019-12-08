@@ -51,7 +51,7 @@ public class ResponseGeneratorImpl implements ResponseGenerator {
 
         if (options != null && options.size() > 0) {
             for (OptionNode option : options) {
-                botUtterEvent.addOption(new Option(option.getStringId(), option.getName()));
+                botUtterEvent.addOption(new Option(option.getStringId()));
             }
 
         }
@@ -117,8 +117,8 @@ public class ResponseGeneratorImpl implements ResponseGenerator {
         if (menuItemEntity.getImageUrl() != null)
             botUtterEvent.addImage(new ImageInfo("/images/food/" + menuItemEntity.getImageUrl()));
 
-        botUtterEvent.addOption(new Option("yes", "Yes"));
-        botUtterEvent.addOption(new Option("no", "No"));
+        botUtterEvent.addOption(new Option("yes"));
+        botUtterEvent.addOption(new Option("no"));
 
         return botUtterEvent;
     }
@@ -146,7 +146,7 @@ public class ResponseGeneratorImpl implements ResponseGenerator {
         botUtterEvent.setText(text);
 
         for (String value : slotEntity.getValues()) {
-            botUtterEvent.addOption(new Option(value, value));
+            botUtterEvent.addOption(new Option(value));
         }
 
         return botUtterEvent;

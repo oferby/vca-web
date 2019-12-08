@@ -33,8 +33,8 @@ public class TestGraphDb {
     @Test
     public void testReset(){
 
-//        reset();
-        RootNode rootNode = conversationGraphRepository.getRootNode();
+        reset();
+        RootNode rootNode = conversationGraphRepository.getRootNodeWithObservations();
 
         assert rootNode !=null;
 
@@ -137,51 +137,26 @@ public class TestGraphDb {
 
         conversationGraphController.saveDialogueToGraph(dialogue);
 
-        RootNode rootNode = conversationGraphRepository.getRootNode();
+        RootNode rootNode = conversationGraphRepository.getRootNodeWithObservations();
 
         assert rootNode != null;
 
     }
 
 
-//    @Test
-    public void testSet() {
+    @Test
+    public void findAction(){
 
-        Set<ObservationNode>nodes = new HashSet<>();
+        ArrayList<String> optionList = new ArrayList<String>() {
+            {
+               add("beef");
+               add("lamb");
+            }};
 
-        ObservationNode node = new ObservationNode("text");
+        ActionNode action = conversationGraphRepository.findActionByIdAndOptions("What kind of meat would you like? These are the options:", optionList);
 
-        nodes.add(node);
+        assert action!=null;
 
-        node.setActionNode(new ActionNode());
-
-        nodes.add(node);
-
-        assert nodes.size() == 1;
-
-
-
-    }
-
-
-//    @Test
-    public void getNodeById() {
-
-        Iterable<StateNode> nodes = conversationGraphRepository.findAll();
-
-        StateNode node = nodes.iterator().next();
-
-        Optional<StateNode> byId = conversationGraphRepository.findById(node.getId());
-
-        assert byId.isPresent();
-
-        List<ObservationNode> allObservationNodes = conversationGraphRepository.findAllObservationNodes();
-
-        ObservationNode observationNode = allObservationNodes.get(0);
-
-        ObservationNode observationNodeById = conversationGraphRepository.findObservationNodeById(observationNode.getId());
-
-        assert observationNodeById != null;
 
     }
 
@@ -192,53 +167,22 @@ public class TestGraphDb {
         reset();
     }
 
-//    @Test
-    public void testProperties() {
-
-        reset();
-        RootNode rootNode = conversationGraphRepository.getRootNode();
-        addObservations(rootNode);
-
-//        ObservationNode obs1 = conversationRepository.findObservationNodeByName("obs1");
-//
-//        obs1.addProperty("k1", "v1");
-//
-//        conversationRepository.save(obs1);
-//
-//        obs1 = conversationRepository.findObservationNodeByName("obs1");
-//
-//        assert obs1.getProperties() !=null && !obs1.getProperties().keySet().isEmpty();
-
-
-    }
 
     private void reset(){
 
         conversationGraphRepository.deleteAll();
 
         RootNode rootNode = new RootNode();
-        rootNode.setName("root");
         rootNode.setStringId("root");
 
         RootNode save = conversationGraphRepository.save(rootNode);
 
-        Optional<StateNode> byId = conversationGraphRepository.findById(save.getId());
+        Optional<GenericNode> byId = conversationGraphRepository.findById(save.getId());
 
         assert byId.isPresent();
 
     }
 
-
-    public void addObservations(StateNode from) {
-
-        RootNode rootNode = conversationGraphRepository.getRootNode();
-
-        for (int i = 0; i < 10; i++) {
-            rootNode.addObservation(new ObservationNode("obs" + i));
-        }
-
-        conversationGraphRepository.save(rootNode);
-    }
 
     @Test
     public void testSaveToGraphWithOptions() {
@@ -256,22 +200,34 @@ public class TestGraphDb {
 
         ArrayList<String> propStringIdList = new ArrayList<String>() {
             {
-//                add("query");
-                add("food:main_dish:burger");
-                add("food:drink:hard:wine");
+                add("want:food:main_dish:burger");
             }
         };
 
-
-        ObservationNode observationNode = conversationGraphRepository.findByProperties(propStringIdList, propStringIdList.size());
+        ObservationNode observationNode = conversationGraphRepository.findObservationByProperties(propStringIdList);
 
         assert observationNode!=null;
 
 
     }
 
+    @Test
+    public void findState() {
 
 
+        ArrayList<String> properties = new ArrayList<String>() {
+            {
+                add("botAct:INFORM_USER");
+                add("want:food:main_dish:burger");
+            }
+        };
+
+        StateNode stateNode = conversationGraphRepository.findStateByPropertiesAndObservation(properties, (long) 12368769);
+
+        assert stateNode!=null;
+
+
+    }
 
 
 }

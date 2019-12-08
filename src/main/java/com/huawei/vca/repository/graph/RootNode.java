@@ -7,44 +7,46 @@ import java.util.List;
 import java.util.Objects;
 
 @NodeEntity
-public class RootNode extends HasObservationsNode implements Comparable<StateNode>{
+public class RootNode extends GenericNode{
 
-    private Integer visited;
+    @Id
+    @GeneratedValue
+    private
+    Long id;
 
-    public int getVisited() {
-        return visited;
+    private String stringId;
+
+    @Relationship("HAS")
+    private List<StateNode> stateNodeList;
+
+    public Long getId() {
+        return id;
     }
 
-    public void setVisited(int visited) {
-        this.visited = visited;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public void increaseVisited() {
-
-        if (this.visited == null)
-            visited = 0;
-
-        this.visited++;
+    public String getStringId() {
+        return stringId;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        RootNode rootNode = (RootNode) o;
-        return Objects.equals(visited, rootNode.visited);
+    public void setStringId(String stringId) {
+        this.stringId = stringId;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), visited);
+    public List<StateNode> getStateNodeList() {
+        return stateNodeList;
     }
 
-    @Override
-    public int compareTo(StateNode stateNode) {
-
-        return this.getStringId().compareTo(stateNode.getStringId());
-
+    public void setStateNodeList(List<StateNode> stateNodeList) {
+        this.stateNodeList = stateNodeList;
     }
+
+    public void addStateNode(StateNode stateNode){
+        if (stateNodeList == null)
+            stateNodeList = new ArrayList<>();
+        stateNodeList.add(stateNode);
+    }
+
 }

@@ -9,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Controller
 public class MinimalStepGraphController implements SkillController {
@@ -33,39 +31,17 @@ public class MinimalStepGraphController implements SkillController {
 
         PredictedAction predictedAction = new PredictedAction();
 
-
-        String query = "query:";
-        String searchString = null;
-        for (String key : observations.keySet()) {
-            if (key.startsWith(query)){
-                searchString = key.substring(query.length());
-                break;
-            }
-        }
-
-        if (searchString==null){
-            return predictedAction;
-        }
-
-        ArrayList<String> propStringIdList = new ArrayList<>();
-        propStringIdList.add(searchString);
-
-        ObservationNode observationNode = conversationGraphRepository.findByProperties(propStringIdList, propStringIdList.size());
-
-        if (observationNode == null) {
+        StateNode stateNode = conversationGraphRepository.findStateByProperties(observations.keySet());
+        if (stateNode == null) {
             logger.debug("Prediction from Q&A: " + predictedAction);
             return predictedAction;
         }
 
-        observationNode = conversationGraphRepository.findObservationNodeById(observationNode.getId());
-
-        if (observationNode.getActionNode() == null)
+        ActionNode actionNode = stateNode.getActionNode();
+        if (actionNode==null){
+            logger.debug("There is no action attached to state.\nPrediction from Q&A: " + predictedAction);
             return predictedAction;
-
-        ActionNode actionNode = conversationGraphRepository.findActionById(observationNode.getActionNode().getId());
-
-        if (actionNode.getObservationNodes() != null)
-            return predictedAction;
+        }
 
         predictedAction.setConfidence(confidence);
         BotUtterEvent botUtterEvent = responseGenerator.generateResponse(actionNode.getStringId(), this.getClass());

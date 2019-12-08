@@ -8,9 +8,9 @@ public class SentimentAnalysisSkill implements PreprocessorSkill{
     @Override
     public void process(Dialogue dialogue) {
 
-        dialogue.addObservation("sentiment:positive", (float) 0.1);
-        dialogue.addObservation("sentiment:negative", (float) 0.1);
-        dialogue.addObservation("sentiment:neutral", (float) 0.8);
+//        dialogue.addObservation("sentiment:positive", (float) 0.1);
+//        dialogue.addObservation("sentiment:negative", (float) 0.1);
+//        dialogue.addObservation("sentiment:neutral", (float) 0.8);
 
     }
 }

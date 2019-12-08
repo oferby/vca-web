@@ -1,11 +1,14 @@
 package com.huawei.vca.message;
 
+import java.util.Map;
 import java.util.Objects;
 
 public class UserUtterEvent extends Event{
 
     private String text;
     private NluEvent nluEvent;
+    private Map<String, Float> observations;
+    private Map<String, Float> state;
 
     public UserUtterEvent() {
         super();
@@ -30,6 +33,22 @@ public class UserUtterEvent extends Event{
 
     public void setNluEvent(NluEvent nluEvent) {
         this.nluEvent = nluEvent;
+    }
+
+    public Map<String, Float> getObservations() {
+        return observations;
+    }
+
+    public void setObservations(Map<String, Float> observations) {
+        this.observations = observations;
+    }
+
+    public Map<String, Float> getState() {
+        return state;
+    }
+
+    public void setState(Map<String, Float> state) {
+        this.state = state;
     }
 
     @Override

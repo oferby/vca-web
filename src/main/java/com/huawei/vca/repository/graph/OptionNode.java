@@ -5,10 +5,34 @@ import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 
 @NodeEntity
-public class OptionNode extends StateNode{
+public class OptionNode extends GenericNode {
 
-    public OptionNode(String id, String text) {
-        this.stringId = id;
-        this.name = text;
+    @Id
+    @GeneratedValue
+    private
+    Long id;
+
+    private String stringId;
+
+    public OptionNode(String stringId) {
+        this.stringId = stringId;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getStringId() {
+        return stringId;
+    }
+
+    public void setStringId(String stringId) {
+        this.stringId = stringId;
+    }
+
+
 }

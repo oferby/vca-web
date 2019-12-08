@@ -1,32 +1,34 @@
 package com.huawei.vca.repository.graph;
 
+import org.jetbrains.annotations.NotNull;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
+import org.neo4j.ogm.annotation.Relationship;
 
-import java.util.Objects;
+import java.util.List;
 
 @NodeEntity
-public class StateNode {
+public class StateNode extends GenericNode{
 
     @Id
     @GeneratedValue
     private
     Long id;
 
-    String stringId;
+    private String stringId;
 
-    String name;
+    @Relationship(type = "LEADS")
+    private ActionNode actionNode;
 
-    private Integer stateId;
+    @Relationship(type = "HAS_OBSERVATION")
+    private ObservationNode observationNode;
 
+    @Relationship(type = "OBSERVE")
+    private List<PropertyNode> stateProperties;
 
-    public StateNode() {
-    }
+    private Integer visited;
 
-    public StateNode(String name) {
-        this.name = name;
-    }
 
     public Long getId() {
         return id;
@@ -44,35 +46,47 @@ public class StateNode {
         this.stringId = stringId;
     }
 
-    public String getName() {
-        return name;
+    public ActionNode getActionNode() {
+        return actionNode;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setActionNode(ActionNode actionNode) {
+        this.actionNode = actionNode;
     }
 
-    public Integer getStateId() {
-        return stateId;
+    public ObservationNode getObservationNode() {
+        return observationNode;
     }
 
-    public void setStateId(Integer stateId) {
-        this.stateId = stateId;
+    public void setObservationNode(ObservationNode observationNode) {
+        this.observationNode = observationNode;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        StateNode stateNode = (StateNode) o;
-        return Objects.equals(id, stateNode.id) &&
-                Objects.equals(stringId, stateNode.stringId) &&
-                Objects.equals(name, stateNode.name) &&
-                Objects.equals(stateId, stateNode.stateId);
+    public List<PropertyNode> getStateProperties() {
+        return stateProperties;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, stringId, name, stateId);
+    public void setStateProperties(List<PropertyNode> stateProperties) {
+        this.stateProperties = stateProperties;
     }
+
+    public Integer getVisited() {
+        return visited;
+    }
+
+    public void setVisited(Integer visited) {
+        this.visited = visited;
+    }
+
+    public void increaseVisited() {
+
+        if (this.visited == null)
+            visited = 0;
+
+        this.visited++;
+    }
+
+
+
+
 }

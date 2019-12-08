@@ -1,64 +1,61 @@
 package com.huawei.vca.repository.graph;
 
+import org.jetbrains.annotations.NotNull;
 import org.neo4j.ogm.annotation.*;
 
 import java.util.*;
 
 @NodeEntity
-public class ObservationNode extends StateNode implements Comparable<StateNode>{
+public class ObservationNode extends GenericNode implements Comparable<ObservationNode>{
 
-    @Relationship(type = "LEADS")
-    private ActionNode actionNode;
+    @Id
+    @GeneratedValue
+    private
+    Long id;
 
-    @Relationship(type = "HAS_PROPERTY")
-    private List<PropertyNode>properties;
+    private String stringId;
 
-    private Integer visited;
+    @Relationship(type = "OBSERVE")
+    private List<PropertyNode> observationProperties;
+
 
     public ObservationNode() {
     }
 
-    public ObservationNode(String name) {
-        super(name);
+    public ObservationNode(String stringId){
+        this.stringId = stringId;
     }
 
-    public ActionNode getActionNode() {
-        return actionNode;
+    public Long getId() {
+        return id;
     }
 
-    public void setActionNode(ActionNode actionNode) {
-        this.actionNode = actionNode;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public List<PropertyNode> getProperties() {
-        return properties;
+    public String getStringId() {
+        return stringId;
     }
 
-    public void setProperties(List<PropertyNode> properties) {
-        this.properties = properties;
+    public void setStringId(String stringId) {
+        this.stringId = stringId;
     }
 
-    public void addProperty(PropertyNode propertyNode){
-        if (properties==null)
-            properties = new ArrayList<>();
-        properties.add(propertyNode);
+    public List<PropertyNode> getObservationProperties() {
+        return observationProperties;
     }
 
-    public int getVisited() {
-        return visited;
+    public void setObservationProperties(List<PropertyNode> observationProperties) {
+        this.observationProperties = observationProperties;
     }
 
-    public void setVisited(int visited) {
-        this.visited = visited;
+    public void addObservationProperty(PropertyNode propertyNode){
+        if (observationProperties ==null)
+            observationProperties = new ArrayList<>();
+        observationProperties.add(propertyNode);
     }
 
-    public void increaseVisited() {
-
-        if (this.visited == null)
-            visited = 0;
-
-        this.visited++;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -66,18 +63,16 @@ public class ObservationNode extends StateNode implements Comparable<StateNode>{
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         ObservationNode that = (ObservationNode) o;
-        return Objects.equals(actionNode, that.actionNode) &&
-                Objects.equals(properties, that.properties) &&
-                Objects.equals(visited, that.visited);
+        return Objects.equals(observationProperties, that.observationProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), actionNode, properties, visited);
+        return Objects.hash(super.hashCode(), observationProperties);
     }
 
     @Override
-    public int compareTo(StateNode stateNode) {
-        return this.getStringId().compareTo(stateNode.getStringId());
+    public int compareTo(@NotNull ObservationNode o) {
+        return this.id.compareTo(o.getId());
     }
 }

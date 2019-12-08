@@ -1,19 +1,48 @@
 package com.huawei.vca.repository.graph;
 
+import org.jetbrains.annotations.NotNull;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
-import javax.swing.plaf.nimbus.State;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @NodeEntity
-public class ActionNode extends HasObservationsNode implements Comparable<StateNode> {
+public class ActionNode extends GenericNode implements Comparable<ActionNode> {
+
+    @Id
+    @GeneratedValue
+    private
+    Long id;
+
+    private String stringId;
+
     @Relationship(type = "OPTIONS")
     private List<OptionNode>optionNodeList;
+
+
+
+    public ActionNode(String stringId) {
+        this.stringId = stringId;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getStringId() {
+        return stringId;
+    }
+
+    public void setStringId(String stringId) {
+        this.stringId = stringId;
+    }
 
     public List<OptionNode> getOptionNodeList() {
         return optionNodeList;
@@ -30,7 +59,7 @@ public class ActionNode extends HasObservationsNode implements Comparable<StateN
     }
 
     @Override
-    public int compareTo(StateNode stateNode) {
-        return this.getStringId().compareTo(stateNode.getStringId());
+    public int compareTo(@NotNull ActionNode o) {
+        return o.getId().compareTo(this.id);
     }
 }
