@@ -106,22 +106,38 @@ function scroll_window() {
 
 }
 
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
 function addBotResponse(event) {
 
-    if (event.text != null) {
-        addBotEvent(event);
+    async function displayWait() {
+
+        $('#smartbotBody').append('<div id="waiting-div" class="messageBox incoming"><div class="messageText"><div class="waiting"><img src="/images/waiting.gif" alt="Enter"></div></div></div>');
+        scroll_window();
+        await sleep(1000);
+        $('#waiting-div').remove();
+
+       if (event.text != null) {
+           addBotEvent(event);
+       }
+
+       let options = event.options;
+       if (options != null) {
+           $('#smartbotBody').append('<div class="messageBox incoming">');
+           options.forEach(function (option) {
+               addMessageButton(option);
+           });
+           $('#smartbotBody').append('</div>');
+       }
+       scroll_window();
+
     }
 
-    let options = event.options;
-    if (options != null) {
-        $('#smartbotBody').append('<div class="messageBox incoming">');
-        options.forEach(function (option) {
-            addMessageButton(option);
-        });
-        $('#smartbotBody').append('</div>');
-    }
-    scroll_window();
-
+    displayWait();
 }
 
 
