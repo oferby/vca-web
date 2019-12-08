@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 @Controller
@@ -31,7 +30,7 @@ public class MinimalStepGraphController implements SkillController {
 
         PredictedAction predictedAction = new PredictedAction();
 
-        StateNode stateNode = conversationGraphRepository.findStateByProperties(observations.keySet());
+        StateNode stateNode = conversationGraphRepository.findStateByObservation(observations.keySet());
         if (stateNode == null) {
             logger.debug("Prediction from Q&A: " + predictedAction);
             return predictedAction;

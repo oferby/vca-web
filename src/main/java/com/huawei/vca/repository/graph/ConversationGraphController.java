@@ -32,20 +32,12 @@ public class ConversationGraphController implements SkillController {
 
         PredictedAction predictedAction = new PredictedAction();
 
-
-        ObservationNode observationNode = conversationGraphRepository.findObservationByProperties(observations.keySet());
-
-        if (observationNode == null) {
-            logger.debug("Prediction from history: " + predictedAction);
-            return predictedAction;
-        }
-
         StateNode stateNode;
 
         if (state.keySet().isEmpty()){
-           stateNode = conversationGraphRepository.findStateWithoutPropertiesAndObservation(observationNode.getId());
+           stateNode = conversationGraphRepository.findStateByObservation(observations.keySet());
         } else {
-            stateNode = conversationGraphRepository.findStateByPropertiesAndObservation(state.keySet(), observationNode.getId());
+            stateNode = conversationGraphRepository.findStateByStateAndObservation(observations.keySet(),state.keySet());
         }
 
         if (stateNode==null || stateNode.getActionNode() == null){
