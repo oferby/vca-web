@@ -36,17 +36,20 @@ public interface ConversationGraphRepository extends Neo4jRepository<GenericNode
     ActionNode findActionByIdAndOptions(String stringId, List<String>optionIdList);
 
 
-    @Query("MATCH (s1:StateNode)-[:HAS_PROPERTY]->(p1:PropertyNode) " +
+    @Query("MATCH(s1:StateNode)-[:OBSERVE]->(p1:PropertyNode) " +
             "WHERE " +
             "not p1.stringId in {optionStringIdList} " +
             "WITH collect(s1) as group1 " +
-            "MATCH (s2:StateNode)-[:HAS_PROPERTY]->(p2:PropertyNode) " +
-            "MATCH (s2)-[:HAS_OBSERVATION]->(o2:ObservationNode) " +
-            "MATCH (s2)-[l:LEADS]->(a2:ActionNode) " +
+            "MATCH(s2:StateNode)-[r2:OBSERVE]->(p2:PropertyNode) " +
+            "MATCH (s2)-[r20:LEADS]->(a2:ActionNode) " +
+            "MATCH (s2)-[:HAS_OBSERVATION]->(o:ObservationNode) " +
             "WHERE " +
             "p2.stringId in {optionStringIdList} " +
-            "and not s2 in group1 and id(o2)={observationId} " +
-            "RETURN s2,a2,l")
+            "and not s2 in group1 " +
+            "and id(o)={observationId} " +
+            "WITH collect(p2) as col_p2, s2, collect(r2) as col_r2, r20, a2 " +
+            "WHERE size(col_p2) = size({optionStringIdList}) " +
+            "RETURN s2, col_p2 , col_r2, r20, a2")
     StateNode findStateByPropertiesAndObservation(List<String>optionStringIdList, Long observationId);
 
 
