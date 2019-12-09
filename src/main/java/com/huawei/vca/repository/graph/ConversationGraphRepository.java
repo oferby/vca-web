@@ -49,42 +49,61 @@ public interface ConversationGraphRepository extends Neo4jRepository<GenericNode
             "RETURN s2,a2,l")
     StateNode findStateByPropertiesAndObservation(List<String>optionStringIdList, Long observationId);
 
-    @Query("MATCH (s1:StateNode)-[:HAS_OBSERVATION]->(o1:ObservationNode) " +
-            "MATCH (o1)-[:OBSERVE]->(p1:PropertyNode) " +
+
+
+    @Query("MATCH (s:StateNode)-[:HAS_OBSERVATION]->(o:ObservationNode) " +
+            "WHERE id(o)={observationId} " +
+            "and not (s)-[:OBSERVE]->(:PropertyNode) " +
+            "RETURN s")
+    StateNode findStateNodeByObservationId(Long observationId);
+
+
+    @Query("MATCH (o3:ObservationNode)-[:OBSERVE]->(p3:PropertyNode) " +
             "WHERE " +
-            "not p1.stringId in {propertyStringIdSet} " +
-            "WITH collect(o1) as group1 " +
-            "MATCH (s2:StateNode)-[r1:HAS_OBSERVATION]->(o2:ObservationNode) " +
-            "MATCH (o2)-[r2:OBSERVE]->(p2:PropertyNode) " +
-            "MATCH (s2)-[r3:LEADS]->(a2:ActionNode) " +
+            "not p3.stringId in {propertyStringIdSet} " +
+            "WITH collect(o3) as group2, collect(p3) as group3 " +
+            "MATCH (o4)-[r4:OBSERVE]->(p4:PropertyNode) " +
+            "MATCH (s1:StateNode)-[r1:HAS_OBSERVATION]->(o4) " +
+            "MATCH (s1)-[r2:LEADS]->(a1:ActionNode) " +
             "WHERE " +
-            "p2.stringId in {propertyStringIdSet} " +
-            "and not o2 in group1 " +
-            "with s2, r1,o2,p2,r2,r3,a2 " +
-            "OPTIONAL MATCH (a2)-[r4:OPTIONS]->(op:OptionNode) " +
-            "RETURN s2, collect(r1), collect(o2), collect(p2), collect(r2), collect(r3), collect(a2), collect(r4), collect(op)")
+            "p4.stringId in {propertyStringIdSet} " +
+            "and not p4 in group3 " +
+            "and not o4 in group2 " +
+            "and not (s1)-[:OBSERVE]->(:PropertyNode) " +
+            "WITH o4, collect(p4) as col_p4, collect(r4) as col_r4, s1, r2, a1 " +
+            "WHERE " +
+            "size(col_p4)=size({propertyStringIdSet}) " +
+            "WITH s1, r2, a1 " +
+            "OPTIONAL MATCH(a1)-[r3:OPTIONS]->(op:OptionNode) " +
+            "RETURN s1, r2, a1, collect(op), collect(r3)")
     StateNode findStateByObservation(Set<String>propertyStringIdSet);
 
 
-    @Query("MATCH(s0:StateNode)-[:OBSERVE]->(p0:PropertyNode) " +
-            "MATCH (s1:StateNode)-[:HAS_OBSERVATION]->(o1:ObservationNode) " +
-            "MATCH (o1)-[:OBSERVE]->(p1:PropertyNode) " +
+    @Query("MATCH(s1:StateNode)-[:OBSERVE]->(p1:PropertyNode) " +
             "WHERE " +
-            "not p1.stringId in {observationPropertyStringIdSet} and " +
-            "not p0.stringId in {statePropertyStringIdSet} " +
-            "WITH collect(o1) as group1, collect(s0) as group2 " +
-            "MATCH (s2:StateNode)-[r1:HAS_OBSERVATION]->(o2:ObservationNode) " +
-            "MATCH (o2)-[r2:OBSERVE]->(p2:PropertyNode) " +
-            "MATCH (s2)-[r3:LEADS]->(a2:ActionNode) " +
-            "MATCH(s2)-[r5:OBSERVE]->(p3:PropertyNode) " +
+            "not p1.stringId in {statePropertyStringIdSet} " +
+            "WITH collect(s1) as group1 " +
+            "MATCH(s2:StateNode)-[r2:OBSERVE]->(p2:PropertyNode) " +
+            "MATCH (s2)-[r20:LEADS]->(a2:ActionNode) " +
             "WHERE " +
-            "p2.stringId in {observationPropertyStringIdSet} " +
-            "and p3.stringId in {statePropertyStringIdSet} " +
-            "and not o2 in group1 " +
-            "and not s2 in group2 " +
-            "with s2, r1, o2, p2, r2, r3, a2, p3, r5 " +
-            "OPTIONAL MATCH (a2)-[r4:OPTIONS]->(op:OptionNode) " +
-            "RETURN s2, r1, o2, collect(p2), collect(r2), r3, a2, collect(r4), collect(p3), collect(r5), collect(op)")
+            "p2.stringId in {statePropertyStringIdSet} " +
+            "and not s2 in group1 " +
+            "WITH collect(p2) as col_p2, s2, collect(r2) as col_r2, r20, a2 " +
+            "WHERE size(col_p2) = size({statePropertyStringIdSet}) " +
+            "WITH col_p2, s2, col_r2, r20, a2 " +
+            "MATCH (o3:ObservationNode)-[:OBSERVE]->(p3:PropertyNode) " +
+            "WHERE " +
+            "not p3.stringId in {observationPropertyStringIdSet} " +
+            "WITH collect(o3) as group2, collect(p3) as group3, col_p2, s2, col_r2, r20, a2 " +
+            "MATCH (o4)-[r4:OBSERVE]->(p4:PropertyNode) " +
+            "MATCH (s2)-[:HAS_OBSERVATION]->(o4) " +
+            "WHERE " +
+            "p4.stringId in {observationPropertyStringIdSet} " +
+            "and not p4 in group3 " +
+            "and not o4 in group2 " +
+            "WITH s2, a2, r20 " +
+            "OPTIONAL MATCH(a2)-[r3:OPTIONS]->(op:OptionNode) " +
+            "RETURN DISTINCT s2, a2, r20, collect(op), collect(r3)")
     StateNode findStateByStateAndObservation(Set<String>observationPropertyStringIdSet, Set<String>statePropertyStringIdSet);
 
     @Query("MATCH (f:GenericNode) WHERE id(f)={0} OPTIONAL MATCH (f)-[l*]->(to) detach delete f,to")

@@ -24,9 +24,6 @@ public class ConversationGraphController implements SkillController {
     //    @Value("${skill.confidence.graph}")
     private float confidence = (float) 0.9;
 
-    private static String graphLocation = "graph_location";
-    private static String observationLocation = "observation_location";
-
     @Override
     public PredictedAction getPredictedAction(Map<String, Float> state, Map<String, Float> observations) {
 
@@ -103,7 +100,12 @@ public class ConversationGraphController implements SkillController {
             propertyIdList.add(propertyNode.getStringId());
         }
 
-        StateNode stateNode = conversationGraphRepository.findStateByPropertiesAndObservation(propertyIdList, observationNode.getId());
+        StateNode stateNode = null;
+        if (propertyIdList.isEmpty()) {
+            stateNode = conversationGraphRepository.findStateNodeByObservationId(observationNode.getId());
+        }else {
+            stateNode = conversationGraphRepository.findStateByPropertiesAndObservation(propertyIdList, observationNode.getId());
+        }
 
         if (stateNode == null) {
 
@@ -208,83 +210,5 @@ public class ConversationGraphController implements SkillController {
 
         return propertyNodes;
     }
-
-    public void saveDialogueToGraphOld(Dialogue dialogue) {
-
-        Map<String, Float> observations = dialogue.getObservations();
-        Map<String, Float> state = dialogue.getState();
-
-        Set<String> keys = new HashSet<>(observations.keySet());
-        keys.addAll(state.keySet());
-
-        List<PropertyNode> propertyNodesToSave = new ArrayList<>();
-        List<PropertyNode> propertyNodes = new ArrayList<>();
-
-        String observationName = null;
-        for (String key : keys) {
-
-            if (key.startsWith("userAct")) {
-                observationName = key;
-                continue;
-            }
-
-            if (key.startsWith("botAct"))
-                continue;
-
-            PropertyNode propertyNode = conversationGraphRepository.findByStringId(key);
-
-            if (propertyNode == null) {
-                propertyNode = new PropertyNode();
-                propertyNode.setStringId(key);
-                propertyNode.setPropertyType(PropertyType.STRING);
-                propertyNodesToSave.add(propertyNode);
-            } else {
-                propertyNodes.add(propertyNode);
-            }
-        }
-
-        if (!propertyNodesToSave.isEmpty()) {
-            Iterable<PropertyNode> saved = conversationGraphRepository.saveAll(propertyNodesToSave);
-            for (PropertyNode node : saved) {
-                propertyNodes.add(node);
-            }
-        }
-
-        RootNode rootNode = conversationGraphRepository.getRootNode();
-
-//        ObservationNode observationNode = new ObservationNode();
-//        observationNode.setStringId(observationName);
-//        observationNode.setObservationProperties(propertyNodes);
-//        rootNode.addObservation(observationNode);
-//
-//        List<GenericNode> nodesToSave = new ArrayList<>(propertyNodes);
-//        nodesToSave.add(rootNode);
-//        nodesToSave.add(observationNode);
-//
-//        List<Event> history = dialogue.getHistory();
-//        Event event = history.get(history.size() - 1);
-//        if (!(event instanceof BotUtterEvent))
-//            throw new RuntimeException("wrong bot event");
-//
-//        BotUtterEvent botUtterEvent = (BotUtterEvent) event;
-//
-//        ActionNode actionNode = new ActionNode();
-//        actionNode.setStringId(botUtterEvent.getId());
-//        nodesToSave.add(actionNode);
-//        observationNode.setActionNode(actionNode);
-//
-//        if (botUtterEvent.getOptions() != null) {
-//            for (Option option : botUtterEvent.getOptions()) {
-//                OptionNode optionNode = new OptionNode(option.getId());
-//                actionNode.addOption(optionNode);
-//                nodesToSave.add(optionNode);
-//            }
-//
-//        }
-//
-//        conversationGraphRepository.saveAll(nodesToSave);
-//
-    }
-
 
 }
