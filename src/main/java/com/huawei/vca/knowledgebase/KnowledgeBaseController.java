@@ -7,6 +7,6 @@ import java.util.Map;
 
 public interface KnowledgeBaseController {
 
-    PredictedAction getPredictedAct(Map<String,Float> state);
+    PredictedAction getPredictedAct(Map<String,Float> state, Map<String,Float> observations);
 
 }

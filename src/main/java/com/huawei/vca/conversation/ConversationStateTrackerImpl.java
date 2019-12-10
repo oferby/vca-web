@@ -92,7 +92,7 @@ public class ConversationStateTrackerImpl implements ConversationStateTracker{
 
             } else if (botAct == BotAct.DB_SEARCH) {
 
-                PredictedAction predictedAct = knowledgeBaseController.getPredictedAct(state);
+                PredictedAction predictedAct = knowledgeBaseController.getPredictedAct(state, observations);
 
                 if (predictedAct.getConfidence() > 0.5) {
                     postProcess(dialogue, predictedAct.getBotEvent());
@@ -134,11 +134,12 @@ public class ConversationStateTrackerImpl implements ConversationStateTracker{
 
             }
 
-            this.transition(state,observations);
+
             this.transition(state, botAct);
 
         } while (true);
 
+        this.transition(state,observations);
         searchKey(state,"temp.",true);
         return dialogue;
     }

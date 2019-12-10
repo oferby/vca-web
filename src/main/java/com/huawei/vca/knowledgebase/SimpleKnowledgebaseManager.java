@@ -245,15 +245,25 @@ public class SimpleKnowledgebaseManager implements KnowledgeBaseController {
 
     }
 
+    private Slot extractSlot(String key) {
+
+        Slot slot = new Slot();
+        int index = key.lastIndexOf(":");
+        slot.setKey(key.substring(0,index));
+        slot.setValue(key.substring(index+1));
+
+        return slot;
+    }
+
     @Override
-    public PredictedAction getPredictedAct(Map<String, Float> state) {
+    public PredictedAction getPredictedAct(Map<String, Float> state, Map<String, Float> observations) {
 
         PredictedAction predictedAction = new PredictedAction();
 
         List<Slot> informSlots = new ArrayList<>();
         List<Slot> denySlots = new ArrayList<>();
 
-        for (String key : state.keySet()) {
+        for (String key : observations.keySet()) {
 
             if (!key.contains("food"))
                 continue;
@@ -269,21 +279,33 @@ public class SimpleKnowledgebaseManager implements KnowledgeBaseController {
 
         }
 
-        GoalPrediction userGoal = this.getGoalPrediction(informSlots, denySlots);
-        this.findBestAction(userGoal);
-        this.addBotUtterEvent(predictedAction, userGoal);
+        if (!(informSlots.isEmpty() && denySlots.isEmpty())) {
+
+            for (String key : state.keySet()) {
+
+                if (!key.contains("food"))
+                    continue;
+
+                String want = "want";
+                String dontwant = "dontwant";
+
+                if (key.startsWith(want)) {
+                    informSlots.add(this.extractSlot(key.substring(want.length()+1)));
+                } else if (key.startsWith(dontwant)) {
+                    denySlots.add(extractSlot(key.substring(dontwant.length()+1)));
+                }
+
+            }
+
+            GoalPrediction userGoal = this.getGoalPrediction(informSlots, denySlots);
+            this.findBestAction(userGoal);
+            this.addBotUtterEvent(predictedAction, userGoal);
+
+        }
 
         logger.debug("Prediction from KB: " + predictedAction);
         return predictedAction;
+
     }
 
-    private Slot extractSlot(String key) {
-
-        Slot slot = new Slot();
-        int index = key.lastIndexOf(":");
-        slot.setKey(key.substring(0,index));
-        slot.setValue(key.substring(index+1));
-
-        return slot;
-    }
 }
