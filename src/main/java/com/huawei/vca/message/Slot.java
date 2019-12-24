@@ -11,6 +11,9 @@ public class Slot {
     private float confidence;
     private Integer start;
     private Integer end;
+    private ValueType valueType;
+    private Integer minValue;
+    private Integer maxValue;
 
     public Slot() {
     }
@@ -72,6 +75,30 @@ public class Slot {
 
     public void setEnd(Integer end) {
         this.end = end;
+    }
+
+    public ValueType getValueType() {
+        return valueType;
+    }
+
+    public void setValueType(ValueType valueType) {
+        this.valueType = valueType;
+    }
+
+    public Integer getMinValue() {
+        return minValue;
+    }
+
+    public void setMinValue(Integer minValue) {
+        this.minValue = minValue;
+    }
+
+    public Integer getMaxValue() {
+        return maxValue;
+    }
+
+    public void setMaxValue(Integer maxValue) {
+        this.maxValue = maxValue;
     }
 
     @Override

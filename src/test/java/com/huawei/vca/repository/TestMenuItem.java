@@ -1,6 +1,7 @@
 package com.huawei.vca.repository;
 
 import com.huawei.vca.message.Slot;
+import com.huawei.vca.message.ValueType;
 import com.huawei.vca.repository.controller.BotUtterRepository;
 import com.huawei.vca.repository.controller.FeatureGroupRepository;
 import com.huawei.vca.repository.controller.MenuItemRepository;
@@ -227,5 +228,26 @@ public class TestMenuItem {
     }
 
 
+//    @Test
+    public void addContinuousSlot(){
+
+
+        Random r = new Random();
+
+        List<MenuItemEntity> all = menuItemRepository.findAll();
+
+        for (MenuItemEntity menuItemEntity : all) {
+
+            Slot calories = new Slot();
+            calories.setValueType(ValueType.CONTINUOUS);
+            calories.setMinValue(0);
+//            calories.setMaxValue(1500);
+            calories.setValue(String.valueOf(r.nextInt(1500)));
+            menuItemEntity.addSlot(calories);
+
+        }
+
+        menuItemRepository.saveAll(all);
+    }
 
 }
